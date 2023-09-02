@@ -1,5 +1,12 @@
 package edu.usfca.cs272;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
@@ -19,18 +26,48 @@ public class Driver {
 	 * inverted index.
 	 *
 	 * @param args flag/value pairs used to start this program
+	 * @throws IOException 
+	 * 
 	 */
-	public static void main(String[] args) {
-		// store initial start time
-		Instant start = Instant.now();
+	
+	
+	public static int textProcess (Path input) throws IOException {
+		
+		System.out.println(input);
+		
 
-		// TODO Fill in and modify as needed
-		System.out.println(Arrays.toString(args));
+		StringBuilder inputText = new StringBuilder();
+		 try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
+			 String line;
+		        while ((line = reader.readLine()) != null) {
+		            inputText.append(line).append("\n");
+		            System.out.println(line);
+		        }
+		    }
+		System.out.println("TEST1111111");
+		System.out.println(inputText);
+		return 0;
+	}
+	
+	
+	
+	
+	public static void main(String[] args) throws IOException {
 
-		// calculate time elapsed and output
-		long elapsed = Duration.between(start, Instant.now()).toMillis();
-		double seconds = (double) elapsed / Duration.ofSeconds(1).toMillis();
-		System.out.printf("Elapsed: %f seconds%n", seconds);
+
+		//System.out.println(Arrays.toString(args));
+		
+		 for (int i = 0; i < args.length; i++) {
+             System.out.println(args[i]);
+             
+             if (args[i].equals("-text")) {
+            	 Path path = Paths.get(args[i+1]);
+            	 
+            	 textProcess(path);
+             }
+     }
+
+
 	}
 
 	/*
@@ -47,6 +84,5 @@ public class Driver {
 	 * The starter code (calculating elapsed time) is not necessary. It can be
 	 * removed from the main method.
 	 *
-	 * TODO Delete this after reading.
 	 */
 }
