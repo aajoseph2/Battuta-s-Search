@@ -4,6 +4,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,9 +49,24 @@ public class Driver {
 	}
 	
 
+	public static void iterDirectory(Path input) {
+		
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
+            for (Path entry : stream) {
+                System.out.println(entry.getFileName());
+                if (!Files.isDirectory(entry)) {
+                	System.out.println(textProcess(entry));
+                } else {
+                	iterDirectory(entry);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
 	
 	
-	public static int textProcess (Path input) throws IOException {
+	public static int textProcess(Path input) throws IOException {
 		
 		StringBuilder inputText = new StringBuilder();
 		 try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
@@ -82,8 +98,9 @@ public class Driver {
             	 
             	 if (Files.isDirectory(path)) {
             		System.out.println("This is a directory");
+            		iterDirectory(path);
             	 } else {
-            		textProcess(path);
+            		System.out.println(textProcess(path));
             	 }
             
              }
@@ -92,19 +109,4 @@ public class Driver {
 
 	}
 
-	/*
-	 * Generally, "Driver" classes are responsible for setting up and calling other
-	 * classes, usually from a main() method that parses command-line parameters.
-	 * Generalized reusable code are usually placed outside of the Driver class.
-	 * They are sometimes called "Main" classes too, since they usually include the
-	 * main() method.
-	 *
-	 * If the driver were only responsible for a single class, we use that class
-	 * name. For example, "TaxiDriver" is what we would name a driver class that
-	 * just sets up and calls the "Taxi" class.
-	 *
-	 * The starter code (calculating elapsed time) is not necessary. It can be
-	 * removed from the main method.
-	 *
-	 */
 }
