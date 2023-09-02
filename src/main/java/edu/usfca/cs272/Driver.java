@@ -7,15 +7,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.Instant;
+import java.text.Normalizer;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 /**
  * Class responsible for running this project based on the provided command-line
  * arguments. See the README for details.
  *
- * @author TODO Amin Joseph
+ * @author Amin Joseph
  * @author CS 272 Software Development (University of San Francisco)
  * @version Fall 2023
  */
@@ -30,40 +30,62 @@ public class Driver {
 	 * 
 	 */
 	
+	public static final Pattern SPLIT_REGEX = Pattern.compile("(?U)\\p{Space}+");
+	public static final Pattern CLEAN_REGEX = Pattern.compile("(?U)[^\\p{Alpha}\\p{Space}]+");
+	
+	public static String clean(String text) {
+		String cleaned = Normalizer.normalize(text, Normalizer.Form.NFD);
+		cleaned = CLEAN_REGEX.matcher(cleaned).replaceAll("");
+		return cleaned.toLowerCase();
+	}
+	
+	public static String[] split(String text) {
+		return text.isBlank() ? new String[0] : SPLIT_REGEX.split(text.strip());
+	}
+	
+	public static String[] parse(String text) {
+		return split(clean(text));
+	}
+	
+
+	
 	
 	public static int textProcess (Path input) throws IOException {
 		
-		System.out.println(input);
-		
-
 		StringBuilder inputText = new StringBuilder();
 		 try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			 String line;
 		        while ((line = reader.readLine()) != null) {
 		            inputText.append(line).append("\n");
-		            System.out.println(line);
 		        }
 		    }
-		System.out.println("TEST1111111");
-		System.out.println(inputText);
-		return 0;
+		 
+		
+		String[] str = parse(inputText.toString());
+
+		System.out.println(Arrays.toString(str));
+		
+		return str.length;
+		
 	}
 	
 	
 	
 	
 	public static void main(String[] args) throws IOException {
-
-
-		//System.out.println(Arrays.toString(args));
 		
 		 for (int i = 0; i < args.length; i++) {
-             System.out.println(args[i]);
              
              if (args[i].equals("-text")) {
             	 Path path = Paths.get(args[i+1]);
             	 
-            	 textProcess(path);
+            	 
+            	 if (Files.isDirectory(path)) {
+            		System.out.println("This is a directory");
+            	 } else {
+            		textProcess(path);
+            	 }
+            
              }
      }
 
