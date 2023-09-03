@@ -84,15 +84,35 @@ public class Driver {
 		            inputText.append(line).append("\n");
 		        }
 		    }
-		 
 		
+		Path rootPath = Paths.get("/Users/aminjoseph/git/project-tests");
+		Path relative = rootPath.relativize(input);
+		
+
 		String[] str = parse(inputText.toString());		
-		fileInfo.put(input, str.length);
+		fileInfo.put(relative, str.length);
 		
 	}
 	
+	
+	
 	public static String mapToJson() {		
-		return null;
+		StringBuilder json = new StringBuilder("{\n");
+		for (Entry<Path, Integer> entry : fileInfo.entrySet()) {
+			
+			json.append("\t\"")
+            .append(entry.getKey())
+            .append("\": ")
+            .append(entry.getValue())
+            .append(",\n");
+			
+		}		
+		if (json.length() > 2) {
+            json.setLength(json.length() - 2);
+        }
+		
+		json.append("\n}");
+        return json.toString();
 	}
 
 	
@@ -106,10 +126,10 @@ public class Driver {
 	
 	
 	
-	
 	public static void main(String[] args) throws IOException {
 		
 		 for (int i = 0; i < args.length; i++) {
+			 
              
              if (args[i].equals("-text")) {
             	 Path path = Paths.get(args[i+1]);
@@ -127,6 +147,8 @@ public class Driver {
 		 }
 
 		 //System.out.println(fileInfo);
+		 Path currentWorkingDir = Paths.get("").toAbsolutePath();
+		 System.out.println(currentWorkingDir.normalize().toString());
 	}
 
 }
