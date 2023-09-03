@@ -4,12 +4,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.MalformedInputException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.Normalizer;
-import java.util.Arrays;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 /**
@@ -31,6 +33,7 @@ public class Driver {
 	 * 
 	 */
 	
+	public static TreeMap<Path,Integer> fileInfo = new TreeMap<>();
 	public static final Pattern SPLIT_REGEX = Pattern.compile("(?U)\\p{Space}+");
 	public static final Pattern CLEAN_REGEX = Pattern.compile("(?U)[^\\p{Alpha}\\p{Space}]+");
 	
@@ -52,21 +55,27 @@ public class Driver {
 	public static void iterDirectory(Path input) {
 		
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
-            for (Path entry : stream) {
-                System.out.println(entry.getFileName());
-                if (!Files.isDirectory(entry)) {
-                	System.out.println(textProcess(entry));
-                } else {
-                	iterDirectory(entry);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+	        for (Path entry : stream) {
+	            if (entry.getFileName().toString().equals(".DS_Store")) {
+	                continue;  
+	            }
+	            if (Files.isDirectory(entry)) {
+	                iterDirectory(entry);
+	            } else {
+	                try {
+	                    textProcess(entry);
+	                } catch (MalformedInputException e) {
+	                    System.out.println("Skipped due to encoding issues: " + entry);
+	                }
+	            }
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
 	}
 	
 	
-	public static int textProcess(Path input) throws IOException {
+	public static void textProcess(Path input) throws IOException {
 		
 		StringBuilder inputText = new StringBuilder();
 		 try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
@@ -77,13 +86,23 @@ public class Driver {
 		    }
 		 
 		
-		String[] str = parse(inputText.toString());
-
-		System.out.println(Arrays.toString(str));
-		
-		return str.length;
+		String[] str = parse(inputText.toString());		
+		fileInfo.put(input, str.length);
 		
 	}
+	
+	public static String mapToJson() {		
+		return null;
+	}
+
+	
+	public static void writeJsonToFile(String json, Path outputPath) {
+        try {
+            Files.write(outputPath, json.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 	
 	
 	
@@ -94,19 +113,20 @@ public class Driver {
              
              if (args[i].equals("-text")) {
             	 Path path = Paths.get(args[i+1]);
-            	 
-            	 
+            	             	 
             	 if (Files.isDirectory(path)) {
-            		System.out.println("This is a directory");
             		iterDirectory(path);
             	 } else {
-            		System.out.println(textProcess(path));
+            		textProcess(path);
             	 }
             
+             } else if (args[i].equals("-counts")) {
+                 Path outputPath = Paths.get("counts.json");
+                 writeJsonToFile(mapToJson(), outputPath);
              }
-     }
+		 }
 
-
+		 //System.out.println(fileInfo);
 	}
 
 }
