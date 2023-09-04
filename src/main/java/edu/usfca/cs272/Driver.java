@@ -128,27 +128,45 @@ public class Driver {
 	
 	public static void main(String[] args) throws IOException {
 		
+		//boolean pathPresent = false;
 		 for (int i = 0; i < args.length; i++) {
 			 
-             
              if (args[i].equals("-text")) {
-            	 Path path = Paths.get(args[i+1]);
-            	             	 
-            	 if (Files.isDirectory(path)) {
-            		iterDirectory(path);
+            	 if ((i + 1 >= args.length)) {
+            		 System.out.println("Missing file path to read!\n");
             	 } else {
-            		textProcess(path);
+            		 Path path = Paths.get(args[i+1]);
+	             	 
+	            	 if (Files.isDirectory(path)) {
+	            		iterDirectory(path);
+	            	 } else {
+	            		textProcess(path);
+	            	 }
+	            	 i++;
             	 }
-            
              } else if (args[i].equals("-counts")) {
-                 Path outputPath = Paths.get("counts.json");
-                 writeJsonToFile(mapToJson(), outputPath);
+            	 if ((i + 1 >= args.length ) || (args[i+1].startsWith("-"))) {
+            		 Path indexPath = Paths.get("counts.json");
+            		 writeJsonToFile(mapToJson(), indexPath);
+            	 } else {
+            		 Path outputPath = Paths.get("counts.json");
+                     writeJsonToFile(mapToJson(), outputPath);
+            	 }
+             } else if (args[i].equals("-index")) {
+            	 if ((i + 1 >= args.length ) || (args[i+1].startsWith("-"))) {
+            		 Path indexPath = Paths.get("index.json");
+            		 writeJsonToFile(mapToJson(), indexPath);
+            	 } else {
+            		 Path indexPath = Paths.get(args[i+1]);
+            		 writeJsonToFile(mapToJson(), indexPath);
+            		 i++;
+            	 }
              }
 		 }
 
 		 //System.out.println(fileInfo);
-		 Path currentWorkingDir = Paths.get("").toAbsolutePath();
-		 System.out.println(currentWorkingDir.normalize().toString());
+		 //Path currentWorkingDir = Paths.get("").toAbsolutePath();
+		 //System.out.println(currentWorkingDir.normalize().toString());
 	}
 
 }
