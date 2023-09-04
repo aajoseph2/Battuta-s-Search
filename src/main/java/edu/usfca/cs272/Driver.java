@@ -53,8 +53,7 @@ public class Driver {
 	
 
 	public static void iterDirectory(Path input) {
-		
-		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
+	    try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 	        for (Path entry : stream) {
 	            if (entry.getFileName().toString().equals(".DS_Store")) {
 	                continue;  
@@ -62,10 +61,14 @@ public class Driver {
 	            if (Files.isDirectory(entry)) {
 	                iterDirectory(entry);
 	            } else {
-	                try {
-	                    textProcess(entry);
-	                } catch (MalformedInputException e) {
-	                    System.out.println("Skipped due to encoding issues: " + entry);
+	                if(entry.getFileName().toString().matches("(?i).*\\.txt$|.*\\.text$")) {
+	                    try {
+	                        textProcess(entry);
+	                    } catch (MalformedInputException e) {
+	                        System.out.println("Skipped due to encoding issues: " + entry);
+	                    } catch (IOException e) {
+	                        e.printStackTrace();
+	                    }
 	                }
 	            }
 	        }
@@ -73,9 +76,16 @@ public class Driver {
 	        e.printStackTrace();
 	    }
 	}
+
+
 	
 	
 	public static void textProcess(Path input) throws IOException {
+		
+		if(!Files.exists(input)) {
+	        System.out.println("Invalid file: " + input.toString());
+	        return;
+	    }
 		
 		StringBuilder inputText = new StringBuilder();
 		 try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
@@ -85,34 +95,41 @@ public class Driver {
 		        }
 		    }
 		
-		Path rootPath = Paths.get("/Users/aminjoseph/git/project-tests");
+		Path rootPath = Paths.get("").toAbsolutePath();
 		Path relative = rootPath.relativize(input);
 		
 
-		String[] str = parse(inputText.toString());		
-		fileInfo.put(relative, str.length);
+		String[] str = parse(inputText.toString());	
+		
+		if (str.length != 0) {
+			fileInfo.put(relative, str.length);
+		}
+		
 		
 	}
 	
 	
 	
-	public static String mapToJson() {		
-		StringBuilder json = new StringBuilder("{\n");
-		for (Entry<Path, Integer> entry : fileInfo.entrySet()) {
-			
-			json.append("\t\"")
-            .append(entry.getKey())
-            .append("\": ")
-            .append(entry.getValue())
-            .append(",\n");
-			
-		}		
-		if (json.length() > 2) {
-            json.setLength(json.length() - 2);
-        }
-		
-		json.append("\n}");
-        return json.toString();
+	public static String mapToJson() {       
+	    StringBuilder json = new StringBuilder("{\n");
+	    
+
+	    for (Entry<Path, Integer> entry : fileInfo.entrySet()) {
+	        json.append("  \"")
+	            .append(entry.getKey())
+	            .append("\": ")
+	            .append(entry.getValue())
+	            .append(",\n");
+	    }       
+
+	    if (json.length() > 2) {
+	        json.setLength(json.length() - 2);
+	    } else {
+	        return "{\n}";
+	    }
+	    
+	    json.append("\n}");
+	    return json.toString();
 	}
 
 	
@@ -128,15 +145,19 @@ public class Driver {
 	
 	public static void main(String[] args) throws IOException {
 		
-		//boolean pathPresent = false;
-		 for (int i = 0; i < args.length; i++) {
-			 
+		 for (int i = 0; i < args.length; i++) {			 
              if (args[i].equals("-text")) {
+            	 fileInfo.clear();
             	 if ((i + 1 >= args.length)) {
             		 System.out.println("Missing file path to read!\n");
+            		 continue;
             	 } else {
             		 Path path = Paths.get(args[i+1]);
-	             	 
+            		 
+            		 if (!path.isAbsolute()) {
+            				Path currentWorkingDir = Paths.get("").toAbsolutePath();
+            				path = Paths.get(currentWorkingDir.toString(), args[i+1]);
+            			}	             	 
 	            	 if (Files.isDirectory(path)) {
 	            		iterDirectory(path);
 	            	 } else {
@@ -146,11 +167,16 @@ public class Driver {
             	 }
              } else if (args[i].equals("-counts")) {
             	 if ((i + 1 >= args.length ) || (args[i+1].startsWith("-"))) {
-            		 Path indexPath = Paths.get("counts.json");
-            		 writeJsonToFile(mapToJson(), indexPath);
+            		 Path countPath = Paths.get("counts.json");
+            		 writeJsonToFile(mapToJson(), countPath);
             	 } else {
-            		 Path outputPath = Paths.get("counts.json");
-                     writeJsonToFile(mapToJson(), outputPath);
+            		 Path countPath = Paths.get(args[i+1]);            		 
+            		 if (!countPath.isAbsolute()) {
+         				Path currentWorkingDir = Paths.get("").toAbsolutePath();
+         				countPath = Paths.get(currentWorkingDir.toString(), args[i+1]);
+         			}             		 
+                     writeJsonToFile(mapToJson(), countPath);
+                     i++;
             	 }
              } else if (args[i].equals("-index")) {
             	 if ((i + 1 >= args.length ) || (args[i+1].startsWith("-"))) {
@@ -161,12 +187,11 @@ public class Driver {
             		 writeJsonToFile(mapToJson(), indexPath);
             		 i++;
             	 }
+             } else {
+                 System.out.println("Ignoring unknown argument: " + args[i]);
              }
 		 }
 
-		 //System.out.println(fileInfo);
-		 //Path currentWorkingDir = Paths.get("").toAbsolutePath();
-		 //System.out.println(currentWorkingDir.normalize().toString());
 	}
 
 }
