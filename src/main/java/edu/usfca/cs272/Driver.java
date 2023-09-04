@@ -61,7 +61,8 @@ public class Driver {
 	            if (Files.isDirectory(entry)) {
 	                iterDirectory(entry);
 	            } else {
-	                if(entry.getFileName().toString().matches("(?i).*\\.txt$|.*\\.text$")) {
+	            	String fileNameLower = entry.getFileName().toString().toLowerCase();
+	            	if(fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text")) {
 	                    try {
 	                        textProcess(entry);
 	                    } catch (MalformedInputException e) {
@@ -108,6 +109,14 @@ public class Driver {
 		
 	}
 	
+	public static Path toAbsolutePath(Path path, String relativePathString) {
+	    if (!path.isAbsolute()) {
+	        Path currentWorkingDir = Paths.get("").toAbsolutePath();
+	        path = Paths.get(currentWorkingDir.toString(), relativePathString);
+	    }
+	    return path;
+	}
+	
 	
 	
 	public static String mapToJson() {       
@@ -144,54 +153,50 @@ public class Driver {
 	
 	
 	public static void main(String[] args) throws IOException {
-		
-		 for (int i = 0; i < args.length; i++) {			 
-             if (args[i].equals("-text")) {
-            	 fileInfo.clear();
-            	 if ((i + 1 >= args.length)) {
-            		 System.out.println("Missing file path to read!\n");
-            		 continue;
-            	 } else {
-            		 Path path = Paths.get(args[i+1]);
-            		 
-            		 if (!path.isAbsolute()) {
-            				Path currentWorkingDir = Paths.get("").toAbsolutePath();
-            				path = Paths.get(currentWorkingDir.toString(), args[i+1]);
-            			}	             	 
-	            	 if (Files.isDirectory(path)) {
-	            		iterDirectory(path);
-	            	 } else {
-	            		textProcess(path);
-	            	 }
-	            	 i++;
-            	 }
-             } else if (args[i].equals("-counts")) {
-            	 if ((i + 1 >= args.length ) || (args[i+1].startsWith("-"))) {
-            		 Path countPath = Paths.get("counts.json");
-            		 writeJsonToFile(mapToJson(), countPath);
-            	 } else {
-            		 Path countPath = Paths.get(args[i+1]);            		 
-            		 if (!countPath.isAbsolute()) {
-         				Path currentWorkingDir = Paths.get("").toAbsolutePath();
-         				countPath = Paths.get(currentWorkingDir.toString(), args[i+1]);
-         			}             		 
-                     writeJsonToFile(mapToJson(), countPath);
-                     i++;
-            	 }
-             } else if (args[i].equals("-index")) {
-            	 if ((i + 1 >= args.length ) || (args[i+1].startsWith("-"))) {
-            		 Path indexPath = Paths.get("index.json");
-            		 writeJsonToFile(mapToJson(), indexPath);
-            	 } else {
-            		 Path indexPath = Paths.get(args[i+1]);
-            		 writeJsonToFile(mapToJson(), indexPath);
-            		 i++;
-            	 }
-             } else {
-                 System.out.println("Ignoring unknown argument: " + args[i]);
-             }
-		 }
+	    
+		for (int i = 0; i < args.length; i++) {
+	        int bound = args.length;
 
+	        if (args[i].equals("-text")) {
+	            fileInfo.clear();
+	            if ((i + 1 >= bound)) {
+	                System.out.println("Missing file path to read!\n");
+	                continue;
+	            } else {
+	                Path path = Paths.get(args[i+1]);
+	                path = toAbsolutePath(path, args[i+1]);
+	                if (Files.isDirectory(path)) {
+	                    iterDirectory(path);
+	                } else {
+	                    textProcess(path);
+	                }
+	                i++;
+	            }
+	        } else if (args[i].equals("-counts")) {
+	            if ((i + 1 >= bound) || (args[i+1].startsWith("-"))) {
+	                Path countPath = Paths.get("counts.json");
+	                writeJsonToFile(mapToJson(), countPath);
+	            } else {
+	                Path countPath = Paths.get(args[i+1]);
+	                countPath = toAbsolutePath(countPath, args[i+1]);
+	                writeJsonToFile(mapToJson(), countPath);
+	                i++;
+	            }
+	        } else if (args[i].equals("-index")) {
+	        	//INdentation not done,for now has the same functionality as counts
+	            if ((i + 1 >= bound) || (args[i+1].startsWith("-"))) {
+	                Path indexPath = Paths.get("index.json");
+	                writeJsonToFile(mapToJson(), indexPath);
+	            } else {
+	                Path indexPath = Paths.get(args[i+1]);
+	                indexPath = toAbsolutePath(indexPath, args[i+1]);
+	                writeJsonToFile(mapToJson(), indexPath);
+	                i++;
+	            }
+	        } else {
+	            System.out.println("Ignoring unknown argument: " + args[i]);
+	        }
+	    }
 	}
 
 }
