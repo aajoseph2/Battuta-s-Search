@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.Normalizer;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
@@ -74,7 +73,9 @@ public class Driver {
 	            }
 	        }
 	    } catch (IOException e) {
+	    	System.out.println("File was not able to be read!");
 	        e.printStackTrace();
+	        //System.out.println("File was not able to be read!");
 	    }
 	}
 
@@ -123,7 +124,7 @@ public class Driver {
 	    StringBuilder json = new StringBuilder("{\n");
 	    
 
-	    for (Entry<Path, Integer> entry : fileInfo.entrySet()) {
+	    for (var entry : fileInfo.entrySet()) {
 	        json.append("  \"")
 	            .append(entry.getKey())
 	            .append("\": ")
@@ -183,7 +184,7 @@ public class Driver {
 	                i++;
 	            }
 	        } else if (args[i].equals("-index")) {
-	        	//INdentation not done,for now has the same functionality as counts
+	        	//Indexing not done,for now has the same functionality as counts
 	            if ((i + 1 >= bound) || (args[i+1].startsWith("-"))) {
 	                Path indexPath = Paths.get("index.json");
 	                writeJsonToFile(mapToJson(), indexPath);
