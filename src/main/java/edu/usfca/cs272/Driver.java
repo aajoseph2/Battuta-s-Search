@@ -183,7 +183,7 @@ public class Driver {
 	                writeJsonToFile(mapToJson(), countPath);
 	                i++;
 	            }
-	        } else if (args[i].equals("-index")) {
+	        } /*else if (args[i].equals("-index")) {
 	        	//Indexing not done,for now has the same functionality as counts
 	            if ((i + 1 >= bound) || (args[i+1].startsWith("-"))) {
 	                Path indexPath = Paths.get("index.json");
@@ -194,7 +194,7 @@ public class Driver {
 	                writeJsonToFile(mapToJson(), indexPath);
 	                i++;
 	            }
-	        } else {
+	        }*/ else {
 	            System.out.println("Ignoring unknown argument: " + args[i]);
 	        }
 	    }
