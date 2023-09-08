@@ -28,29 +28,48 @@ public class Driver {
 	 * arguments. This includes (but is not limited to) how to build or search an
 	 * inverted index.
 	 *
-	 * @param args flag/value pairs used to start this program
-	 * @throws IOException
-	 * 
+	 
 	 */
 
 	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>();
+	/**
+	 * Text pattern to follow
+	 */
 	public static final Pattern SPLIT_REGEX = Pattern.compile("(?U)\\p{Space}+");
+	/**
+	 * Text pattern to follow
+	 */
 	public static final Pattern CLEAN_REGEX = Pattern.compile("(?U)[^\\p{Alpha}\\p{Space}]+");
 
+	/**
+	 * @param text
+	 * @return cleaned text
+	 */
 	public static String clean(String text) {
 		String cleaned = Normalizer.normalize(text, Normalizer.Form.NFD);
 		cleaned = CLEAN_REGEX.matcher(cleaned).replaceAll("");
 		return cleaned.toLowerCase();
 	}
 
+	/**
+	 * @param text
+	 * @return splitted text
+	 */
 	public static String[] split(String text) {
 		return text.isBlank() ? new String[0] : SPLIT_REGEX.split(text.strip());
 	}
 
+	/**
+	 * @param text
+	 * @return returns cleaned & splitted text
+	 */
 	public static String[] parse(String text) {
 		return split(clean(text));
 	}
 
+	/**
+	 * @param input the directory that recurses on its self until it reaches a base text file
+	 */
 	public static void iterDirectory(Path input) {
 
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
@@ -79,6 +98,10 @@ public class Driver {
 		}
 	}
 
+	/**
+	 * @param input the path of which the info will be parsed
+	 * @throws IOException
+	 */
 	public static void textProcess(Path input) throws IOException {
 
 		if (!Files.exists(input)) {
@@ -104,14 +127,10 @@ public class Driver {
 
 	}
 
-	public static Path toAbsolutePath(Path path, String relativePathString) {
-		if (!path.isAbsolute()) {
-			Path currentWorkingDir = Paths.get("").toAbsolutePath();
-			path = Paths.get(currentWorkingDir.toString(), relativePathString);
-		}
-		return path;
-	}
 
+	/**
+	 * @return converted json string taken from a map
+	 */
 	public static String mapToJson() {
 		StringBuilder json = new StringBuilder("{\n");
 
@@ -129,15 +148,23 @@ public class Driver {
 		return json.toString();
 	}
 
+	/**
+	 * @param json Srting to be parsed in the outputPath
+	 * @param outputPath the final destination of the parsed info
+	 */
 	public static void writeJsonToFile(String json, Path outputPath) {
 		try {
 			System.out.println(outputPath);
 			Files.write(outputPath, json.getBytes());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("An error occurred while reading the file: " + outputPath.toString());
 		}
 	}
 
+	/**
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		HashMap<String, String> flags = new HashMap<>();
 		int bound = args.length;
