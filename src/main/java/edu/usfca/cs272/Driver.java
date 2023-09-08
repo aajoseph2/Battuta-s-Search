@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.Normalizer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
@@ -52,6 +54,7 @@ public class Driver {
 	
 
 	public static void iterDirectory(Path input) {
+		
 	    try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 	        for (Path entry : stream) {
 	            if (entry.getFileName().toString().equals(".DS_Store")) {
@@ -75,7 +78,6 @@ public class Driver {
 	    } catch (IOException e) {
 	    	System.out.println("File was not able to be read!");
 	        e.printStackTrace();
-	        //System.out.println("File was not able to be read!");
 	    }
 	}
 
@@ -96,15 +98,12 @@ public class Driver {
 		            inputText.append(line).append("\n");
 		        }
 		    }
-		
-		Path rootPath = Paths.get("").toAbsolutePath();
-		Path relative = rootPath.relativize(input);
-		
+				
 
 		String[] str = parse(inputText.toString());	
 		
 		if (str.length != 0) {
-			fileInfo.put(relative, str.length);
+			fileInfo.put(input, str.length);
 		}
 		
 		
@@ -145,6 +144,7 @@ public class Driver {
 	
 	public static void writeJsonToFile(String json, Path outputPath) {
         try {
+        	System.out.println(outputPath);
             Files.write(outputPath, json.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
@@ -154,50 +154,62 @@ public class Driver {
 	
 	
 	public static void main(String[] args) throws IOException {
-	    
+		HashMap<String,String> flags = new HashMap<>();
+		int bound = args.length;
+		
+		
 		for (int i = 0; i < args.length; i++) {
-	        int bound = args.length;
+	        if (args[i].startsWith("-")) {	        	        	                	
+	        	if ( (i+1 < bound) && (!args[i+1].startsWith("-"))) {
+	        		flags.put(args[i], args[i+1]);
+	        		i++;
+	        	}else {
+	        		flags.put(args[i], "default");
+	        	}
 
-	        if (args[i].equals("-text")) {
-	            fileInfo.clear();
-	            if ((i + 1 >= bound)) {
-	                System.out.println("Missing file path to read!\n");
-	                continue;
-	            } else {
-	                Path path = Paths.get(args[i+1]);
-	                path = toAbsolutePath(path, args[i+1]);
-	                if (Files.isDirectory(path)) {
-	                    iterDirectory(path);
-	                } else {
-	                    textProcess(path);
-	                }
-	                i++;
-	            }
-	        } else if (args[i].equals("-counts")) {
-	            if ((i + 1 >= bound) || (args[i+1].startsWith("-"))) {
-	                Path countPath = Paths.get("counts.json");
-	                writeJsonToFile(mapToJson(), countPath);
-	            } else {
-	                Path countPath = Paths.get(args[i+1]);
-	                countPath = toAbsolutePath(countPath, args[i+1]);
-	                writeJsonToFile(mapToJson(), countPath);
-	                i++;
-	            }
-	        } /*else if (args[i].equals("-index")) {
-	        	//Indexing not done,for now has the same functionality as counts
-	            if ((i + 1 >= bound) || (args[i+1].startsWith("-"))) {
-	                Path indexPath = Paths.get("index.json");
-	                writeJsonToFile(mapToJson(), indexPath);
-	            } else {
-	                Path indexPath = Paths.get(args[i+1]);
-	                indexPath = toAbsolutePath(indexPath, args[i+1]);
-	                writeJsonToFile(mapToJson(), indexPath);
-	                i++;
-	            }
-	        }*/ else {
-	            System.out.println("Ignoring unknown argument: " + args[i]);
 	        }
-	    }
+		}
+	        
+	        for (var commands : flags.entrySet()) {
+	        	String flag = commands.getKey();
+	        	String path = commands.getValue();
+	        	
+	        	switch (flag) {	        	
+		        	case "-text" :
+		        		fileInfo.clear();
+		        		if (path.equals("default")) {
+		        			System.out.println("Missing file path to read!\n");
+		        			continue;
+		        		} else {
+		        			Path content = Paths.get(path);
+		        			if (Files.isDirectory(content)) {
+			                    iterDirectory(content);
+			                } else {
+			                	textProcess(content);
+			                }
+		        		}
+		        		break;
+		        		
+		        	case "-counts" :
+		        		if (path.equals("default")) {
+		        			Path countPath = Paths.get("counts.json");
+			                writeJsonToFile(mapToJson(), countPath);
+		        		} else {
+		        			Path countPath = Paths.get(path);
+		 	                writeJsonToFile(mapToJson(), countPath);		 	                
+		        		}
+		        		break;
+		        		
+		        	//case "-index" :
+		        	//	System.out.println("Pending");
+		        	
+		        	default :
+		        		System.out.println("Ignoring unknown argument: " + flag);
+		                break;
+		        }
+	        }
+	        
+	    
 	}
 
 }
