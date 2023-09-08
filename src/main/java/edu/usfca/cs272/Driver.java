@@ -28,7 +28,6 @@ public class Driver {
 	 * arguments. This includes (but is not limited to) how to build or search an
 	 * inverted index.
 	 *
-	 
 	 */
 
 	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>();
@@ -42,7 +41,7 @@ public class Driver {
 	public static final Pattern CLEAN_REGEX = Pattern.compile("(?U)[^\\p{Alpha}\\p{Space}]+");
 
 	/**
-	 * @param text
+	 * @param text text to be parsed
 	 * @return cleaned text
 	 */
 	public static String clean(String text) {
@@ -52,7 +51,7 @@ public class Driver {
 	}
 
 	/**
-	 * @param text
+	 * @param text text to be parsed
 	 * @return splitted text
 	 */
 	public static String[] split(String text) {
@@ -60,7 +59,7 @@ public class Driver {
 	}
 
 	/**
-	 * @param text
+	 * @param text text to be parsed
 	 * @return returns cleaned & splitted text
 	 */
 	public static String[] parse(String text) {
@@ -100,7 +99,7 @@ public class Driver {
 
 	/**
 	 * @param input the path of which the info will be parsed
-	 * @throws IOException
+	 * @throws IOException IOException In case file cannot be read
 	 */
 	public static void textProcess(Path input) throws IOException {
 
@@ -162,8 +161,8 @@ public class Driver {
 	}
 
 	/**
-	 * @param args
-	 * @throws IOException
+	 * @param args Command Line Args to be read
+	 * @throws IOException In case file cannot be read
 	 */
 	public static void main(String[] args) throws IOException {
 		HashMap<String, String> flags = new HashMap<>();
