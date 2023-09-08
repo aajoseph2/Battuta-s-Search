@@ -59,7 +59,7 @@ public class Driver {
 
 	/**
 	 * @param text text to be parsed
-	 * @return returns cleaned & splitted text
+	 * @return returns cleaned and splitted text
 	 */
 	public static String[] parse(String text) {
 		return split(clean(text));
@@ -189,11 +189,11 @@ public class Driver {
 				if (path.equals("default")) {
 					System.out.println("Missing file path to read!\n");
 					continue;
-				} else {
+			} else {
 					Path content = Paths.get(path);
 					if (Files.isDirectory(content)) {
 						iterDirectory(content);
-					} else {
+			} else {
 						textProcess(content);
 					}
 				}
@@ -203,7 +203,7 @@ public class Driver {
 				if (path.equals("default")) {
 					Path countPath = Paths.get("counts.json");
 					writeJsonToFile(mapToJson(), countPath);
-				} else {
+			} else {
 					Path countPath = Paths.get(path);
 					writeJsonToFile(mapToJson(), countPath);
 				}
