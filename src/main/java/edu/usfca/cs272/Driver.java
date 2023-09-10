@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
@@ -30,6 +31,8 @@ public class Driver {
 	 */
 
 	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>();
+	public static Map<String, Integer> nestMap = new HashMap<>();
+	public static Map<String, Map<String, Integer>> invertedIndex = new HashMap<>();
 	/**
 	 * Text pattern to follow
 	 */
@@ -112,6 +115,7 @@ public class Driver {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				inputText.append(line).append("\n");
+				processIndex(inputText.toString(), input.toString());
 			}
 		} catch (IOException e) {
 			System.out.println("An error occurred while reading the file: " + input.toString());
@@ -123,6 +127,10 @@ public class Driver {
 			fileInfo.put(input, str.length);
 		}
 
+	}
+
+	public static void processIndex (String input, String fn) {
+		System.out.println(fn + ": " + input);
 	}
 
 
@@ -167,7 +175,7 @@ public class Driver {
 		HashMap<String, String> flags = new HashMap<>();
 		int bound = args.length;
 
-		for (int i = 0; i < args.length; i++) {
+		for (int i = 0; i < bound; i++) {
 			if (args[i].startsWith("-")) {
 				if ((i + 1 < bound) && (!args[i + 1].startsWith("-"))) {
 					flags.put(args[i], args[i + 1]);
@@ -217,6 +225,7 @@ public class Driver {
 				break;
 			}
 		}
+
 
 	}
 
