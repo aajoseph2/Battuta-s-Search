@@ -32,7 +32,7 @@ public class Driver {
 
 	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>();
 	public static Map<String, Integer> nestMap = new HashMap<>();
-	public static Map<String, Map<String, Integer>> invertedIndex = new HashMap<>();
+	public static Map<String, Map<String, Integer>> invertMap = new HashMap<>();
 	/**
 	 * Text pattern to follow
 	 */
@@ -115,22 +115,41 @@ public class Driver {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				inputText.append(line).append("\n");
-				processIndex(inputText.toString(), input.toString());
 			}
 		} catch (IOException e) {
 			System.out.println("An error occurred while reading the file: " + input.toString());
 		}
 
-		String[] str = parse(inputText.toString());
+		String[] contents = parse(inputText.toString());
 
-		if (str.length != 0) {
-			fileInfo.put(input, str.length);
+		for (String text: contents) {
+			processIndex(text, input.toString());
+		}
+
+		if (contents.length != 0) {
+			fileInfo.put(input, contents.length);
 		}
 
 	}
 
-	public static void processIndex (String input, String fn) {
-		System.out.println(fn + ": " + input);
+	public static void processIndex (String stem, String fn) {
+
+		//System.out.println(stem);
+		if (invertMap.containsKey(stem)) {
+			var buffer = invertMap.get(stem);
+			Integer freq = buffer.get(fn);
+			if (freq == null) {
+				nestMap.put(fn, 1);
+			} else {
+				nestMap.put(fn, freq + 1);
+			}
+
+			invertMap.put(stem, nestMap);
+		} else {
+			nestMap.put(fn, 1);
+			invertMap.put(stem, nestMap);
+		}
+
 	}
 
 
@@ -226,6 +245,7 @@ public class Driver {
 			}
 		}
 
+		System.out.println(invertMap);
 
 	}
 
