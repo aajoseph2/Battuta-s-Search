@@ -10,7 +10,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -31,8 +33,8 @@ public class Driver {
 	 */
 
 	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>();
-	public static Map<String, Integer> nestMap = new HashMap<>();
-	public static Map<String, Map<String, Integer>> invertMap = new HashMap<>();
+	public static Map<String, List<Integer>> nestMap = new HashMap<>();
+	public static Map<String, Map<String, List<Integer>>> invertMap = new HashMap<>();
 	/**
 	 * Text pattern to follow
 	 */
@@ -113,8 +115,17 @@ public class Driver {
 		StringBuilder inputText = new StringBuilder();
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;
+			int pos = 0;
 			while ((line = reader.readLine()) != null) {
 				inputText.append(line).append("\n");
+
+				String[] buffer = parse(line.toString());
+
+				for (String text: buffer) {
+					processIndex(text, input.toString(), pos);
+				}
+
+				pos++;
 			}
 		} catch (IOException e) {
 			System.out.println("An error occurred while reading the file: " + input.toString());
@@ -122,9 +133,9 @@ public class Driver {
 
 		String[] contents = parse(inputText.toString());
 
-		for (String text: contents) {
+/*		for (String text: contents) {
 			processIndex(text, input.toString());
-		}
+		}*/
 
 		if (contents.length != 0) {
 			fileInfo.put(input, contents.length);
@@ -132,21 +143,22 @@ public class Driver {
 
 	}
 
-	public static void processIndex (String stem, String fn) {
+	public static void processIndex (String stem, String fn, Integer num) {
 
-		//System.out.println(stem);
 		if (invertMap.containsKey(stem)) {
-			var buffer = invertMap.get(stem);
-			Integer freq = buffer.get(fn);
-			if (freq == null) {
-				nestMap.put(fn, 1);
+			if (nestMap.get(fn) == null) {
+				 List<Integer> temp = new ArrayList<Integer>();
+				 temp.add(num);
+				nestMap.put(fn, temp);
 			} else {
-				nestMap.put(fn, freq + 1);
+				var tempTwo = nestMap.get(fn);
+				tempTwo.add(num);
+				invertMap.put(stem, nestMap);
 			}
-
-			invertMap.put(stem, nestMap);
 		} else {
-			nestMap.put(fn, 1);
+			List<Integer> tempThree = new ArrayList<Integer>();
+			tempThree.add(num);
+			nestMap.put(fn, tempThree);
 			invertMap.put(stem, nestMap);
 		}
 
