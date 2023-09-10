@@ -133,36 +133,21 @@ public class Driver {
 
 		String[] contents = parse(inputText.toString());
 
-/*		for (String text: contents) {
-			processIndex(text, input.toString());
-		}*/
-
 		if (contents.length != 0) {
 			fileInfo.put(input, contents.length);
 		}
 
 	}
 
-	public static void processIndex (String stem, String fn, Integer num) {
+	public static void processIndex(String stem, String fn, Integer num) {
+		Map<String, List<Integer>> nestMap = invertMap.getOrDefault(stem, new HashMap<>());
+		List<Integer> positionsList = nestMap.getOrDefault(fn, new ArrayList<>());
+		positionsList.add(num);
 
-		if (invertMap.containsKey(stem)) {
-			if (nestMap.get(fn) == null) {
-				 List<Integer> temp = new ArrayList<Integer>();
-				 temp.add(num);
-				nestMap.put(fn, temp);
-			} else {
-				var tempTwo = nestMap.get(fn);
-				tempTwo.add(num);
-				invertMap.put(stem, nestMap);
-			}
-		} else {
-			List<Integer> tempThree = new ArrayList<Integer>();
-			tempThree.add(num);
-			nestMap.put(fn, tempThree);
-			invertMap.put(stem, nestMap);
-		}
+		nestMap.put(fn, positionsList);
+		invertMap.put(stem, nestMap);
+}
 
-	}
 
 
 	/**
