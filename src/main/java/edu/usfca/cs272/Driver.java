@@ -45,8 +45,8 @@ public class Driver {
 	 */
 
 	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>();
-	public static Map<String, List<Integer>> nestMap = new HashMap<>();
-	public static Map<String, Map<String, List<Integer>>> invertMap = new HashMap<>();
+	public static TreeMap<String, List<Integer>> nestMap = new TreeMap<>();
+	public static Map<String, TreeMap<String, List<Integer>>> invertMap = new HashMap<>();
 	public static TreeMap<String, String> formatMap = new TreeMap<>();
 	/**
 	 * Text pattern to follow
@@ -403,7 +403,7 @@ public class Driver {
 
 	public static void processIndex(String stem, String fn, Integer num) {
 
-		nestMap = invertMap.getOrDefault(stem, new HashMap<>());
+		nestMap = invertMap.getOrDefault(stem, new TreeMap<>());
 		List<Integer> positionsList = nestMap.getOrDefault(fn, new ArrayList<>());
 		positionsList.add(num);
 
