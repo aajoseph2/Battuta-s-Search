@@ -410,7 +410,6 @@ public class Driver {
 		nestMap.put(fn, positionsList);
 		invertMap.put(stem, nestMap);
 
-		writeObjectArrays(nestMap);
 		formatMap.put(stem, writeObjectArrays(nestMap));
 
 }
@@ -444,6 +443,7 @@ public class Driver {
 
 
     buffer.write("}");
+    formatMap.clear();
 
     return buffer.toString();
 	}
@@ -510,6 +510,8 @@ public class Driver {
 			switch (flag) {
 
 			case "-text":
+				invertMap.clear();
+				nestMap.clear();
 				fileInfo.clear();
 				formatMap.clear();
 				if (path.equals("default")) {
@@ -554,5 +556,6 @@ public class Driver {
 		}
 
 	}
+	//u need to fix how the maps are being created
 
 }
