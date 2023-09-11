@@ -46,6 +46,7 @@ public class Driver {
 	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>();
 	public static Map<String, List<Integer>> nestMap = new HashMap<>();
 	public static Map<String, Map<String, List<Integer>>> invertMap = new HashMap<>();
+	public static Map<String, String> formatMap = new HashMap<>();
 	/**
 	 * Text pattern to follow
 	 */
@@ -192,7 +193,7 @@ public class Driver {
 	 * @see #writeIndent(String, Writer, int)
 	 * @see #writeArray(Collection)
 	 */
-	public static void writeObjectArrays(Map<String, ? extends Collection<? extends Number>> elements, Writer writer, int indent) throws IOException {
+	public static String writeObjectArrays(Map<String, ? extends Collection<? extends Number>> elements, Writer writer, int indent) throws IOException {
 	    writer.write("{\n");
 
 	    var iterator = elements.entrySet().iterator();
@@ -222,6 +223,8 @@ public class Driver {
 
 	    writeIndent(writer, indent);
 	    writer.write("}");
+
+	    return writer.toString();
 	}
 
 
@@ -399,12 +402,19 @@ public class Driver {
 
 	public static void processIndex(String stem, String fn, Integer num) {
 
-		Map<String, List<Integer>> nestMap = invertMap.getOrDefault(stem, new HashMap<>());
+		nestMap = invertMap.getOrDefault(stem, new HashMap<>());
 		List<Integer> positionsList = nestMap.getOrDefault(fn, new ArrayList<>());
 		positionsList.add(num);
 
 		nestMap.put(fn, positionsList);
 		invertMap.put(stem, nestMap);
+
+		writeObjectArrays(nestMap);
+
+		formatMap.put(stem, writeObjectArrays(nestMap));
+
+
+
 }
 
 
@@ -502,8 +512,10 @@ public class Driver {
 			}
 		}
 
-		System.out.println(invertMap);
-
+		//System.out.println(invertMap);
+	//	System.out.println(nestMap);
+//		System.out.println(writeObjectArrays(nestMap));
+		System.out.println(formatMap);
 	}
 
 }
