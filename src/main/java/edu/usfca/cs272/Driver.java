@@ -206,11 +206,12 @@ public class Driver {
 	        String elementString = entry.getKey();
 	        Collection<? extends Number> elementCollection = entry.getValue();
 
+	        writer.write("  ");
 	        writeQuote(elementString, writer, indent + 1);
 	        writer.write(": ");
 
 	        if (elementCollection != null && !elementCollection.isEmpty()) {
-	            writeArray(elementCollection, writer, indent + 1);
+	            writeArray(elementCollection, writer, indent + 2);
 	        } else {
 	            writer.write("[\n");
 	            writeIndent(writer, indent + 1);
@@ -224,7 +225,7 @@ public class Driver {
 	    }
 
 	    writeIndent(writer, indent);
-	    writer.write("}");
+	    //writer.write("}");
 
 	    return writer.toString();
 	}
@@ -415,28 +416,37 @@ public class Driver {
 
 }
 
-	public static void finalIndexJson() {
+	public static String finalIndexJson() {
 		StringWriter buffer = new StringWriter();
 
-
+		var iterator = Driver.formatMap.entrySet().iterator();
 		buffer.write("{\n");
 
 
-    for (var entry: Driver.formatMap.entrySet()) {
+		while (iterator.hasNext()) {
+    	var entry = iterator.next();
 
         String stem = entry.getKey();
         String loc = entry.getValue();
 
+        buffer.write("  ");
         buffer.write('"');
         buffer.write(stem);
         buffer.write("\": ");
         buffer.write(loc.toString());
+
+
+        if (iterator.hasNext()) {
+          buffer.write("  },\n");
+      } else {
+          buffer.write("  }\n");
+      }
     }
 
 
     buffer.write("}");
 
-    System.out.println(buffer);
+    return buffer.toString();
 	}
 
 
@@ -526,11 +536,15 @@ public class Driver {
 				break;
 
 			 case "-index" :
+				 formatMap.clear();
 				 if (path.equals("default")) {
 						Path indexPath = Paths.get("index.json");
-						finalIndexJson();
+						String indexJson = finalIndexJson();
+						writeJsonToFile(indexJson, indexPath);
 				} else {
 						Path indexPath = Paths.get(path);
+						String indexJson = finalIndexJson();
+						writeJsonToFile(indexJson, indexPath);
 					}
 					break;
 
