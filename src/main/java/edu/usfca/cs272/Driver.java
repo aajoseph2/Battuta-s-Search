@@ -47,7 +47,7 @@ public class Driver {
 	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>();
 	public static Map<String, List<Integer>> nestMap = new HashMap<>();
 	public static Map<String, Map<String, List<Integer>>> invertMap = new HashMap<>();
-	public static Map<String, String> formatMap = new HashMap<>();
+	public static TreeMap<String, String> formatMap = new TreeMap<>();
 	/**
 	 * Text pattern to follow
 	 */
@@ -383,11 +383,10 @@ public class Driver {
 
 				countText.append(line).append("\n");
 				ArrayList<String> stems = listStems(line);
-
 				for (String stem: stems) {
 					processIndex(stem, input.toString(), pos);
+					pos++;
 				}
-				pos++;
 			}
 		} catch (IOException e) {
 			System.out.println("An error occurred while reading the file: " + input.toString());
@@ -512,6 +511,7 @@ public class Driver {
 
 			case "-text":
 				fileInfo.clear();
+				formatMap.clear();
 				if (path.equals("default")) {
 					System.out.println("Missing file path to read!\n");
 					continue;
@@ -536,7 +536,6 @@ public class Driver {
 				break;
 
 			 case "-index" :
-				 formatMap.clear();
 				 if (path.equals("default")) {
 						Path indexPath = Paths.get("index.json");
 						String indexJson = finalIndexJson();
