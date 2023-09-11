@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -186,6 +187,7 @@ public class Driver {
 	 * @param indent the initial indent level; the first bracket is not indented,
 	 *   inner elements are indented by one, and the last bracket is indented at the
 	 *   initial indentation level
+	 * @return String
 	 * @throws IOException if an IO error occurs
 	 *
 	 * @see Writer#write(String)
@@ -375,17 +377,15 @@ public class Driver {
 		StringBuilder countText = new StringBuilder();
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;
-			int pos = 0;
+			int pos = 1;
 			while ((line = reader.readLine()) != null) {
 
 				countText.append(line).append("\n");
-
 				ArrayList<String> stems = listStems(line);
 
 				for (String stem: stems) {
 					processIndex(stem, input.toString(), pos);
 				}
-
 				pos++;
 			}
 		} catch (IOException e) {
@@ -397,6 +397,7 @@ public class Driver {
 		if (contents.length != 0) {
 			fileInfo.put(input, contents.length);
 		}
+
 
 	}
 
@@ -410,13 +411,33 @@ public class Driver {
 		invertMap.put(stem, nestMap);
 
 		writeObjectArrays(nestMap);
-
 		formatMap.put(stem, writeObjectArrays(nestMap));
-
-
 
 }
 
+	public static void finalIndexJson() {
+		StringWriter buffer = new StringWriter();
+
+
+		buffer.write("{\n");
+
+
+    for (var entry: Driver.formatMap.entrySet()) {
+
+        String stem = entry.getKey();
+        String loc = entry.getValue();
+
+        buffer.write('"');
+        buffer.write(stem);
+        buffer.write("\": ");
+        buffer.write(loc.toString());
+    }
+
+
+    buffer.write("}");
+
+    System.out.println(buffer);
+	}
 
 
 	/**
@@ -457,7 +478,7 @@ public class Driver {
 	 * @throws IOException In case file cannot be read
 	 */
 	public static void main(String[] args) throws IOException {
-		HashMap<String, String> flags = new HashMap<>();
+		LinkedHashMap<String, String> flags = new LinkedHashMap<>();
 		int bound = args.length;
 
 		for (int i = 0; i < bound; i++) {
@@ -475,6 +496,7 @@ public class Driver {
 		for (var commands : flags.entrySet()) {
 			String flag = commands.getKey();
 			String path = commands.getValue();
+
 
 			switch (flag) {
 
@@ -504,7 +526,13 @@ public class Driver {
 				break;
 
 			 case "-index" :
-			 System.out.println("Pending");
+				 if (path.equals("default")) {
+						Path indexPath = Paths.get("index.json");
+						finalIndexJson();
+				} else {
+						Path indexPath = Paths.get(path);
+					}
+					break;
 
 			default:
 				System.out.println("Ignoring unknown argument: " + flag);
@@ -512,10 +540,6 @@ public class Driver {
 			}
 		}
 
-		//System.out.println(invertMap);
-	//	System.out.println(nestMap);
-//		System.out.println(writeObjectArrays(nestMap));
-		System.out.println(formatMap);
 	}
 
 }
