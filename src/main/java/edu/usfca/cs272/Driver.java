@@ -1,21 +1,32 @@
 package edu.usfca.cs272;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.MalformedInputException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
+
+import opennlp.tools.stemmer.Stemmer;
+import opennlp.tools.stemmer.snowball.SnowballStemmer;
+import opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM;
 
 /**
  * Class responsible for running this project based on the provided command-line
@@ -44,6 +55,213 @@ public class Driver {
 	 */
 	public static final Pattern CLEAN_REGEX = Pattern.compile("(?U)[^\\p{Alpha}\\p{Space}]+");
 
+
+	/**
+	 * Indents the writer by the specified number of times. Does nothing if the
+	 * indentation level is 0 or less.
+	 *
+	 * @param writer the writer to use
+	 * @param indent the number of times to indent
+	 * @throws IOException if an IO error occurs
+	 */
+	public static void writeIndent(Writer writer, int indent) throws IOException {
+		while (indent-- > 0) {
+			writer.write("  ");
+		}
+	}
+
+	/**
+	 * Indents and then writes the String element.
+	 *
+	 * @param element the element to write
+	 * @param writer the writer to use
+	 * @param indent the number of times to indent
+	 * @throws IOException if an IO error occurs
+	 */
+	public static void writeIndent(String element, Writer writer, int indent) throws IOException {
+		writeIndent(writer, indent);
+		writer.write(element);
+	}
+
+	/**
+	 * Indents and then writes the text element surrounded by {@code " "} quotation
+	 * marks.
+	 *
+	 * @param element the element to write
+	 * @param writer the writer to use
+	 * @param indent the number of times to indent
+	 * @throws IOException if an IO error occurs
+	 */
+	public static void writeQuote(String element, Writer writer, int indent) throws IOException {
+		writeIndent(writer, indent);
+		writer.write('"');
+		writer.write(element);
+		writer.write('"');
+	}
+
+	/**
+	 * Writes the elements as a pretty JSON array.
+	 *
+	 * @param elements the elements to write
+	 * @param writer the writer to use
+	 * @param indent the initial indent level; the first bracket is not indented,
+	 *   inner elements are indented by one, and the last bracket is indented at the
+	 *   initial indentation level
+	 * @throws IOException if an IO error occurs
+	 *
+	 * @see Writer#write(String)
+	 * @see #writeIndent(Writer, int)
+	 * @see #writeIndent(String, Writer, int)
+	 */
+	public static void writeArray(Collection<? extends Number> elements, Writer writer, int indent) throws IOException {
+
+		writer.write("[\n");
+
+	    Iterator<? extends Number> iterator = elements.iterator();
+	    while (iterator.hasNext()) {
+	        Number element = iterator.next();
+
+	        writeIndent(writer, indent + 1);
+	        writer.write(element.toString());
+
+	        if (iterator.hasNext()) {
+	            writer.write(",");
+	        }
+	        writer.write("\n");
+	    }
+
+	    writeIndent(writer, indent);
+	    writer.write("]");
+
+
+	}
+
+
+
+	/**
+	 * Writes the elements as a pretty JSON array to file.
+	 *
+	 * @param elements the elements to write
+	 * @param path the file path to use
+	 * @throws IOException if an IO error occurs
+	 *
+	 * @see Files#newBufferedReader(Path, java.nio.charset.Charset)
+	 * @see StandardCharsets#UTF_8
+	 * @see #writeArray(Collection, Writer, int)
+	 */
+	public static void writeArray(Collection<? extends Number> elements, Path path) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
+			writeArray(elements, writer, 0);
+		}
+	}
+
+	/**
+	 * Returns the elements as a pretty JSON array.
+	 *
+	 * @param elements the elements to use
+	 * @return a {@link String} containing the elements in pretty JSON format
+	 *
+	 * @see StringWriter
+	 * @see #writeArray(Collection, Writer, int)
+	 */
+	public static String writeArray(Collection<? extends Number> elements) {
+		try {
+			StringWriter writer = new StringWriter();
+			writeArray(elements, writer, 0);
+			return writer.toString();
+		}
+		catch (IOException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Writes the elements as a pretty JSON object with nested arrays. The generic
+	 * notation used allows this method to be used for any type of map with any type
+	 * of nested collection of number objects.
+	 *
+	 * @param elements the elements to write
+	 * @param writer the writer to use
+	 * @param indent the initial indent level; the first bracket is not indented,
+	 *   inner elements are indented by one, and the last bracket is indented at the
+	 *   initial indentation level
+	 * @throws IOException if an IO error occurs
+	 *
+	 * @see Writer#write(String)
+	 * @see #writeIndent(Writer, int)
+	 * @see #writeIndent(String, Writer, int)
+	 * @see #writeArray(Collection)
+	 */
+	public static void writeObjectArrays(Map<String, ? extends Collection<? extends Number>> elements, Writer writer, int indent) throws IOException {
+	    writer.write("{\n");
+
+	    var iterator = elements.entrySet().iterator();
+
+	    while (iterator.hasNext()) {
+	        Map.Entry<String, ? extends Collection<? extends Number>> entry = iterator.next();
+
+	        String elementString = entry.getKey();
+	        Collection<? extends Number> elementCollection = entry.getValue();
+
+	        writeQuote(elementString, writer, indent + 1);
+	        writer.write(": ");
+
+	        if (elementCollection != null && !elementCollection.isEmpty()) {
+	            writeArray(elementCollection, writer, indent + 1);
+	        } else {
+	            writer.write("[\n");
+	            writeIndent(writer, indent + 1);
+	            writer.write("]");
+	        }
+
+	        if (iterator.hasNext()) {
+	            writer.write(",");
+	        }
+	        writer.write("\n");
+	    }
+
+	    writeIndent(writer, indent);
+	    writer.write("}");
+	}
+
+
+	/**
+	 * Writes the elements as a pretty JSON object with nested arrays to file.
+	 *
+	 * @param elements the elements to write
+	 * @param path the file path to use
+	 * @throws IOException if an IO error occurs
+	 *
+	 * @see Files#newBufferedReader(Path, java.nio.charset.Charset)
+	 * @see StandardCharsets#UTF_8
+	 * @see #writeObjectArrays(Map, Writer, int)
+	 */
+	public static void writeObjectArrays(Map<String, ? extends Collection<? extends Number>> elements, Path path) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
+			writeObjectArrays(elements, writer, 0);
+		}
+	}
+
+	/**
+	 * Returns the elements as a pretty JSON object with nested arrays.
+	 *
+	 * @param elements the elements to use
+	 * @return a {@link String} containing the elements in pretty JSON format
+	 *
+	 * @see StringWriter
+	 * @see #writeObjectArrays(Map, Writer, int)
+	 */
+	public static String writeObjectArrays(Map<String, ? extends Collection<? extends Number>> elements) {
+		try {
+			StringWriter writer = new StringWriter();
+			writeObjectArrays(elements, writer, 0);
+			return writer.toString();
+		}
+		catch (IOException e) {
+			return null;
+		}
+	}
+
 	/**
 	 * @param text text to be parsed
 	 * @return cleaned text
@@ -68,6 +286,45 @@ public class Driver {
 	 */
 	public static String[] parse(String text) {
 		return split(clean(text));
+	}
+
+	/**
+	 * Parses the line into a list of cleaned and stemmed words.
+	 *
+	 * @param line the line of words to clean, split, and stem
+	 * @param stemmer the stemmer to use
+	 * @return a list of cleaned and stemmed words in parsed order
+	 *
+	 * @see #parse(String)
+	 * @see Stemmer#stem(CharSequence)
+	 * @see #addStems(String, Stemmer, Collection)
+	 */
+	public static ArrayList<String> listStems(String line, Stemmer stemmer) {
+		ArrayList<String> stemList = new ArrayList<>();
+		String[] words = parse(line);
+		for (int i = 0; i < words.length; i++) {
+	        stemList.add(stemmer.stem(words[i]).toString());
+	    }
+
+		return stemList;
+
+	}
+
+	/**
+	 * Parses the line into a list of cleaned and stemmed words using the default
+	 * stemmer for English.
+	 *
+	 * @param line the line of words to parse and stem
+	 * @return a list of cleaned and stemmed words in parsed order
+	 *
+	 * @see SnowballStemmer#SnowballStemmer(ALGORITHM)
+	 * @see ALGORITHM#ENGLISH
+	 * @see #listStems(String, Stemmer)
+	 */
+	public static ArrayList<String> listStems(String line) {
+		Stemmer stem = new SnowballStemmer(ENGLISH);
+		return listStems(line, stem);
+
 	}
 
 	/**
@@ -112,17 +369,18 @@ public class Driver {
 			return;
 		}
 
-		StringBuilder inputText = new StringBuilder();
+		StringBuilder countText = new StringBuilder();
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;
 			int pos = 0;
 			while ((line = reader.readLine()) != null) {
-				inputText.append(line).append("\n");
 
-				String[] buffer = parse(line.toString());
+				countText.append(line).append("\n");
 
-				for (String text: buffer) {
-					processIndex(text, input.toString(), pos);
+				ArrayList<String> stems = listStems(line);
+
+				for (String stem: stems) {
+					processIndex(stem, input.toString(), pos);
 				}
 
 				pos++;
@@ -131,7 +389,7 @@ public class Driver {
 			System.out.println("An error occurred while reading the file: " + input.toString());
 		}
 
-		String[] contents = parse(inputText.toString());
+		String[] contents = parse(countText.toString());
 
 		if (contents.length != 0) {
 			fileInfo.put(input, contents.length);
@@ -140,6 +398,7 @@ public class Driver {
 	}
 
 	public static void processIndex(String stem, String fn, Integer num) {
+
 		Map<String, List<Integer>> nestMap = invertMap.getOrDefault(stem, new HashMap<>());
 		List<Integer> positionsList = nestMap.getOrDefault(fn, new ArrayList<>());
 		positionsList.add(num);
@@ -208,6 +467,7 @@ public class Driver {
 			String path = commands.getValue();
 
 			switch (flag) {
+
 			case "-text":
 				fileInfo.clear();
 				if (path.equals("default")) {
@@ -233,8 +493,8 @@ public class Driver {
 				}
 				break;
 
-			// case "-index" :
-			// System.out.println("Pending");
+			 case "-index" :
+			 System.out.println("Pending");
 
 			default:
 				System.out.println("Ignoring unknown argument: " + flag);
