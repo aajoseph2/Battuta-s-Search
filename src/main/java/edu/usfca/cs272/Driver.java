@@ -209,11 +209,15 @@ public class Driver {
 
 	    var iterator = elements.entrySet().iterator();
 
+
 	    while (iterator.hasNext()) {
 	        Map.Entry<String, ? extends Collection<? extends Number>> entry = iterator.next();
 
 	        String elementString = entry.getKey();
 	        Collection<? extends Number> elementCollection = entry.getValue();
+
+	        System.out.println(elementString);
+	        System.out.println(elementCollection);
 
 	        writer.write("  ");
 	        writeQuote(elementString, writer, indent + 1);
@@ -353,12 +357,10 @@ public class Driver {
 				}
 				if (Files.isDirectory(entry)) {
 					iterDirectory(entry);
-					System.out.println("Directory: " + entry);
 				} else {
 					String fileNameLower = entry.getFileName().toString().toLowerCase();
 					if (fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text")) {
 						try {
-							System.out.println("File: " + entry);
 							textProcess(entry);
 						} catch (MalformedInputException e) {
 							System.out.println("Skipped due to encoding issues: " + entry);
@@ -425,8 +427,10 @@ public class Driver {
 		nestMap.put(fn, positionsList);
 		invertMap.put(stem, nestMap);
 
-
+		System.out.println("Stem: " + stem);
 		formatMap.put(stem, writeObjectArrays(nestMap));
+
+		//formatMap.put(stem, "hello");
 
 
 }
@@ -574,9 +578,9 @@ public class Driver {
 				break;
 			}
 		}
-		System.out.println(invertMap);
+		//System.out.println(invertMap);
 		System.out.println("\n");
-		System.out.println(formatMap);
+		//System.out.println(formatMap);
 
 
 	}
