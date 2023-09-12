@@ -45,8 +45,17 @@ public class Driver {
 	 */
 
 	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>();
+	/**
+	 * Map of file: position
+	 */
 	public static TreeMap<String, List<Integer>> nestMap = new TreeMap<>();
+	/**
+	 * map of stem:nestMap
+	 */
 	public static Map<String, TreeMap<String, List<Integer>>> invertMap = new HashMap<>();
+	/**
+	 * map to which will be written to json, index
+	 */
 	public static TreeMap<String, String> formatMap = new TreeMap<>();
 	/**
 	 * Text pattern to follow
@@ -303,7 +312,6 @@ public class Driver {
 	 *
 	 * @see #parse(String)
 	 * @see Stemmer#stem(CharSequence)
-	 * @see #addStems(String, Stemmer, Collection)
 	 */
 	public static ArrayList<String> listStems(String line, Stemmer stemmer) {
 		ArrayList<String> stemList = new ArrayList<>();
@@ -345,10 +353,12 @@ public class Driver {
 				}
 				if (Files.isDirectory(entry)) {
 					iterDirectory(entry);
+					System.out.println("Directory: " + entry);
 				} else {
 					String fileNameLower = entry.getFileName().toString().toLowerCase();
 					if (fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text")) {
 						try {
+							System.out.println("File: " + entry);
 							textProcess(entry);
 						} catch (MalformedInputException e) {
 							System.out.println("Skipped due to encoding issues: " + entry);
@@ -401,6 +411,11 @@ public class Driver {
 
 	}
 
+	/**
+	 * @param stem stem to be added in  invertMap
+	 * @param fn file name
+	 * @param num position in file
+	 */
 	public static void processIndex(String stem, String fn, Integer num) {
 
 		nestMap = invertMap.getOrDefault(stem, new TreeMap<>());
@@ -410,10 +425,15 @@ public class Driver {
 		nestMap.put(fn, positionsList);
 		invertMap.put(stem, nestMap);
 
+
 		formatMap.put(stem, writeObjectArrays(nestMap));
+
 
 }
 
+	/**
+	 * @return formatMap to json string
+	 */
 	public static String finalIndexJson() {
 		StringWriter buffer = new StringWriter();
 
@@ -554,8 +574,12 @@ public class Driver {
 				break;
 			}
 		}
+		System.out.println(invertMap);
+		System.out.println("\n");
+		System.out.println(formatMap);
+
 
 	}
 	//u need to fix how the maps are being created
-
+	//fix the wrte array so that u dont call it so much.
 }
