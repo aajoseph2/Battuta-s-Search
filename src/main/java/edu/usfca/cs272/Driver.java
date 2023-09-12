@@ -29,7 +29,13 @@ public class Driver {
 	 * inverted index.
 	 */
 
-	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>();
+	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>(); // TODO Reduces reusability
+	
+	/*
+	 * TODO At least move into its own data structure class... InvertedIndex
+	 * Store String, Integer instead of Path, Integer 
+	 */
+	
 	/**
 	 * Text pattern to follow
 	 */
@@ -68,7 +74,7 @@ public class Driver {
 	/**
 	 * @param input the directory that recurses on its self until it reaches a base text file
 	 */
-	public static void iterDirectory(Path input) {
+	public static void iterDirectory(Path input) { // TODO throw exception here
 
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 			for (Path entry : stream) {
@@ -127,6 +133,7 @@ public class Driver {
 
 
 	/**
+	 * TODO Describe the method here
 	 * @return converted json string taken from a map
 	 */
 	public static String mapToJson() {
@@ -152,18 +159,39 @@ public class Driver {
 	 */
 	public static void writeJsonToFile(String json, Path outputPath) {
 		try {
-			System.out.println(outputPath);
+			System.out.println(outputPath); // TODO Try to remove when possible
 			Files.write(outputPath, json.getBytes());
 		} catch (IOException e) {
 			System.out.println("An error occurred while reading the file: " + outputPath.toString());
 		}
 	}
 
+	/*
+	 * TODO Break up into the homework classes ArgumentParser, FileStemmer, JsonWriter
+	 */
+	
 	/**
 	 * @param args Command Line Args to be read
 	 * @throws IOException In case file cannot be read
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException { // TODO remove throws here
+		
+		/*
+		 * TODO 
+		 * ArgumentParser parser = new ArgumentParser(args)....
+		 * 
+		 * if (-text) {
+		 *   get the -text flag value
+		 *   
+		 *   try {
+		 *     1 or 2 lines of code
+		 *   }
+		 *   catch ( ) {
+		 *      Unable to process the files from path: ...
+		 *   }
+		 * }
+		 */
+		
 		HashMap<String, String> flags = new HashMap<>();
 		int bound = args.length;
 
