@@ -11,9 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -25,30 +23,9 @@ import java.util.TreeMap;
  * @version Fall 2023
  */
 public class Driver {
-	/**
-	 * Initializes the classes necessary based on the provided command-line
-	 * arguments. This includes (but is not limited to) how to build or search an
-	 * inverted index.
-	 */
 
-	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>(); // TODO Reduces reusability
-	/**
-	 * Map of file: position
-	 */
-	public static TreeMap<String, List<Integer>> nestMap = new TreeMap<>();
-	/**
-	 * map of stem:nestMap
-	 */
-	public static Map<String, TreeMap<String, List<Integer>>> invertMap = new HashMap<>();
-	/**
-	 * map to which will be written to json, index
-	 */
-	public static TreeMap<String, TreeMap<String, List<Integer>>> formatMap = new TreeMap<>();
 
-	/*
-	 * TODO At least move into its own data structure class... InvertedIndex
-	 * Store String, Integer instead of Path, Integer
-	 */
+	public static GeneralFileInfo mapMethods = new GeneralFileInfo();
 
 
 	/**
@@ -109,7 +86,7 @@ public class Driver {
 		String[] contents = TextParser.parse(countText.toString());
 
 		if (contents.length != 0) {
-			fileInfo.put(input, contents.length);
+			mapMethods.addFileCountsInfo(input, contents.length);
 		}
 
 
@@ -122,17 +99,13 @@ public class Driver {
 	 */
 	public static void processIndex(String stem, String fn, Integer num) {
 
-		nestMap = invertMap.getOrDefault(stem, new TreeMap<>());
+		TreeMap<String, List<Integer>> nestMap = mapMethods.getInvertedVal(stem);
 		List<Integer> positionsList = nestMap.getOrDefault(fn, new ArrayList<>());
 		positionsList.add(num);
 
 		nestMap.put(fn, positionsList);
-		invertMap.put(stem, nestMap);
-
-
-		formatMap.put(stem, nestMap);
-
-
+		mapMethods.addInvertedInfo(stem, nestMap);
+		mapMethods.addFormatInfo(stem, nestMap);
 }
 
 	/**
@@ -140,36 +113,37 @@ public class Driver {
 	 */
 	public static String finalIndexJson() {
 		StringWriter buffer = new StringWriter();
+		TreeMap<String, TreeMap<String, List<Integer>>> formatMap = mapMethods.getFormatMap();
 
-		var iterator = Driver.formatMap.entrySet().iterator();
+		var iterator = formatMap.entrySet().iterator();
 		buffer.write("{\n");
 
 
 		while (iterator.hasNext()) {
-    	var entry = iterator.next();
+			var entry = iterator.next();
 
-        String stem = entry.getKey();
-        String loc =  JsonFormatter.writeObjectArrays(entry.getValue());
+			String stem = entry.getKey();
+			String loc =  JsonFormatter.writeObjectArrays(entry.getValue());
 
-        buffer.write("  ");
-        buffer.write('"');
-        buffer.write(stem);
-        buffer.write("\": ");
-        buffer.write(loc.toString());
-
-
-        if (iterator.hasNext()) {
-          buffer.write("  },\n");
-      } else {
-          buffer.write("  }\n");
-      }
-    }
+			buffer.write("  ");
+			buffer.write('"');
+			buffer.write(stem);
+			buffer.write("\": ");
+			buffer.write(loc.toString());
 
 
-    buffer.write("}");
-    formatMap.clear();
+			if (iterator.hasNext()) {
+				buffer.write("  },\n");
+			} else {
+				buffer.write("  }\n");
+			}
+		}
 
-    return buffer.toString();
+
+		buffer.write("}");
+		formatMap.clear();
+
+		return buffer.toString();
 	}
 
 
@@ -179,8 +153,9 @@ public class Driver {
 	 */
 	public static String mapToJson() {
 		StringBuilder json = new StringBuilder("{\n");
+		TreeMap<Path, Integer> fileCountsInfo =  mapMethods.getFileCountsInfo();
 
-		for (var entry : fileInfo.entrySet()) {
+		for (var entry : fileCountsInfo.entrySet()) {
 			json.append("  \"").append(entry.getKey()).append("\": ").append(entry.getValue()).append(",\n");
 		}
 
@@ -218,10 +193,7 @@ public class Driver {
 			Path path = map.getPath("-text");
 			if (path != null) {
 				try {
-					invertMap.clear();
-					nestMap.clear();
-					fileInfo.clear();
-					formatMap.clear();
+					mapMethods.clearAll();
 
 					if (Files.isDirectory(path)) {
 						iterDirectory(path);
