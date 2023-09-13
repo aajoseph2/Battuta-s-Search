@@ -44,7 +44,7 @@ public class Driver {
 	 * inverted index.
 	 */
 
-	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>(); // TODO Reduces reusability
+	public static TreeMap<Path, Integer> fileInfo = new TreeMap<>();
 	/**
 	 * Map of file: position
 	 */
@@ -56,12 +56,7 @@ public class Driver {
 	/**
 	 * map to which will be written to json, index
 	 */
-	public static TreeMap<String, String> formatMap = new TreeMap<>();
-
-	/*
-	 * TODO At least move into its own data structure class... InvertedIndex
-	 * Store String, Integer instead of Path, Integer
-	 */
+	public static TreeMap<String, TreeMap<String, List<Integer>>> formatMap = new TreeMap<>();
 	/**
 	 * Text pattern to follow
 	 */
@@ -349,7 +344,7 @@ public class Driver {
 	/**
 	 * @param input the directory that recurses on its self until it reaches a base text file
 	 */
-	public static void iterDirectory(Path input) { // TODO throw exception here
+	public static void iterDirectory(Path input) {
 
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 			for (Path entry : stream) {
@@ -358,12 +353,10 @@ public class Driver {
 				}
 				if (Files.isDirectory(entry)) {
 					iterDirectory(entry);
-					System.out.println("Directory: " + entry);
 				} else {
 					String fileNameLower = entry.getFileName().toString().toLowerCase();
 					if (fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text")) {
 						try {
-							System.out.println("File: " + entry);
 							textProcess(entry);
 						} catch (MalformedInputException e) {
 							System.out.println("Skipped due to encoding issues: " + entry);
@@ -431,7 +424,7 @@ public class Driver {
 		invertMap.put(stem, nestMap);
 
 
-		formatMap.put(stem, writeObjectArrays(nestMap));
+		formatMap.put(stem, nestMap);
 
 
 }
@@ -450,7 +443,7 @@ public class Driver {
     	var entry = iterator.next();
 
         String stem = entry.getKey();
-        String loc = entry.getValue();
+        String loc =  writeObjectArrays(entry.getValue());
 
         buffer.write("  ");
         buffer.write('"');
@@ -475,7 +468,6 @@ public class Driver {
 
 
 	/**
-	 * TODO Describe the method here
 	 * @return converted json string taken from a map
 	 */
 	public static String mapToJson() {
@@ -501,40 +493,18 @@ public class Driver {
 	 */
 	public static void writeJsonToFile(String json, Path outputPath) {
 		try {
-			System.out.println(outputPath); // TODO Try to remove when possible
+			System.out.println(outputPath);
 			Files.write(outputPath, json.getBytes());
 		} catch (IOException e) {
 			System.out.println("An error occurred while reading the file: " + outputPath.toString());
 		}
 	}
 
-	/*
-	 * TODO Break up into the homework classes ArgumentParser, FileStemmer, JsonWriter
-	 */
-
 	/**
 	 * @param args Command Line Args to be read
 	 * @throws IOException In case file cannot be read
 	 */
-	public static void main(String[] args) throws IOException { //TODO REMOVE THROWS HERE
-
-		/*
-		 * TODO
-		 * ArgumentParser parser = new ArgumentParser(args)....
-		 *
-		 * if (-text) {
-		 *   get the -text flag value
-		 *
-		 *   try {
-		 *     1 or 2 lines of code
-		 *   }
-		 *   catch ( ) {
-		 *      Unable to process the files from path: ...
-		 *   }
-		 * }
-		 */
-
-
+	public static void main(String[] args) throws IOException {
 		LinkedHashMap<String, String> flags = new LinkedHashMap<>();
 		int bound = args.length;
 
@@ -602,13 +572,10 @@ public class Driver {
 				break;
 			}
 		}
-		System.out.println(invertMap);
-		System.out.println("\n");
-		System.out.println(formatMap);
+
 
 
 	}
 	//u need to fix how the maps are being created
 	//fix the wrte array so that u dont call it so much.
 }
-
