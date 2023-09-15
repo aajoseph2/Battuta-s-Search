@@ -25,12 +25,20 @@ import java.util.TreeMap;
 public class Driver {
 
 
+	/**
+	 * This imports methods from GeneralInfo.java. These methods use wrapper calls
+	 * to alter maps that are used to build the counts or indeces of the file contents.
+	 * The data structure is located in this seperate class, where data can be stored
+	 * and called.
+	 */
 	public static GeneralFileInfo mapMethods = new GeneralFileInfo();
 
 
 	/**
-	 * @param input the directory that recurses on its self until it reaches a base text file
-	 * @throws IOException If file isunable to be read, then throw an exception
+	 * This recurses on its self until it reaches a base text file. Logic for the case
+	 * that the file inputted is a directory.
+	 * @param input the directory
+	 * @throws IOException If file is unable to be read, then throw an exception.
 	 */
 	public static void iterDirectory(Path input) throws IOException {
 
@@ -56,6 +64,12 @@ public class Driver {
 	}
 
 	/**
+	 * This is the engine of the text processing. Will take in a .txt file
+	 * and input it in  a Stringbuilder. This stringBuilder is then parsed into
+	 * the processIndex method where the toString() will be inputted into the
+	 * maps, used to read counts and index. There is also logic to convert the
+	 * text into the proper stems and remove any formatting issues within the
+	 * file contents, by calling helper functions within the textParser class.
 	 * @param input the path of which the info will be parsed
 	 * @throws IOException IOException In case file cannot be read
 	 */
@@ -93,23 +107,27 @@ public class Driver {
 	}
 
 	/**
+	 * This method processes data from the textProcess methods, where the data will
+	 * be inputted into maps, which are used to build a final data structure to read
+	 * the counts and index of the file contents.
 	 * @param stem stem to be added in  invertMap
-	 * @param fn file name
+	 * @param fn file name, to be added within nestMap
 	 * @param num position in file
 	 */
 	public static void processIndex(String stem, String fn, Integer num) {
 
-		TreeMap<String, List<Integer>> nestMap = mapMethods.getInvertedVal(stem);
+		TreeMap<String, List<Integer>> nestMap = mapMethods.getFormatVal(stem);
 		List<Integer> positionsList = nestMap.getOrDefault(fn, new ArrayList<>());
 		positionsList.add(num);
 
 		nestMap.put(fn, positionsList);
-		mapMethods.addInvertedInfo(stem, nestMap);
 		mapMethods.addFormatInfo(stem, nestMap);
 }
 
 	/**
-	 * @return formatMap to json string
+	 * Converts the formatted map, into json pretty text that follows the standard
+	 * of the example from the readMe.
+	 * @return stringBuilder.toString() that is ready to be inputted within writeJsonToFile()
 	 */
 	public static String finalIndexJson() {
 		StringWriter buffer = new StringWriter();
@@ -148,10 +166,12 @@ public class Driver {
 
 
 	/**
-	 * TODO Describe the method here
-	 * @return converted json string taken from a map
+	 * This method takes in the map of fileCountsInfo, and converts the contents into
+	 * a string of pretty json. This string is meant for the "-counts" flag and will
+	 * be inputted within writeToJsonFile eventually for the output.
+	 * @return converted pretty json string taken from a map
 	 */
-	public static String mapToJson() {
+	public static String mapToJsonCounts() {
 		StringBuilder json = new StringBuilder("{\n");
 		TreeMap<Path, Integer> fileCountsInfo =  mapMethods.getFileCountsInfo();
 
@@ -170,6 +190,9 @@ public class Driver {
 	}
 
 	/**
+	 * This method simply takes in the Strings built from mapToJsonCounts() and
+	 * finalIndexJson(), writes it into the desired outputPath with the pretty
+	 * json format.
 	 * @param json Srting to be parsed in the outputPath
 	 * @param outputPath the final destination of the parsed info
 	 */
@@ -194,13 +217,12 @@ public class Driver {
 			if (path != null) {
 				try {
 					mapMethods.clearAll();
-
 					if (Files.isDirectory(path)) {
 						iterDirectory(path);
 					} else {
 						textProcess(path);
 					}
-				} catch(IOException e) {
+				} catch(IOException e ) {
 					System.out.println("Missing file path to read!\n");
 				}
 			}
@@ -211,10 +233,10 @@ public class Driver {
 		if (map.hasFlag("-counts")) {
 			if (map.getPath("-counts") == null) {
 				Path countPath = Paths.get("counts.json");
-				writeJsonToFile(mapToJson(), countPath);
+				writeJsonToFile(mapToJsonCounts(), countPath);
 		} else {
 				Path countPath = map.getPath("-counts");
-				writeJsonToFile(mapToJson(), countPath);
+				writeJsonToFile(mapToJsonCounts(), countPath);
 			}
 		}
 
@@ -230,4 +252,5 @@ public class Driver {
 			}
 		}
 	}
+	//Take out the catches within the methods above and only leave them in main.
 }

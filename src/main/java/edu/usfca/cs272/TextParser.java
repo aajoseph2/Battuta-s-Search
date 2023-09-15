@@ -10,6 +10,12 @@ import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM;
 
+/**
+ * Utility class for parsing, cleaning, and stemming text and text files into
+ * collections of processed words.
+ *
+ */
+
 public class TextParser {
 
 	/**
@@ -61,8 +67,8 @@ public class TextParser {
 		ArrayList<String> stemList = new ArrayList<>();
 		String[] words = parse(line);
 		for (int i = 0; i < words.length; i++) {
-	        stemList.add(stemmer.stem(words[i]).toString());
-	    }
+			stemList.add(stemmer.stem(words[i]).toString());
+		}
 
 		return stemList;
 

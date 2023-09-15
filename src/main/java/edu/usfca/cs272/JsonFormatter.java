@@ -13,6 +13,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * Outputs several simple data structures in "pretty" JSON format where newlines
+ * are used to separate elements and nested elements are indented using spaces.
+ *
+ * Warning: This class is not thread-safe. If multiple threads access this class
+ * concurrently, access must be synchronized externally.
+ *
+ */
+
 public class JsonFormatter {
 	/**
 	 * Indents the writer by the specified number of times. Does nothing if the
@@ -75,22 +84,21 @@ public class JsonFormatter {
 
 		writer.write("[\n");
 
-	    Iterator<? extends Number> iterator = elements.iterator();
-	    while (iterator.hasNext()) {
-	        Number element = iterator.next();
+		Iterator<? extends Number> iterator = elements.iterator();
+		while (iterator.hasNext()) {
+			Number element = iterator.next();
 
-	        writeIndent(writer, indent + 1);
-	        writer.write(element.toString());
+			writeIndent(writer, indent + 1);
+			writer.write(element.toString());
 
-	        if (iterator.hasNext()) {
-	            writer.write(",");
-	        }
-	        writer.write("\n");
-	    }
+			if (iterator.hasNext()) {
+				writer.write(",");
+			}
+			writer.write("\n");
+		}
 
-	    writeIndent(writer, indent);
-	    writer.write("]");
-
+		writeIndent(writer, indent);
+		writer.write("]");
 
 	}
 
@@ -152,38 +160,37 @@ public class JsonFormatter {
 	 * @see #writeArray(Collection)
 	 */
 	public static String writeObjectArrays(Map<String, ? extends Collection<? extends Number>> elements, Writer writer, int indent) throws IOException {
-	    writer.write("{\n");
+		writer.write("{\n");
 
-	    var iterator = elements.entrySet().iterator();
+		var iterator = elements.entrySet().iterator();
 
-	    while (iterator.hasNext()) {
-	        Map.Entry<String, ? extends Collection<? extends Number>> entry = iterator.next();
+		while (iterator.hasNext()) {
+			Map.Entry<String, ? extends Collection<? extends Number>> entry = iterator.next();
 
-	        String elementString = entry.getKey();
-	        Collection<? extends Number> elementCollection = entry.getValue();
+			String elementString = entry.getKey();
+			Collection<? extends Number> elementCollection = entry.getValue();
 
-	        writer.write("  ");
-	        writeQuote(elementString, writer, indent + 1);
-	        writer.write(": ");
+			writer.write("  ");
+			writeQuote(elementString, writer, indent + 1);
+			writer.write(": ");
 
-	        if (elementCollection != null && !elementCollection.isEmpty()) {
-	            writeArray(elementCollection, writer, indent + 2);
-	        } else {
-	            writer.write("[\n");
-	            writeIndent(writer, indent + 1);
-	            writer.write("]");
-	        }
+			if (elementCollection != null && !elementCollection.isEmpty()) {
+				writeArray(elementCollection, writer, indent + 2);
+			} else {
+				writer.write("[\n");
+				writeIndent(writer, indent + 1);
+				writer.write("]");
+			}
 
-	        if (iterator.hasNext()) {
-	            writer.write(",");
-	        }
-	        writer.write("\n");
-	    }
+			if (iterator.hasNext()) {
+				writer.write(",");
+			}
+			writer.write("\n");
+		}
 
-	    writeIndent(writer, indent);
-	    //writer.write("}");
+		writeIndent(writer, indent);
 
-	    return writer.toString();
+		return writer.toString();
 	}
 
 
