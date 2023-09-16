@@ -50,14 +50,14 @@ public class ArgumentParser {
 	 * @see Character#isWhitespace(int)
 	 */
 	public static boolean isFlag(String arg) {
-    if (arg == null || arg.length() <= 1) {
-    	return false;
-    }
-    if (arg.startsWith("-") && !Character.isDigit(arg.charAt(1)) && !Character.isWhitespace(arg.charAt(1))) {
-    	return true;
-    }
+		if (arg == null || arg.length() <= 1) {
+			return false;
+		}
+		if (arg.startsWith("-") && !Character.isDigit(arg.charAt(1)) && !Character.isWhitespace(arg.charAt(1))) {
+			return true;
+		}
 
-    return false;
+		return false;
 }
 
 
@@ -238,21 +238,5 @@ public class ArgumentParser {
 		return this.map.toString();
 	}
 
-	/**
-	 * Demonstrates this class.
-	 *
-	 * @param args the arguments to test
-	 */
-	public static void main(String[] args) {
-		// Feel free to modify or delete this method for debugging
-		if (args.length < 1) {
-			args = new String[] { "-max", "false", "-min", "0", "-min", "-10", "hello",
-					"-@debug", "-f", "output.txt", "-verbose" };
-		}
 
-		// expected output:
-		// {-max=false, -min=-10, -verbose=null, -f=output.txt, -@debug=null}
-		ArgumentParser map = new ArgumentParser(args);
-		System.out.println(map);
-	}
 }
