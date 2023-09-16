@@ -5,7 +5,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.nio.charset.MalformedInputException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,11 +51,7 @@ public class Driver {
 				} else {
 					String fileNameLower = entry.getFileName().toString().toLowerCase();
 					if (fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text")) {
-						try {
 							textProcess(entry);
-						} catch (MalformedInputException e) {
-							System.out.println("Skipped due to encoding issues: " + entry);
-						}
 					}
 				}
 			}
@@ -93,8 +88,6 @@ public class Driver {
 					pos++;
 				}
 			}
-		} catch (IOException e) {
-			System.out.println("An error occurred while reading the file: " + input.toString());
 		}
 
 		String[] contents = TextParser.parse(countText.toString());
@@ -149,7 +142,6 @@ public class Driver {
 			buffer.write("\": ");
 			buffer.write(loc.toString());
 
-
 			if (iterator.hasNext()) {
 				buffer.write("  },\n");
 			} else {
@@ -157,9 +149,7 @@ public class Driver {
 			}
 		}
 
-
 		buffer.write("}");
-		formatMap.clear();
 
 		return buffer.toString();
 	}
@@ -195,13 +185,10 @@ public class Driver {
 	 * json format.
 	 * @param json Srting to be parsed in the outputPath
 	 * @param outputPath the final destination of the parsed info
+	 * @throws IOException In case there is any issue with write file
 	 */
-	public static void writeJsonToFile(String json, Path outputPath) {
-		try {
+	public static void writeJsonToFile(String json, Path outputPath) throws IOException{
 			Files.write(outputPath, json.getBytes());
-		} catch (IOException e) {
-			System.out.println("An error occurred while reading the file: " + outputPath.toString());
-		}
 	}
 
 	/**
@@ -209,48 +196,50 @@ public class Driver {
 	 */
 	public static void main(String[] args)  {
 
-		ArgumentParser map = new ArgumentParser(args);
+		try {
+			ArgumentParser map = new ArgumentParser(args);
 
-
-		if (map.hasFlag("-text")) {
-			Path path = map.getPath("-text");
-			if (path != null) {
-				try {
-					mapMethods.clearAll();
-					if (Files.isDirectory(path)) {
-						iterDirectory(path);
-					} else {
-						textProcess(path);
+			if (map.hasFlag("-text")) {
+				Path path = map.getPath("-text");
+				if (path != null) {
+					try {
+						mapMethods.clearAll();
+						if (Files.isDirectory(path)) {
+							iterDirectory(path);
+						} else {
+							textProcess(path);
+						}
+					} catch(IOException e ) {
+						System.out.println("Missing file path to read!\n");
 					}
-				} catch(IOException e ) {
-					System.out.println("Missing file path to read!\n");
+				}
+			} else {
+				System.out.println("Must input a Text file to read!");
+		}
+
+			if (map.hasFlag("-counts")) {
+				if (map.getPath("-counts") == null) {
+					Path countPath = Paths.get("counts.json");
+					writeJsonToFile(mapToJsonCounts(), countPath);
+			} else {
+					Path countPath = map.getPath("-counts");
+					writeJsonToFile(mapToJsonCounts(), countPath);
 				}
 			}
-		} else {
-			System.out.println("Must input a Text file to read!");
-	}
 
-		if (map.hasFlag("-counts")) {
-			if (map.getPath("-counts") == null) {
-				Path countPath = Paths.get("counts.json");
-				writeJsonToFile(mapToJsonCounts(), countPath);
-		} else {
-				Path countPath = map.getPath("-counts");
-				writeJsonToFile(mapToJsonCounts(), countPath);
+			if (map.hasFlag("-index")) {
+				if (map.getPath("-index") == null) {
+					Path indexPath = Paths.get("index.json");
+					String indexJson = finalIndexJson();
+					writeJsonToFile(indexJson, indexPath);
+			} else {
+					Path indexPath = map.getPath("-index");
+					String indexJson = finalIndexJson();
+					writeJsonToFile(indexJson, indexPath);
+				}
 			}
-		}
-
-		if (map.hasFlag("-index")) {
-			if (map.getPath("-index") == null) {
-				Path indexPath = Paths.get("index.json");
-				String indexJson = finalIndexJson();
-				writeJsonToFile(indexJson, indexPath);
-		} else {
-				Path indexPath = map.getPath("-index");
-				String indexJson = finalIndexJson();
-				writeJsonToFile(indexJson, indexPath);
-			}
+	} catch (IOException e) {
+		System.out.println("An error occurred: " + e.getMessage());
 		}
 	}
-	//Take out the catches within the methods above and only leave them in main.
 }
