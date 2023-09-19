@@ -32,7 +32,7 @@ public class Driver {
 	 */
 	public static GeneralFileInfo mapMethods = new GeneralFileInfo();
 
-
+	// TODO Move into a InvertedIndexProcessor (anything file IO  reading stuff goes here...)
 	/**
 	 * This recurses on its self until it reaches a base text file. Logic for the case
 	 * that the file inputted is a directory.
@@ -43,7 +43,7 @@ public class Driver {
 
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 			for (Path entry : stream) {
-				if (entry.getFileName().toString().equals(".DS_Store")) {
+				if (entry.getFileName().toString().equals(".DS_Store")) { // TODO What does this break?
 					continue;
 				}
 				if (Files.isDirectory(entry)) {
@@ -107,7 +107,7 @@ public class Driver {
 	 * @param fn file name, to be added within nestMap
 	 * @param num position in file
 	 */
-	public static void processIndex(String stem, String fn, Integer num) {
+	public static void processIndex(String stem, String fn, Integer num) { // TODO Make this an add method in the data structure?
 
 		TreeMap<String, List<Integer>> nestMap = mapMethods.getFormatVal(stem);
 		List<Integer> positionsList = nestMap.getOrDefault(fn, new ArrayList<>());
@@ -198,6 +198,7 @@ public class Driver {
 
 		try {
 			ArgumentParser map = new ArgumentParser(args);
+			// TODO GeneralFileInfo mapMethods = new GeneralFileInfo();
 
 			if (map.hasFlag("-text")) {
 				Path path = map.getPath("-text");
@@ -218,6 +219,7 @@ public class Driver {
 		}
 
 			if (map.hasFlag("-counts")) {
+				// TODO Smaller try catch inside of here
 				if (map.getPath("-counts") == null) {
 					Path countPath = Paths.get("counts.json");
 					writeJsonToFile(mapToJsonCounts(), countPath);
@@ -228,8 +230,11 @@ public class Driver {
 			}
 
 			if (map.hasFlag("-index")) {
+				// TODO Path indexPath = map.getPath("-index", Path.of("index.json"));
+				
+				// TODO Smaller try catch inside here
 				if (map.getPath("-index") == null) {
-					Path indexPath = Paths.get("index.json");
+					Path indexPath = Paths.get("index.json"); // TODO Path.of
 					String indexJson = finalIndexJson();
 					writeJsonToFile(indexJson, indexPath);
 			} else {
