@@ -22,7 +22,7 @@ import java.util.Map;
  *
  */
 
-public class JsonFormatter {
+public class JsonFormatter { // TODO Add back some of the other json methods from the homework
 	/**
 	 * Indents the writer by the specified number of times. Does nothing if the
 	 * indentation level is 0 or less.

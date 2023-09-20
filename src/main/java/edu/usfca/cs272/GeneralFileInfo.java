@@ -9,21 +9,23 @@ import java.util.TreeMap;
  * Data structure class to contain all major data structures that utilizes wrapper methods, to
  * alter data recieved from file inputs.
  */
-public class GeneralFileInfo {
+public class GeneralFileInfo { // TODO Rename to InvertedIndex
 
 	/**
 	 * The final -counts map that builds the file path and counts.
 	 */
-	private TreeMap<Path, Integer> fileCountsInfo = new TreeMap<>();
+	private TreeMap<Path, Integer> fileCountsInfo = new TreeMap<>(); // TODO TreeMap<String, Integer>, call this counts or countsMap
 	/**
 	 * Nested map to be inputted as the value of both invertMap and formatMap.
 	 */
-	private TreeMap<String, List<Integer>> nestMap = new TreeMap<>();
+	private TreeMap<String, List<Integer>> nestMap = new TreeMap<>(); // TODO Should be local variable where it needs to be initialized
 	/**
 	 * Final structure to contain the index information.
 	 */
-	private TreeMap<String, TreeMap<String, List<Integer>>> formatMap = new TreeMap<>();
+	private TreeMap<String, TreeMap<String, List<Integer>>> formatMap = new TreeMap<>(); // TODO Name index or data etc., TreeMap<String, TreeMap<String, TreeSet<Integer>>>
 
+	// TODO Thnk about method names now
+	
 	/**
 	 * @return the fileCountsInfo in the Driver class
 	 */
@@ -45,6 +47,12 @@ public class GeneralFileInfo {
 		return formatMap;
 	}
 
+	/* TODO processIndex is basically this add method
+	public boolean add(String word, String location, Integer position) {
+		
+	}
+	*/
+	
 	/**
 	 * wrapper add method
 	 * @param fn File name to stored as key

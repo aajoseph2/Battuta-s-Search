@@ -16,7 +16,7 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM;
  *
  */
 
-public class TextParser {
+public class TextParser { // TODO Add back uniqueStems
 
 	/**
 	 * Text pattern to follow
