@@ -22,7 +22,7 @@ import java.util.Map;
  *
  */
 
-public class JsonFormatter { // TODO Add back some of the other json methods from the homework
+public class JsonFormatter {
 	/**
 	 * Indents the writer by the specified number of times. Does nothing if the
 	 * indentation level is 0 or less.
@@ -142,6 +142,84 @@ public class JsonFormatter { // TODO Add back some of the other json methods fro
 	}
 
 	/**
+	 * Writes the elements as a pretty JSON object.
+	 *
+	 * @param elements the elements to write
+	 * @param writer the writer to use
+	 * @param indent the initial indent level; the first bracket is not indented,
+	 *   inner elements are indented by one, and the last bracket is indented at the
+	 *   initial indentation level
+	 * @throws IOException if an IO error occurs
+	 *
+	 * @see Writer#write(String)
+	 * @see #writeIndent(Writer, int)
+	 * @see #writeIndent(String, Writer, int)
+	 */
+	public static void writeObject(Map<String, ? extends Number> elements, Writer writer, int indent) throws IOException {
+
+		writer.write("{\n");
+
+		Iterator<? extends Map.Entry<String, ? extends Number>> iterator = elements.entrySet().iterator();
+
+		while (iterator.hasNext()) {
+			Map.Entry<String, ? extends Number> entry = iterator.next();
+			String elementString = entry.getKey();
+			Number elementNum = entry.getValue();
+
+			writeIndent(writer, indent + 1);
+			writer.write('"');
+			writer.write(elementString);
+			writer.write("\": ");
+			writer.write(elementNum.toString());
+
+			if (iterator.hasNext()) {
+				writer.write(",");
+			}
+			writer.write("\n");
+			}
+
+		writeIndent(writer, indent);
+		writer.write("}");
+}
+
+	/**
+	 * Writes the elements as a pretty JSON object to file.
+	 *
+	 * @param elements the elements to write
+	 * @param path the file path to use
+	 * @throws IOException if an IO error occurs
+	 *
+	 * @see Files#newBufferedReader(Path, java.nio.charset.Charset)
+	 * @see StandardCharsets#UTF_8
+	 * @see #writeObject(Map, Writer, int)
+	 */
+	public static void writeObject(Map<String, ? extends Number> elements, Path path) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
+			writeObject(elements, writer, 0);
+		}
+	}
+
+	/**
+	 * Returns the elements as a pretty JSON object.
+	 *
+	 * @param elements the elements to use
+	 * @return a {@link String} containing the elements in pretty JSON format
+	 *
+	 * @see StringWriter
+	 * @see #writeObject(Map, Writer, int)
+	 */
+	public static String writeObject(Map<String, ? extends Number> elements) {
+		try {
+			StringWriter writer = new StringWriter();
+			writeObject(elements, writer, 0);
+			return writer.toString();
+		}
+		catch (IOException e) {
+			return null;
+		}
+	}
+
+	/**
 	 * Writes the elements as a pretty JSON object with nested arrays. The generic
 	 * notation used allows this method to be used for any type of map with any type
 	 * of nested collection of number objects.
@@ -230,4 +308,83 @@ public class JsonFormatter { // TODO Add back some of the other json methods fro
 			return null;
 		}
 	}
+
+	/**
+	 * Writes the elements as a pretty JSON array with nested objects. The generic
+	 * notation used allows this method to be used for any type of collection with
+	 * any type of nested map of String keys to number objects.
+	 *
+	 * @param elements the elements to write
+	 * @param writer the writer to use
+	 * @param indent the initial indent level; the first bracket is not indented,
+	 *   inner elements are indented by one, and the last bracket is indented at the
+	 *   initial indentation level
+	 * @throws IOException if an IO error occurs
+	 *
+	 * @see Writer#write(String)
+	 * @see #writeIndent(Writer, int)
+	 * @see #writeIndent(String, Writer, int)
+	 * @see #writeObject(Map)
+	 */
+	public static void writeArrayObjects(Collection<? extends Map<String, ? extends Number>> elements, Writer writer, int indent) throws IOException {
+		writer.write("[\n");
+
+		var iterator = elements.iterator();
+
+		while (iterator.hasNext()) {
+			var element = iterator.next();
+
+				writeIndent(writer, indent + 1);
+
+				writeObject(element, writer, indent + 1);
+
+				if (iterator.hasNext()) {
+					writer.write(",");
+					}
+
+				writer.write("\n");
+		}
+
+		writeIndent(writer, indent);
+		writer.write("]");
+	}
+
+
+	/**
+	 * Writes the elements as a pretty JSON array with nested objects to file.
+	 *
+	 * @param elements the elements to write
+	 * @param path the file path to use
+	 * @throws IOException if an IO error occurs
+	 *
+	 * @see Files#newBufferedReader(Path, java.nio.charset.Charset)
+	 * @see StandardCharsets#UTF_8
+	 * @see #writeArrayObjects(Collection)
+	 */
+	public static void writeArrayObjects(Collection<? extends Map<String, ? extends Number>> elements, Path path) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
+			writeArrayObjects(elements, writer, 0);
+		}
+	}
+
+	/**
+	 * Returns the elements as a pretty JSON array with nested objects.
+	 *
+	 * @param elements the elements to use
+	 * @return a {@link String} containing the elements in pretty JSON format
+	 *
+	 * @see StringWriter
+	 * @see #writeArrayObjects(Collection)
+	 */
+	public static String writeArrayObjects(Collection<? extends Map<String, ? extends Number>> elements) {
+		try {
+			StringWriter writer = new StringWriter();
+			writeArrayObjects(elements, writer, 0);
+			return writer.toString();
+		}
+		catch (IOException e) {
+			return null;
+		}
+	}
 }
+
