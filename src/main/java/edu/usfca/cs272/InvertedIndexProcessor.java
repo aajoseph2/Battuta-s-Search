@@ -43,6 +43,12 @@ public class InvertedIndexProcessor {
 			}
 		}
 	}
+	
+	/* TODO 
+	public boolean isTextFile(Path path) {
+		
+	}
+	*/
 
 	/**
 	 * This is the engine of the text processing. Will take in a .txt file
@@ -55,14 +61,15 @@ public class InvertedIndexProcessor {
 	 * @param mapMethods mapMethods contains the structure for the read data
 	 * @throws IOException IOException In case file cannot be read
 	 */
+	// TODO processText
 	public static void textProcess(Path input, InvertedIndex mapMethods) throws IOException {
 
-		if (!Files.exists(input)) {
+		if (!Files.exists(input)) { // TODO Remove
 			System.out.println("Invalid file: " + input.toString());
 			return;
 		}
 
-		StringBuilder countText = new StringBuilder();
+		StringBuilder countText = new StringBuilder(); // TODO Remove
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;
 			int pos = 1;
@@ -80,7 +87,7 @@ public class InvertedIndexProcessor {
 		String[] contents = TextParser.parse(countText.toString());
 
 		if (contents.length != 0) {
-			mapMethods.addWordCount(input, contents.length);
+			mapMethods.addWordCount(input, contents.length); // TODO Use pos as the word count
 		}
 
 
@@ -93,7 +100,7 @@ public class InvertedIndexProcessor {
 	 * @param mapMethods contains the structure for the read data
 	 * @return stringBuilder.toString() that is ready to be inputted within writeJsonToFile()
 	 */
-	public static String finalIndexJson(InvertedIndex mapMethods) {
+	public static String finalIndexJson(InvertedIndex mapMethods) { // TODO Move to the JsonWriter
 		StringWriter buffer = new StringWriter();
 		TreeMap<String, TreeMap<String, List<Integer>>> formatMap = mapMethods.getInvertedIndex();
 

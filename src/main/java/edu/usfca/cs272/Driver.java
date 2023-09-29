@@ -28,18 +28,20 @@ public class Driver {
 	}
 
 	/**
+	 * TODO Add a description
+	 * 
 	 * @param args Command Line Args to be read
 	 */
 	public static void main(String[] args)  {
 
-			ArgumentParser map = new ArgumentParser(args);
-			InvertedIndex mapMethods = new InvertedIndex();
+			ArgumentParser map = new ArgumentParser(args); // TODO parser
+			InvertedIndex mapMethods = new InvertedIndex(); // TODO index
 
 			if (map.hasFlag("-text")) {
 				Path path = map.getPath("-text");
 				if (path != null) {
 					try {
-						mapMethods.clearAll();
+						mapMethods.clearAll(); // TODO Remove
 						if (Files.isDirectory(path)) {
 							InvertedIndexProcessor.iterDirectory(path, mapMethods);
 						} else {
@@ -65,6 +67,7 @@ public class Driver {
 			if (map.hasFlag("-index")) {
 				try {
 				Path indexPath = map.getPath("-index", Path.of("index.json"));
+				// TODO Rethink to be line by line
 					String indexJson = InvertedIndexProcessor.finalIndexJson(mapMethods);
 					writeJsonToFile(indexJson, indexPath);
 				} catch (IOException e) {

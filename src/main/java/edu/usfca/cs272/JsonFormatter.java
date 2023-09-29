@@ -11,7 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Outputs several simple data structures in "pretty" JSON format where newlines
@@ -386,5 +388,11 @@ public class JsonFormatter {
 			return null;
 		}
 	}
+	
+	/* TODO 
+	public static void writeSomething(TreeMap<String, TreeMap<String, List<Integer>>> elements, Writer writer, int indent) throws IOException {
+		
+	}
+	*/
 }
 
