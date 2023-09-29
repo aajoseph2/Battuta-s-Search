@@ -58,8 +58,7 @@ public class ArgumentParser {
 		}
 
 		return false;
-}
-
+	}
 
 	/**
 	 * Determines whether the argument is a value. Anything that is not a flag is
@@ -81,9 +80,10 @@ public class ArgumentParser {
 	public void parse(String[] args) {
 		for (int i = 0; i < args.length; i++) {
 			if ((isFlag(args[i]))) {
-				if ((i + 1 < args.length) && isValue(args[i+1])) {
-					map.put(args[i], args[i+1]);
-				} else {
+				if ((i + 1 < args.length) && isValue(args[i + 1])) {
+					map.put(args[i], args[i + 1]);
+				}
+				else {
 					map.put(args[i], null);
 				}
 			}
@@ -116,7 +116,7 @@ public class ArgumentParser {
 	 * @return {@code true} if the flag is mapped to a non-null value
 	 */
 	public boolean hasValue(String flag) {
-		if(map.get(flag) != null) {
+		if (map.get(flag) != null) {
 			return true;
 		}
 		return false;
@@ -135,7 +135,8 @@ public class ArgumentParser {
 	public String getString(String flag, String backup) {
 		if (hasValue(flag)) {
 			return map.get(flag);
-		} else {
+		}
+		else {
 			return backup;
 		}
 	}
@@ -169,7 +170,8 @@ public class ArgumentParser {
 	public Path getPath(String flag, Path backup) {
 		if (hasValue(flag)) {
 			return Path.of(map.get(flag));
-		} else {
+		}
+		else {
 			return backup;
 		}
 	}
@@ -209,11 +211,13 @@ public class ArgumentParser {
 		if (value != null) {
 			try {
 				return Integer.parseInt(value);
-			} catch (NumberFormatException e) {
+			}
+			catch (NumberFormatException e) {
 				System.out.println("Cannot parse words!");
 				return backup;
 			}
-		} else {
+		}
+		else {
 			return backup;
 		}
 	}
@@ -237,6 +241,5 @@ public class ArgumentParser {
 	public String toString() {
 		return this.map.toString();
 	}
-
 
 }

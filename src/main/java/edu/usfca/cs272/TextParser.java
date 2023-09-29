@@ -110,10 +110,10 @@ public class TextParser {
 	 */
 	public static TreeSet<String> uniqueStems(String line, Stemmer stemmer) {
 		String[] words = parse(line);
-		TreeSet<String> set =  new TreeSet<>();
+		TreeSet<String> set = new TreeSet<>();
 		for (int i = 0; i < words.length; i++) {
-	        set.add(stemmer.stem(words[i]).toString());
-	    }
+			set.add(stemmer.stem(words[i]).toString());
+		}
 		return set;
 	}
 
@@ -130,7 +130,7 @@ public class TextParser {
 	 */
 	public static TreeSet<String> uniqueStems(String line) {
 		Stemmer stem = new SnowballStemmer(ENGLISH);
-	    return uniqueStems(line, stem);
+		return uniqueStems(line, stem);
 	}
 
 	/**
@@ -149,17 +149,13 @@ public class TextParser {
 	public static TreeSet<String> uniqueStems(Path input) throws IOException {
 
 		StringBuilder inputText = new StringBuilder();
-		 try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
-			 String line;
-		        while ((line = reader.readLine()) != null) {
-		            inputText.append(line).append("\n");
-		        }
-		    }
+		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				inputText.append(line).append("\n");
+			}
+		}
 		return uniqueStems(inputText.toString());
-
-
-
-
 
 	}
 
@@ -181,20 +177,19 @@ public class TextParser {
 	public static ArrayList<TreeSet<String>> listUniqueStems(Path input) throws IOException {
 		ArrayList<TreeSet<String>> listOfStems = new ArrayList<>();
 
-	    StringBuilder inputText = new StringBuilder();
+		StringBuilder inputText = new StringBuilder();
 
-	    try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
-	        String line;
-	        while ((line = reader.readLine()) != null) {
-	            TreeSet<String> stemsForLine = uniqueStems(line);
-	            listOfStems.add(stemsForLine);
-	            inputText.append(line).append("\n");
-	        }
-	    }
+		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				TreeSet<String> stemsForLine = uniqueStems(line);
+				listOfStems.add(stemsForLine);
+				inputText.append(line).append("\n");
+			}
+		}
 
-	    return listOfStems;
+		return listOfStems;
 
 	}
-
 
 }

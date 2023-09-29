@@ -104,8 +104,6 @@ public class JsonFormatter {
 
 	}
 
-
-
 	/**
 	 * Writes the elements as a pretty JSON array to file.
 	 *
@@ -178,11 +176,11 @@ public class JsonFormatter {
 				writer.write(",");
 			}
 			writer.write("\n");
-			}
+		}
 
 		writeIndent(writer, indent);
 		writer.write("}");
-}
+	}
 
 	/**
 	 * Writes the elements as a pretty JSON object to file.
@@ -239,7 +237,8 @@ public class JsonFormatter {
 	 * @see #writeIndent(String, Writer, int)
 	 * @see #writeArray(Collection)
 	 */
-	public static String writeObjectArrays(Map<String, ? extends Collection<? extends Number>> elements, Writer writer, int indent) throws IOException {
+	public static String writeObjectArrays(Map<String, ? extends Collection<? extends Number>> elements, Writer writer,
+			int indent) throws IOException {
 		writer.write("{\n");
 
 		var iterator = elements.entrySet().iterator();
@@ -256,7 +255,8 @@ public class JsonFormatter {
 
 			if (elementCollection != null && !elementCollection.isEmpty()) {
 				writeArray(elementCollection, writer, indent + 2);
-			} else {
+			}
+			else {
 				writer.write("[\n");
 				writeIndent(writer, indent + 1);
 				writer.write("]");
@@ -273,7 +273,6 @@ public class JsonFormatter {
 		return writer.toString();
 	}
 
-
 	/**
 	 * Writes the elements as a pretty JSON object with nested arrays to file.
 	 *
@@ -285,7 +284,8 @@ public class JsonFormatter {
 	 * @see StandardCharsets#UTF_8
 	 * @see #writeObjectArrays(Map, Writer, int)
 	 */
-	public static void writeObjectArrays(Map<String, ? extends Collection<? extends Number>> elements, Path path) throws IOException {
+	public static void writeObjectArrays(Map<String, ? extends Collection<? extends Number>> elements, Path path)
+			throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
 			writeObjectArrays(elements, writer, 0);
 		}
@@ -328,7 +328,8 @@ public class JsonFormatter {
 	 * @see #writeIndent(String, Writer, int)
 	 * @see #writeObject(Map)
 	 */
-	public static void writeArrayObjects(Collection<? extends Map<String, ? extends Number>> elements, Writer writer, int indent) throws IOException {
+	public static void writeArrayObjects(Collection<? extends Map<String, ? extends Number>> elements, Writer writer,
+			int indent) throws IOException {
 		writer.write("[\n");
 
 		var iterator = elements.iterator();
@@ -336,21 +337,20 @@ public class JsonFormatter {
 		while (iterator.hasNext()) {
 			var element = iterator.next();
 
-				writeIndent(writer, indent + 1);
+			writeIndent(writer, indent + 1);
 
-				writeObject(element, writer, indent + 1);
+			writeObject(element, writer, indent + 1);
 
-				if (iterator.hasNext()) {
-					writer.write(",");
-					}
+			if (iterator.hasNext()) {
+				writer.write(",");
+			}
 
-				writer.write("\n");
+			writer.write("\n");
 		}
 
 		writeIndent(writer, indent);
 		writer.write("]");
 	}
-
 
 	/**
 	 * Writes the elements as a pretty JSON array with nested objects to file.
@@ -363,7 +363,8 @@ public class JsonFormatter {
 	 * @see StandardCharsets#UTF_8
 	 * @see #writeArrayObjects(Collection)
 	 */
-	public static void writeArrayObjects(Collection<? extends Map<String, ? extends Number>> elements, Path path) throws IOException {
+	public static void writeArrayObjects(Collection<? extends Map<String, ? extends Number>> elements, Path path)
+			throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
 			writeArrayObjects(elements, writer, 0);
 		}
@@ -388,11 +389,60 @@ public class JsonFormatter {
 			return null;
 		}
 	}
-	
-	/* TODO 
-	public static void writeSomething(TreeMap<String, TreeMap<String, List<Integer>>> elements, Writer writer, int indent) throws IOException {
-		
-	}
-	*/
-}
 
+	/**
+	 * Converts the formatted map, into json pretty text that follows the standard
+	 * of the example from the readMe.
+	 *
+	 * @param mapMethods contains the structure for the read data
+	 * @return stringBuilder.toString() that is ready to be inputted within
+	 *   writeJsonToFile()
+	 */
+	/**
+	 * Converts the formatted map into JSON pretty text that follows the standard of
+	 * the example from the readMe.
+	 *
+	 * @param elements contains the structure for the read data
+	 * @param writer the target writer
+	 * @param indent level of indentation
+	 * @throws IOException if an I/O error occurs
+	 */
+	public static void indexJsonFomatter(TreeMap<String, TreeMap<String, List<Integer>>> elements, Writer writer,
+			int indent) throws IOException {
+		var iterator = elements.entrySet().iterator();
+
+		writer.write("{\n");
+
+		while (iterator.hasNext()) {
+			var entry = iterator.next();
+
+			String stem = entry.getKey();
+			String loc = JsonFormatter.writeObjectArrays(entry.getValue());
+
+			for (int i = 0; i < indent; i++) {
+				writer.write("  ");
+			}
+
+			writer.write('"');
+			writer.write(stem);
+			writer.write("\": ");
+			writer.write(loc);
+
+			if (iterator.hasNext()) {
+				writer.write(",\n");
+			}
+			else {
+				writer.write("\n");
+			}
+		}
+
+		writer.write("}");
+	}
+
+	/*
+	 * TODO public static void writeSomething(TreeMap<String, TreeMap<String,
+	 * List<Integer>>> elements, Writer writer, int indent) throws IOException {
+	 *
+	 * }
+	 */
+}
