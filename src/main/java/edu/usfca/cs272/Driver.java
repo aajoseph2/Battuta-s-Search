@@ -73,9 +73,7 @@ public class Driver {
 		if (parser.hasFlag("-index")) {
 			try {
 				Path indexPath = parser.getPath("-index", Path.of("index.json"));
-				// TODO Rethink to be line by line
-				String indexJson = InvertedIndexProcessor.finalIndexJson(index);
-				writeJsonToFile(indexJson, indexPath);
+				writeJsonToFile( JsonFormatter.writeIndexJson(index), indexPath);
 			}
 			catch (IOException e) {
 				System.out.println("Error writing index to file: " + e.getMessage());

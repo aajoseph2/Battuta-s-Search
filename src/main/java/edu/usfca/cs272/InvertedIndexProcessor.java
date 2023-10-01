@@ -4,13 +4,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * The InvertedIndexProcessor class provides functionalities for reading,
@@ -88,46 +86,6 @@ public class InvertedIndexProcessor {
 		if (pos > 1) {
 			mapMethods.addWordCount(input.toString(), pos - 1);
 		}
-	}
-
-	/**
-	 * Converts the formatted map, into json pretty text that follows the standard
-	 * of the example from the readMe.
-	 *
-	 * @param mapMethods contains the structure for the read data
-	 * @return stringBuilder.toString() that is ready to be inputted within
-	 *   writeJsonToFile()
-	 */
-	public static String finalIndexJson(InvertedIndex mapMethods) { // TODO Move to the JsonWriter
-		StringWriter buffer = new StringWriter();
-		TreeMap<String, TreeMap<String, TreeSet<Integer>>> formatMap = mapMethods.getInvertedIndex();
-
-		var iterator = formatMap.entrySet().iterator();
-		buffer.write("{\n");
-
-		while (iterator.hasNext()) {
-			var entry = iterator.next();
-
-			String stem = entry.getKey();
-			String loc = JsonFormatter.writeObjectArrays(entry.getValue());
-
-			buffer.write("  ");
-			buffer.write('"');
-			buffer.write(stem);
-			buffer.write("\": ");
-			buffer.write(loc.toString());
-
-			if (iterator.hasNext()) {
-				buffer.write("  },\n");
-			}
-			else {
-				buffer.write("  }\n");
-			}
-		}
-
-		buffer.write("}");
-
-		return buffer.toString();
 	}
 
 	/**

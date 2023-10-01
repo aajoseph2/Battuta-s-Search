@@ -11,9 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Outputs several simple data structures in "pretty" JSON format where newlines
@@ -398,20 +398,12 @@ public class JsonFormatter {
 	 * @return stringBuilder.toString() that is ready to be inputted within
 	 *   writeJsonToFile()
 	 */
-	/**
-	 * Converts the formatted map into JSON pretty text that follows the standard of
-	 * the example from the readMe.
-	 *
-	 * @param elements contains the structure for the read data
-	 * @param writer the target writer
-	 * @param indent level of indentation
-	 * @throws IOException if an I/O error occurs
-	 */
-	public static void indexJsonFomatter(TreeMap<String, TreeMap<String, List<Integer>>> elements, Writer writer,
-			int indent) throws IOException {
-		var iterator = elements.entrySet().iterator();
+	public static String writeIndexJson(InvertedIndex mapMethods) { // TODO Move to the JsonWriter
+		StringWriter buffer = new StringWriter();
+		TreeMap<String, TreeMap<String, TreeSet<Integer>>> formatMap = mapMethods.getInvertedIndex();
 
-		writer.write("{\n");
+		var iterator = formatMap.entrySet().iterator();
+		buffer.write("{\n");
 
 		while (iterator.hasNext()) {
 			var entry = iterator.next();
@@ -419,25 +411,25 @@ public class JsonFormatter {
 			String stem = entry.getKey();
 			String loc = JsonFormatter.writeObjectArrays(entry.getValue());
 
-			for (int i = 0; i < indent; i++) {
-				writer.write("  ");
-			}
-
-			writer.write('"');
-			writer.write(stem);
-			writer.write("\": ");
-			writer.write(loc);
+			buffer.write("  ");
+			buffer.write('"');
+			buffer.write(stem);
+			buffer.write("\": ");
+			buffer.write(loc.toString());
 
 			if (iterator.hasNext()) {
-				writer.write(",\n");
+				buffer.write("  },\n");
 			}
 			else {
-				writer.write("\n");
+				buffer.write("  }\n");
 			}
 		}
 
-		writer.write("}");
+		buffer.write("}");
+
+		return buffer.toString();
 	}
+
 
 	/*
 	 * TODO public static void writeSomething(TreeMap<String, TreeMap<String,
