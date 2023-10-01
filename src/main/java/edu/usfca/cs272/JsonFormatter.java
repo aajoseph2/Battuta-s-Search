@@ -390,51 +390,58 @@ public class JsonFormatter {
 		}
 	}
 
+
 	/**
 	 * Converts the formatted map, into json pretty text that follows the standard
 	 * of the example from the readMe.
-	 *
-	 * @param mapMethods contains the structure for the read data
-	 * @return stringBuilder.toString() that is ready to be inputted within
-	 *   writeJsonToFile()
+	 * @param index index map filled with data
+	 * @param writer String appender to be parsed into json format
+	 * @param indent indent increment number
+	 * @return pretty json string
+	 * @throws IOException if file is unreadable
 	 */
-	public static String writeIndexJson(InvertedIndex mapMethods) { // TODO Move to the JsonWriter
-		StringWriter buffer = new StringWriter();
-		TreeMap<String, TreeMap<String, TreeSet<Integer>>> formatMap = mapMethods.getInvertedIndex();
+	public static String writeIndexJson(TreeMap<String, TreeMap<String, TreeSet<Integer>>> index,
+			Writer writer, int indent) throws IOException {
 
-		var iterator = formatMap.entrySet().iterator();
-		buffer.write("{\n");
+		var iterator = index.entrySet().iterator();
+
+		writeIndent("{\n", writer, 0);
 
 		while (iterator.hasNext()) {
 			var entry = iterator.next();
-
 			String stem = entry.getKey();
 			String loc = JsonFormatter.writeObjectArrays(entry.getValue());
 
-			buffer.write("  ");
-			buffer.write('"');
-			buffer.write(stem);
-			buffer.write("\": ");
-			buffer.write(loc.toString());
+			writeQuote(stem, writer, indent);
+			writer.write(": ");
+			writer.write(loc.toString());
+
+			writeIndent("}", writer, indent);
 
 			if (iterator.hasNext()) {
-				buffer.write("  },\n");
+				writer.write(",");
+				writeIndent("\n", writer, indent-1);
 			}
 			else {
-				buffer.write("  }\n");
+				writeIndent("\n", writer, indent-1);
 			}
 		}
 
-		buffer.write("}");
+		writeIndent("}", writer, indent-1);
 
-		return buffer.toString();
+		return writer.toString();
 	}
 
-
-	/*
-	 * TODO public static void writeSomething(TreeMap<String, TreeMap<String,
-	 * List<Integer>>> elements, Writer writer, int indent) throws IOException {
-	 *
-	 * }
+	/**
+	 * @param mapMethods contains the structure for the read data
+	 * @return wrapper to stringBuilder.toString() that is ready to be inputted within
+	 *   writeJsonToFile()
+	 * @throws IOException if file is unreable
 	 */
+	public static String writeIndexJson(InvertedIndex mapMethods) throws IOException {
+		TreeMap<String, TreeMap<String, TreeSet<Integer>>> formatMap = mapMethods.getInvertedIndex();
+		StringWriter buffer = new StringWriter();
+		return writeIndexJson(formatMap, buffer, 1);
+	}
+
 }
