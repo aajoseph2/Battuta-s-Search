@@ -93,7 +93,7 @@ public class JsonFormatter {
 			writeIndent(writer, indent + 1);
 			writer.write(element.toString());
 
-			if (iterator.hasNext()) {
+			if (iterator.hasNext()) { // TODO Try to move this outside of the while loop... see CampusWire post
 				writer.write(",");
 			}
 			writer.write("\n");
@@ -244,6 +244,7 @@ public class JsonFormatter {
 		var iterator = elements.entrySet().iterator();
 
 		while (iterator.hasNext()) {
+			// TODO var entry = iterator.next();
 			Map.Entry<String, ? extends Collection<? extends Number>> entry = iterator.next();
 
 			String elementString = entry.getKey();
@@ -400,6 +401,7 @@ public class JsonFormatter {
 	 * @return pretty json string
 	 * @throws IOException if file is unreadable
 	 */
+	// TODO Try out making index a generic type (like the other methods)
 	public static String writeIndexJson(TreeMap<String, TreeMap<String, TreeSet<Integer>>> index,
 			Writer writer, int indent) throws IOException {
 
@@ -431,6 +433,8 @@ public class JsonFormatter {
 
 		return writer.toString();
 	}
+	
+	// TODO Make a writeIndexJson that creates the buffered writer
 
 	/**
 	 * @param mapMethods contains the structure for the read data
