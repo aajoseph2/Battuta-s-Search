@@ -244,8 +244,7 @@ public class JsonFormatter {
 		var iterator = elements.entrySet().iterator();
 
 		while (iterator.hasNext()) {
-			// TODO var entry = iterator.next();
-			Map.Entry<String, ? extends Collection<? extends Number>> entry = iterator.next();
+			var entry = iterator.next();
 
 			String elementString = entry.getKey();
 			Collection<? extends Number> elementCollection = entry.getValue();
@@ -391,10 +390,10 @@ public class JsonFormatter {
 		}
 	}
 
-
 	/**
 	 * Converts the formatted map, into json pretty text that follows the standard
 	 * of the example from the readMe.
+	 *
 	 * @param index index map filled with data
 	 * @param writer String appender to be parsed into json format
 	 * @param indent indent increment number
@@ -402,8 +401,8 @@ public class JsonFormatter {
 	 * @throws IOException if file is unreadable
 	 */
 	// TODO Try out making index a generic type (like the other methods)
-	public static String writeIndexJson(TreeMap<String, TreeMap<String, TreeSet<Integer>>> index,
-			Writer writer, int indent) throws IOException {
+	public static String writeIndexJson(TreeMap<String, TreeMap<String, TreeSet<Integer>>> index, Writer writer,
+			int indent) throws IOException {
 
 		var iterator = index.entrySet().iterator();
 
@@ -422,24 +421,37 @@ public class JsonFormatter {
 
 			if (iterator.hasNext()) {
 				writer.write(",");
-				writeIndent("\n", writer, indent-1);
+				writeIndent("\n", writer, indent - 1);
 			}
 			else {
-				writeIndent("\n", writer, indent-1);
+				writeIndent("\n", writer, indent - 1);
 			}
 		}
 
-		writeIndent("}", writer, indent-1);
+		writeIndent("}", writer, indent - 1);
 
 		return writer.toString();
 	}
 
-	// TODO Make a writeIndexJson that creates the buffered writer
+	/**
+	 * @param index map filled with data
+	 * @param path path the file path to use
+	 * @param indent indent increment number
+	 * @return wrapper to stringBuilder.toString() that is ready to be inputted
+	 *   within writeJsonToFile()
+	 * @throws IOException if file is unreable
+	 */
+	public static String writeIndexJson(TreeMap<String, TreeMap<String, TreeSet<Integer>>> index, Path path, int indent)
+			throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+			return writeIndexJson(index, writer, indent);
+		}
+	}
 
 	/**
 	 * @param mapMethods contains the structure for the read data
-	 * @return wrapper to stringBuilder.toString() that is ready to be inputted within
-	 *   writeJsonToFile()
+	 * @return wrapper to stringBuilder.toString() that is ready to be inputted
+	 *   within writeJsonToFile()
 	 * @throws IOException if file is unreable
 	 */
 	public static String writeIndexJson(InvertedIndex mapMethods) throws IOException {

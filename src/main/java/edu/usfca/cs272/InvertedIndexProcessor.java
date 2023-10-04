@@ -1,14 +1,16 @@
 package edu.usfca.cs272;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.SortedMap;
+
+import opennlp.tools.stemmer.Stemmer;
+import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
 /**
  * The InvertedIndexProcessor class provides functionalities for reading,
@@ -65,12 +67,8 @@ public class InvertedIndexProcessor {
 	 */
 	public static boolean isTextFile(Path input) {
 		String fileNameLower = input.getFileName().toString().toLowerCase();
-		// TODO return (fileNameLower.endsWith(".txt") ||
-		// fileNameLower.endsWith(".text");
-		if (fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text")) {
-			return true;
-		}
-		return false;
+		return fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text");
+
 	}
 
 	/**
@@ -89,15 +87,14 @@ public class InvertedIndexProcessor {
 
 		int pos = 1;
 		String location = input.toString();
+
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;
-			// TODO Stemmer stemmer = ...
+			Stemmer stemmer = new SnowballStemmer(ENGLISH);
 			while ((line = reader.readLine()) != null) {
-				// TODO Call parse directly here... loop and stem, add directly to the index
-				// (never to a list)
-				ArrayList<String> stems = TextParser.listStems(line);
-				for (String stem : stems) {
-					mapMethods.addData(stem, location, pos);
+				String[] words = TextParser.parse(line);
+				for (String word : words) {
+					mapMethods.addData(stemmer.stem(word).toString(), location, pos);
 					pos++;
 				}
 			}
@@ -106,32 +103,5 @@ public class InvertedIndexProcessor {
 		if (pos > 1) {
 			mapMethods.addWordCount(location, pos - 1);
 		}
-	}
-
-	/**
-	 * This method takes in the map of fileCountsInfo, and converts the contents
-	 * into a string of pretty json. This string is meant for the "-counts" flag and
-	 * will be inputted within writeToJsonFile eventually for the output.
-	 *
-	 * @param mapMethods contains the structure for the read data
-	 * @return converted pretty json string taken from a map
-	 */
-	public static String mapToJsonCounts(InvertedIndex mapMethods) { // TODO Remove
-		StringBuilder json = new StringBuilder("{\n");
-		SortedMap<String, Integer> fileCountsInfo = mapMethods.getWordCounts();
-
-		for (var entry : fileCountsInfo.entrySet()) {
-			json.append("  \"").append(entry.getKey()).append("\": ").append(entry.getValue()).append(",\n");
-		}
-
-		if (json.length() > 2) {
-			json.setLength(json.length() - 2);
-		}
-		else {
-			return "{\n}";
-		}
-
-		json.append("\n}");
-		return json.toString();
 	}
 }

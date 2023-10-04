@@ -1,5 +1,8 @@
 package edu.usfca.cs272;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Set;
 import java.util.SortedMap;
@@ -115,7 +118,6 @@ public class InvertedIndex {
 	// TODO Still need some of these:
 	// https://github.com/usf-cs272-fall2023/project-aajoseph2/blob/a8c04e3ae129f8c0654e785ff6519cd7bc14c377/src/main/java/edu/usfca/cs272/InvertedIndex.java#L52-L53
 
-
 	/**
 	 * Returns a set of all the words in the index.
 	 *
@@ -187,15 +189,20 @@ public class InvertedIndex {
 		return Collections.emptySet();
 	}
 
+	/**
+	 * @param path File to be written to
+	 * @param index Data to be used in file write
+	 * @throws IOException If file is not able to be written
+	 */
+	public static void writeJson(Path path, InvertedIndex index) throws IOException {
+		Files.write(path, JsonFormatter.writeIndexJson(index).getBytes());
+	}
+
 	@Override
 	public String toString() {
 		return "InvertedIndex{" + "counts=" + counts + ", index=" + index + '}';
 	}
 
 
-	/*
-	 * TODO public void writeJson(Path path) throws ... { <-- driver calls this
-	 * intead JsonFormatter.writeIndexJson(index, path); }
-	 */
 
 }
