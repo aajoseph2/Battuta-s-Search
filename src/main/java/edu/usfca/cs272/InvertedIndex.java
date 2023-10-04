@@ -35,10 +35,16 @@ public class InvertedIndex {
 		return new TreeMap<>(Collections.unmodifiableSortedMap(counts));
 	}
 
+	/* TODO Do this instead 
+	public SortedMap<String, Integer> getWordCounts() {
+		return Collections.unmodifiableSortedMap(counts);
+	}
+	*/
+
 	/**
 	 * @return the formatMap in the Driver class
 	 */
-	public TreeMap<String, TreeMap<String, TreeSet<Integer>>> getInvertedIndex() {
+	public TreeMap<String, TreeMap<String, TreeSet<Integer>>> getInvertedIndex() { // TODO Remove
 		return index;
 	}
 
@@ -125,14 +131,32 @@ public class InvertedIndex {
 	public boolean hasPosition(String word, String location, int position) {
 		return hasLocation(word, location) && index.get(word).get(location).contains(position);
 	}
+	
+	// TODO Still need some of these: https://github.com/usf-cs272-fall2023/project-aajoseph2/blob/a8c04e3ae129f8c0654e785ff6519cd7bc14c377/src/main/java/edu/usfca/cs272/InvertedIndex.java#L52-L53
 
+	// TODO Move getWordCounts here (drag/drop methods in the outline)
+	
 	/**
 	 * Returns a set of all the words in the index.
 	 *
 	 * @return a set of all words
 	 */
 	public Set<String> getWords() {
-		return index.keySet();
+		return index.keySet(); // TODO Make unmodifiable
 	}
+	
+	/* TODO
+	public Set<String> getLocations(String word) --> if the word exists, index.get(word).keySet()
+	public Set<Integer> getPositions(String word, String location)
+	
+	
+	.. 1 num/size method per has method
+	*/
 
+	/* TODO 
+	public void writeJson(Path path) throws ... { <-- driver calls this intead
+		JsonFormatter.writeIndexJson(index, path);
+	}
+	*/
+	
 }

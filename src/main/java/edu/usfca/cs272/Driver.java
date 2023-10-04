@@ -3,6 +3,7 @@ package edu.usfca.cs272;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.TreeMap;
 
 /**
  * Class responsible for running this project based on the provided command-line
@@ -63,6 +64,7 @@ public class Driver {
 		if (parser.hasFlag("-counts")) {
 			try {
 				Path countPath = parser.getPath("-counts", Path.of("counts.json"));
+				// TODO JsonFormatter.writeObject(index.getWordCounts());
 				writeJsonToFile(InvertedIndexProcessor.mapToJsonCounts(index), countPath);
 			}
 			catch (IOException e) {

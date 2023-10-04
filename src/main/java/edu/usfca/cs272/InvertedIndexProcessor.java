@@ -20,6 +20,18 @@ import java.util.TreeMap;
  */
 
 public class InvertedIndexProcessor {
+	
+	/* TODO Call this in Driver instead
+	public static void processPath(Path path, InvertedIndex index) throws IOException {
+		if (Files.isDirectory(path)) {
+			iterDirectory(path, index);
+		}
+		else {
+			processText(path, index);
+		}
+	}
+	*/
+	
 	/**
 	 * This recurses on its self until it reaches a base text file. Logic for the
 	 * case that the file inputted is a directory.
@@ -28,7 +40,7 @@ public class InvertedIndexProcessor {
 	 * @param mapMethods contains the structure for the read data
 	 * @throws IOException If file is unable to be read, then throw an exception.
 	 */
-	public static void iterDirectory(Path input, InvertedIndex mapMethods) throws IOException {
+	public static void iterDirectory(Path input, InvertedIndex mapMethods) throws IOException { // TODO processDirectory
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 			for (Path entry : stream) {
 				if (Files.isDirectory(entry)) {
@@ -51,6 +63,7 @@ public class InvertedIndexProcessor {
 	 */
 	public static boolean isTextFile(Path input) {
 		String fileNameLower = input.getFileName().toString().toLowerCase();
+		// TODO return (fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text");
 		if (fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text")) {
 			return true;
 		}
@@ -72,9 +85,12 @@ public class InvertedIndexProcessor {
 	public static void processText(Path input, InvertedIndex mapMethods) throws IOException {
 
 		int pos = 1;
+		// TODO String location = input.toString(); and reuse below
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;
+			// TODO Stemmer stemmer = ...
 			while ((line = reader.readLine()) != null) {
+				// TODO Call parse directly here... loop and stem, add directly to the index (never to a list)
 				ArrayList<String> stems = TextParser.listStems(line);
 				for (String stem : stems) {
 					mapMethods.addData(stem, input.toString(), pos);
@@ -96,7 +112,7 @@ public class InvertedIndexProcessor {
 	 * @param mapMethods contains the structure for the read data
 	 * @return converted pretty json string taken from a map
 	 */
-	public static String mapToJsonCounts(InvertedIndex mapMethods) {
+	public static String mapToJsonCounts(InvertedIndex mapMethods) { // TODO Remove
 		StringBuilder json = new StringBuilder("{\n");
 		TreeMap<String, Integer> fileCountsInfo = mapMethods.getWordCounts();
 
