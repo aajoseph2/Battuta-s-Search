@@ -8,7 +8,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.TreeMap;
+import java.util.SortedMap;
 
 /**
  * The InvertedIndexProcessor class provides functionalities for reading,
@@ -20,37 +20,39 @@ import java.util.TreeMap;
  */
 
 public class InvertedIndexProcessor {
-	
-	/* TODO Call this in Driver instead
-	public static void processPath(Path path, InvertedIndex index) throws IOException {
+
+	/**
+	 * @param path Given file contents
+	 * @param index map to be used for indexing data
+	 * @param flag if original directory is a directory or text file
+	 * @throws IOException if file is unreadable
+	 */
+	public static void processPath(Path path, InvertedIndex index, boolean flag) throws IOException {
+
 		if (Files.isDirectory(path)) {
-			iterDirectory(path, index);
+			processDirectory(path, index, flag);
 		}
-		else {
+		else if (isTextFile(path) && flag) {
+			processText(path, index);
+		}
+		else if (!flag) {
 			processText(path, index);
 		}
 	}
-	*/
-	
+
 	/**
 	 * This recurses on its self until it reaches a base text file. Logic for the
 	 * case that the file inputted is a directory.
 	 *
 	 * @param input the directory
-	 * @param mapMethods contains the structure for the read data
+	 * @param index contains the structure for the read data
+	 * @param flag if original directory is a directory or text file
 	 * @throws IOException If file is unable to be read, then throw an exception.
 	 */
-	public static void iterDirectory(Path input, InvertedIndex mapMethods) throws IOException { // TODO processDirectory
+	public static void processDirectory(Path input, InvertedIndex index, boolean flag) throws IOException {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 			for (Path entry : stream) {
-				if (Files.isDirectory(entry)) {
-					iterDirectory(entry, mapMethods);
-				}
-				else {
-					if (isTextFile(entry)) {
-						processText(entry, mapMethods);
-					}
-				}
+				processPath(entry, index, flag);
 			}
 		}
 	}
@@ -63,7 +65,8 @@ public class InvertedIndexProcessor {
 	 */
 	public static boolean isTextFile(Path input) {
 		String fileNameLower = input.getFileName().toString().toLowerCase();
-		// TODO return (fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text");
+		// TODO return (fileNameLower.endsWith(".txt") ||
+		// fileNameLower.endsWith(".text");
 		if (fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text")) {
 			return true;
 		}
@@ -85,22 +88,23 @@ public class InvertedIndexProcessor {
 	public static void processText(Path input, InvertedIndex mapMethods) throws IOException {
 
 		int pos = 1;
-		// TODO String location = input.toString(); and reuse below
+		String location = input.toString();
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;
 			// TODO Stemmer stemmer = ...
 			while ((line = reader.readLine()) != null) {
-				// TODO Call parse directly here... loop and stem, add directly to the index (never to a list)
+				// TODO Call parse directly here... loop and stem, add directly to the index
+				// (never to a list)
 				ArrayList<String> stems = TextParser.listStems(line);
 				for (String stem : stems) {
-					mapMethods.addData(stem, input.toString(), pos);
+					mapMethods.addData(stem, location, pos);
 					pos++;
 				}
 			}
 		}
 
 		if (pos > 1) {
-			mapMethods.addWordCount(input.toString(), pos - 1);
+			mapMethods.addWordCount(location, pos - 1);
 		}
 	}
 
@@ -114,7 +118,7 @@ public class InvertedIndexProcessor {
 	 */
 	public static String mapToJsonCounts(InvertedIndex mapMethods) { // TODO Remove
 		StringBuilder json = new StringBuilder("{\n");
-		TreeMap<String, Integer> fileCountsInfo = mapMethods.getWordCounts();
+		SortedMap<String, Integer> fileCountsInfo = mapMethods.getWordCounts();
 
 		for (var entry : fileCountsInfo.entrySet()) {
 			json.append("  \"").append(entry.getKey()).append("\": ").append(entry.getValue()).append(",\n");

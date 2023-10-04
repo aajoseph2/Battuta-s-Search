@@ -433,7 +433,7 @@ public class JsonFormatter {
 
 		return writer.toString();
 	}
-	
+
 	// TODO Make a writeIndexJson that creates the buffered writer
 
 	/**

@@ -3,7 +3,6 @@ package edu.usfca.cs272;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.TreeMap;
 
 /**
  * Class responsible for running this project based on the provided command-line
@@ -45,12 +44,8 @@ public class Driver {
 			Path path = parser.getPath("-text");
 			if (path != null) {
 				try {
-					if (Files.isDirectory(path)) {
-						InvertedIndexProcessor.iterDirectory(path, index);
-					}
-					else {
-						InvertedIndexProcessor.processText(path, index);
-					}
+					boolean flag = Files.isDirectory(path);
+					InvertedIndexProcessor.processPath(path, index, flag);
 				}
 				catch (IOException e) {
 					System.out.println("Missing file path to read!\n");

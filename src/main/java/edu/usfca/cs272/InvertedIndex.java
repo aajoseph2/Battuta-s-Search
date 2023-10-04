@@ -2,6 +2,7 @@ package edu.usfca.cs272;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -29,26 +30,6 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * @return the CountsInfo in the Driver class
-	 */
-	public TreeMap<String, Integer> getWordCounts() {
-		return new TreeMap<>(Collections.unmodifiableSortedMap(counts));
-	}
-
-	/* TODO Do this instead 
-	public SortedMap<String, Integer> getWordCounts() {
-		return Collections.unmodifiableSortedMap(counts);
-	}
-	*/
-
-	/**
-	 * @return the formatMap in the Driver class
-	 */
-	public TreeMap<String, TreeMap<String, TreeSet<Integer>>> getInvertedIndex() { // TODO Remove
-		return index;
-	}
-
-	/**
 	 * wrapper add method
 	 *
 	 * @param location File name to stored as key
@@ -56,16 +37,6 @@ public class InvertedIndex {
 	 */
 	public void addWordCount(String location, Integer count) {
 		counts.put(location, count);
-	}
-
-	/**
-	 * getter method
-	 *
-	 * @param location : path key to get the word count in fileCountsInfo
-	 * @return the word count of specific file.
-	 */
-	public Integer getWordCountForFile(String location) {
-		return counts.getOrDefault(location, 0);
 	}
 
 	/**
@@ -81,11 +52,6 @@ public class InvertedIndex {
 		index.putIfAbsent(word, new TreeMap<>());
 		index.get(word).putIfAbsent(location, new TreeSet<>());
 		index.get(word).get(location).add(num);
-	}
-
-	@Override
-	public String toString() {
-		return "InvertedIndex{" + "counts=" + counts + ", index=" + index + '}';
 	}
 
 	/**
@@ -131,32 +97,105 @@ public class InvertedIndex {
 	public boolean hasPosition(String word, String location, int position) {
 		return hasLocation(word, location) && index.get(word).get(location).contains(position);
 	}
-	
-	// TODO Still need some of these: https://github.com/usf-cs272-fall2023/project-aajoseph2/blob/a8c04e3ae129f8c0654e785ff6519cd7bc14c377/src/main/java/edu/usfca/cs272/InvertedIndex.java#L52-L53
 
-	// TODO Move getWordCounts here (drag/drop methods in the outline)
-	
+	/**
+	 * @return the CountsInfo in the Driver class
+	 */
+	public SortedMap<String, Integer> getWordCounts() {
+		return Collections.unmodifiableSortedMap(counts);
+	}
+
+	/**
+	 * @return the formatMap in the Driver class
+	 */
+	public TreeMap<String, TreeMap<String, TreeSet<Integer>>> getInvertedIndex() { // TODO Remove
+		return index;
+	}
+
+	// TODO Still need some of these:
+	// https://github.com/usf-cs272-fall2023/project-aajoseph2/blob/a8c04e3ae129f8c0654e785ff6519cd7bc14c377/src/main/java/edu/usfca/cs272/InvertedIndex.java#L52-L53
+
+
 	/**
 	 * Returns a set of all the words in the index.
 	 *
 	 * @return a set of all words
 	 */
 	public Set<String> getWords() {
-		return index.keySet(); // TODO Make unmodifiable
-	}
-	
-	/* TODO
-	public Set<String> getLocations(String word) --> if the word exists, index.get(word).keySet()
-	public Set<Integer> getPositions(String word, String location)
-	
-	
-	.. 1 num/size method per has method
-	*/
+		return Collections.unmodifiableSet(index.keySet());
 
-	/* TODO 
-	public void writeJson(Path path) throws ... { <-- driver calls this intead
-		JsonFormatter.writeIndexJson(index, path);
 	}
-	*/
-	
+
+	/**
+	 * getter method
+	 *
+	 * @param location : path key to get the word count in fileCountsInfo
+	 * @return the word count of specific file.
+	 */
+	public Integer getWordCountForFile(String location) {
+		return counts.getOrDefault(location, 0);
+	}
+
+	/**
+	 * Returns the number of times a word appears in the index.
+	 *
+	 * @param word the word to check
+	 * @return number of times the word appears
+	 */
+	public int getWordFrequency(String word) {
+		return hasWord(word) ? index.get(word).size() : 0;
+	}
+
+	/**
+	 * Returns the number of times a word appears in a specific location in the
+	 * index.
+	 *
+	 * @param word the word to check
+	 * @param location the location (file) to check
+	 * @return number of times the word appears at the given location
+	 */
+	public int getWordFrequencyAtLocation(String word, String location) {
+		return hasLocation(word, location) ? index.get(word).get(location).size() : 0;
+	}
+
+	/**
+	 * Returns a set of all the locations where the given word is found.
+	 *
+	 * @param word the word to retrieve locations for
+	 * @return a set of locations, or an empty set if the word is not found
+	 */
+	public Set<String> getLocations(String word) {
+		if (hasWord(word)) {
+			return Collections.unmodifiableSet(index.get(word).keySet());
+		}
+		return Collections.emptySet();
+	}
+
+	/**
+	 * Returns a set of all the positions where the given word is found in the given
+	 * location.
+	 *
+	 * @param word the word to retrieve positions for
+	 * @param location the location to retrieve positions for
+	 * @return a set of positions, or an empty set if the word is not found at the
+	 *   given location
+	 */
+	public Set<Integer> getPositions(String word, String location) {
+		if (hasLocation(word, location)) {
+			return Collections.unmodifiableSet(index.get(word).get(location));
+		}
+		return Collections.emptySet();
+	}
+
+	@Override
+	public String toString() {
+		return "InvertedIndex{" + "counts=" + counts + ", index=" + index + '}';
+	}
+
+
+	/*
+	 * TODO public void writeJson(Path path) throws ... { <-- driver calls this
+	 * intead JsonFormatter.writeIndexJson(index, path); }
+	 */
+
 }
