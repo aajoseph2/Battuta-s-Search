@@ -53,6 +53,8 @@ public class ArgumentParser {
 		if (arg == null || arg.length() <= 1) {
 			return false;
 		}
+		// TODO return arg.startsWith("-") && !Character.isDigit(arg.codePointAt(1)) && !Character.isWhitespace(arg.codePointAt(1));
+		
 		if (arg.startsWith("-") && !Character.isDigit(arg.charAt(1)) && !Character.isWhitespace(arg.charAt(1))) {
 			return true;
 		}
@@ -116,7 +118,7 @@ public class ArgumentParser {
 	 * @return {@code true} if the flag is mapped to a non-null value
 	 */
 	public boolean hasValue(String flag) {
-		if (map.get(flag) != null) {
+		if (map.get(flag) != null) { // TODO Single return
 			return true;
 		}
 		return false;
@@ -206,6 +208,15 @@ public class ArgumentParser {
 	 * @see Integer#parseInt(String)
 	 */
 	public int getInteger(String flag, int backup) {
+		/* TODO 
+		try {
+			return Integer.parseInt(map.get(flag));
+		}
+		catch (NumberFormatException | NullPointerException e) {
+			return backup;
+		}
+		*/
+		
 		String value = getString(flag);
 
 		if (value != null) {

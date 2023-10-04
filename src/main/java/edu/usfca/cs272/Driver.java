@@ -23,7 +23,7 @@ public class Driver {
 	 * @param outputPath the final destination of the parsed info
 	 * @throws IOException In case there is any issue with write file
 	 */
-	public static void writeJsonToFile(String json, Path outputPath) throws IOException {
+	public static void writeJsonToFile(String json, Path outputPath) throws IOException { // TODO Remove
 		Files.write(outputPath, json.getBytes());
 	}
 
@@ -59,6 +59,7 @@ public class Driver {
 		if (parser.hasFlag("-counts")) {
 			try {
 				Path countPath = parser.getPath("-counts", Path.of("counts.json"));
+				// TODO JsonFormatter.writeObject(index.getWordCounts(), countPath);
 				writeJsonToFile(JsonFormatter.writeObject(index.getWordCounts()), countPath);
 			}
 			catch (IOException e) {

@@ -24,6 +24,8 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 public class InvertedIndexProcessor {
 
 	/**
+	 * TODO Fill in
+	 * 
 	 * @param path Given file contents
 	 * @param index map to be used for indexing data
 	 * @param flag if original directory is a directory or text file
