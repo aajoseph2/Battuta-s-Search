@@ -12,8 +12,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.Set;
 
 /**
  * Outputs several simple data structures in "pretty" JSON format where newlines
@@ -87,21 +86,26 @@ public class JsonFormatter {
 		writer.write("[\n");
 
 		Iterator<? extends Number> iterator = elements.iterator();
-		while (iterator.hasNext()) {
+
+		if (iterator.hasNext()) {
 			Number element = iterator.next();
 
 			writeIndent(writer, indent + 1);
 			writer.write(element.toString());
-
-			if (iterator.hasNext()) { // TODO Try to move this outside of the while loop... see CampusWire post
-				writer.write(",");
-			}
-			writer.write("\n");
 		}
 
+		while (iterator.hasNext()) {
+			writer.write(",");
+			writer.write("\n");
+
+			Number element = iterator.next();
+			writeIndent(writer, indent + 1);
+			writer.write(element.toString());
+		}
+
+		writer.write("\n");
 		writeIndent(writer, indent);
 		writer.write("]");
-
 	}
 
 	/**
@@ -400,9 +404,9 @@ public class JsonFormatter {
 	 * @return pretty json string
 	 * @throws IOException if file is unreadable
 	 */
-	// TODO Try out making index a generic type (like the other methods)
-	public static String writeIndexJson(TreeMap<String, TreeMap<String, TreeSet<Integer>>> index, Writer writer,
-			int indent) throws IOException {
+
+	public static String writeIndexJson(Map<String, ? extends Map<String, ? extends Set<? extends Number>>> index,
+			Writer writer, int indent) throws IOException {
 
 		var iterator = index.entrySet().iterator();
 
@@ -441,8 +445,8 @@ public class JsonFormatter {
 	 *   within writeJsonToFile()
 	 * @throws IOException if file is unreable
 	 */
-	public static String writeIndexJson(TreeMap<String, TreeMap<String, TreeSet<Integer>>> index, Path path, int indent)
-			throws IOException {
+	public static String writeIndexJson(Map<String, ? extends Map<String, ? extends Set<? extends Number>>> index,
+			Path path, int indent) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			return writeIndexJson(index, writer, indent);
 		}
@@ -455,7 +459,8 @@ public class JsonFormatter {
 	 * @throws IOException if file is unreable
 	 */
 	public static String writeIndexJson(InvertedIndex mapMethods) throws IOException {
-		TreeMap<String, TreeMap<String, TreeSet<Integer>>> formatMap = mapMethods.getInvertedIndex();
+		// var formatMap = mapMethods.getInvertedIndex();
+		var formatMap = mapMethods.constructIndexRepresentation();
 		StringWriter buffer = new StringWriter();
 		return writeIndexJson(formatMap, buffer, 1);
 	}

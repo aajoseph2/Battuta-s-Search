@@ -33,6 +33,26 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * @return a copy of the index. ensures encapsulation
+	 */
+	public TreeMap<String, TreeMap<String, TreeSet<Integer>>> constructIndexRepresentation() {
+		TreeMap<String, TreeMap<String, TreeSet<Integer>>> representation = new TreeMap<>();
+
+		for (String word : getWords()) {
+			TreeMap<String, TreeSet<Integer>> innerMap = new TreeMap<>();
+
+			for (String location : getLocations(word)) {
+				TreeSet<Integer> positions = new TreeSet<>(getPositions(word, location));
+				innerMap.put(location, positions);
+			}
+
+			representation.put(word, innerMap);
+		}
+
+		return representation;
+	}
+
+	/**
 	 * wrapper add method
 	 *
 	 * @param location File name to stored as key
@@ -107,16 +127,6 @@ public class InvertedIndex {
 	public SortedMap<String, Integer> getWordCounts() {
 		return Collections.unmodifiableSortedMap(counts);
 	}
-
-	/**
-	 * @return the formatMap in the Driver class
-	 */
-	public TreeMap<String, TreeMap<String, TreeSet<Integer>>> getInvertedIndex() { // TODO Remove
-		return index;
-	}
-
-	// TODO Still need some of these:
-	// https://github.com/usf-cs272-fall2023/project-aajoseph2/blob/a8c04e3ae129f8c0654e785ff6519cd7bc14c377/src/main/java/edu/usfca/cs272/InvertedIndex.java#L52-L53
 
 	/**
 	 * Returns a set of all the words in the index.
@@ -202,7 +212,5 @@ public class InvertedIndex {
 	public String toString() {
 		return "InvertedIndex{" + "counts=" + counts + ", index=" + index + '}';
 	}
-
-
 
 }
