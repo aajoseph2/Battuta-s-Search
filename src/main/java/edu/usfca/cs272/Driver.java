@@ -14,19 +14,6 @@ import java.nio.file.Path;
  */
 public class Driver {
 
-	/**
-	 * This method simply takes in the Strings built from mapToJsonCounts() and
-	 * finalIndexJson(), writes it into the desired outputPath with the pretty json
-	 * format.
-	 *
-	 * @param json Srting to be parsed in the outputPath
-	 * @param outputPath the final destination of the parsed info
-	 * @throws IOException In case there is any issue with write file
-	 */
-	public static void writeJsonToFile(String json, Path outputPath) throws IOException { // TODO Remove
-		Files.write(outputPath, json.getBytes());
-	}
-
 	/***
 	 * Main method to process command-line arguments and manage the inverted index.
 	 * Read and process text files or directories provided using the "-text" flag.
@@ -59,8 +46,7 @@ public class Driver {
 		if (parser.hasFlag("-counts")) {
 			try {
 				Path countPath = parser.getPath("-counts", Path.of("counts.json"));
-				// TODO JsonFormatter.writeObject(index.getWordCounts(), countPath);
-				writeJsonToFile(JsonFormatter.writeObject(index.getWordCounts()), countPath);
+				JsonFormatter.writeObject(index.getWordCounts(), countPath);
 			}
 			catch (IOException e) {
 				System.out.println("Error writing counts to file: " + e.getMessage());
@@ -75,6 +61,18 @@ public class Driver {
 			catch (IOException e) {
 				System.out.println("Error writing index to file: " + e.getMessage());
 			}
+		}
+
+		if (parser.hasFlag("-query")) {
+			Path qPath = parser.getPath("-query");
+
+			if (qPath != null) {
+				System.out.println("testing query");
+				System.out.println("Query Path: " + qPath.toString());
+			} else {
+				System.out.println("Must input query path!");
+			}
+
 		}
 	}
 }

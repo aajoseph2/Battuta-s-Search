@@ -24,8 +24,10 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 public class InvertedIndexProcessor {
 
 	/**
-	 * TODO Fill in
-	 * 
+	 * Offers logic to determine whether a given file input should
+	 * iterate throug a direcotry structure or should processText
+	 * right away.
+	 *
 	 * @param path Given file contents
 	 * @param index map to be used for indexing data
 	 * @param flag if original directory is a directory or text file
