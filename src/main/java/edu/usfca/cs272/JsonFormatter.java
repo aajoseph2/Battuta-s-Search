@@ -107,6 +107,33 @@ public class JsonFormatter {
 		writeIndent(writer, indent);
 		writer.write("]");
 	}
+	
+	/* TODO 
+	public static void writeArray2(Collection<? extends Number> elements, Writer writer, int indent) throws IOException {
+		writer.write("[");
+		Iterator<? extends Number> iterator = elements.iterator();
+
+		if (iterator.hasNext()) {
+			writeArrayEntry(...);
+		}
+
+		while (iterator.hasNext()) {
+			writer.write(",");
+			writeArrayEntry(...);
+		}
+
+		writer.write("\n");
+		writeIndent(writer, indent);
+		writer.write("]");
+	}
+	
+	public static void writeArrayEntry(...) ... {
+		Number element = iterator.next();
+		writer.write("\n");
+		writeIndent(writer, indent + 1);
+		writer.write(element.toString());
+	}
+	*/
 
 	/**
 	 * Writes the elements as a pretty JSON array to file.
@@ -160,7 +187,7 @@ public class JsonFormatter {
 	 * @see #writeIndent(String, Writer, int)
 	 */
 	public static void writeObject(Map<String, ? extends Number> elements, Writer writer, int indent) throws IOException {
-
+		// TODO Use the if/while approach in all of these methods
 		writer.write("{\n");
 
 		Iterator<? extends Map.Entry<String, ? extends Number>> iterator = elements.entrySet().iterator();
@@ -404,7 +431,7 @@ public class JsonFormatter {
 	 * @return pretty json string
 	 * @throws IOException if file is unreadable
 	 */
-
+	// TODO Set should be Collection, return void
 	public static String writeIndexJson(Map<String, ? extends Map<String, ? extends Set<? extends Number>>> index,
 			Writer writer, int indent) throws IOException {
 
@@ -415,6 +442,7 @@ public class JsonFormatter {
 		while (iterator.hasNext()) {
 			var entry = iterator.next();
 			String stem = entry.getKey();
+			// TODO JsonFormatter.writeObjectArrays(entry.getValue(), writer, indent + 1);
 			String loc = JsonFormatter.writeObjectArrays(entry.getValue());
 
 			writeQuote(stem, writer, indent);
@@ -445,6 +473,7 @@ public class JsonFormatter {
 	 *   within writeJsonToFile()
 	 * @throws IOException if file is unreable
 	 */
+	// TODO return void
 	public static String writeIndexJson(Map<String, ? extends Map<String, ? extends Set<? extends Number>>> index,
 			Path path, int indent) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
@@ -464,5 +493,15 @@ public class JsonFormatter {
 		StringWriter buffer = new StringWriter();
 		return writeIndexJson(formatMap, buffer, 1);
 	}
+	
+	/* TODO 
+	public static String writeIndexJson(Map<String, ? extends Map<String, ? extends Set<? extends Number>>> index,
+			Path path, int indent) throws IOException {
+		try (StringWriter writer = new StringWriter()) {
+			writeIndexJson(index, writer, indent);
+			return writer.toString();
+		}
+	}
+	*/
 
 }
