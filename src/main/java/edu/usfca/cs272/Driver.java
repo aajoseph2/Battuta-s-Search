@@ -67,12 +67,20 @@ public class Driver {
 			Path qPath = parser.getPath("-query");
 
 			if (qPath != null) {
-				System.out.println("testing query");
-				System.out.println("Query Path: " + qPath.toString());
+				try {
+					InvertedIndexProcessor.exactSearch(InvertedIndexProcessor.processQuery(qPath, index), index);
+				}
+				catch (IOException e) {
+					System.out.println("Error writing index to file: " + e.getMessage());
+				}
 			} else {
 				System.out.println("Must input query path!");
 			}
+		}
 
+		if (parser.hasFlag("-results")) {
+			Path resPath = parser.getPath("-results", Path.of("results.json"));
+			System.out.println("Results path: " + resPath);
 		}
 	}
 }

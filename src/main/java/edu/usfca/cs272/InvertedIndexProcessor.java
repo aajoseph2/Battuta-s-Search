@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.TreeSet;
 
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
@@ -24,9 +28,8 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 public class InvertedIndexProcessor {
 
 	/**
-	 * Offers logic to determine whether a given file input should
-	 * iterate throug a direcotry structure or should processText
-	 * right away.
+	 * Offers logic to determine whether a given file input should iterate throug a
+	 * direcotry structure or should processText right away.
 	 *
 	 * @param path Given file contents
 	 * @param index map to be used for indexing data
@@ -97,6 +100,7 @@ public class InvertedIndexProcessor {
 			Stemmer stemmer = new SnowballStemmer(ENGLISH);
 			while ((line = reader.readLine()) != null) {
 				String[] words = TextParser.parse(line);
+
 				for (String word : words) {
 					mapMethods.addData(stemmer.stem(word).toString(), location, pos);
 					pos++;
@@ -106,6 +110,38 @@ public class InvertedIndexProcessor {
 
 		if (pos > 1) {
 			mapMethods.addWordCount(location, pos - 1);
+		}
+	}
+
+	/**
+	 * @param location Where the query is being retrieved from
+	 * @param mapMethods mapMethods contains the structure for the read data
+	 * @return List that contians the sets of queries to be read
+	 * @throws IOException If file is unreadable
+	 */
+	public static List<TreeSet<String>> processQuery(Path location, InvertedIndex mapMethods) throws IOException {
+
+		List<TreeSet<String>> qList = new ArrayList<TreeSet<String>>();
+		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] words = TextParser.parse(line);
+				var buffer = TextParser.uniqueStems(Arrays.toString(words));
+				if (!buffer.isEmpty()) {
+					qList.add(TextParser.uniqueStems(Arrays.toString(words)));
+				}
+			}
+		}
+		return qList;
+	}
+
+	public static void exactSearch(List<TreeSet<String>> query, InvertedIndex mapMethods) {
+
+		for (TreeSet<String> entry : query) {
+			int qCount = 0;
+			for (String word : entry) {
+				qCount += mapMethods.getWordFrequencyAtLocation(word, "");
+			}
 		}
 	}
 }
