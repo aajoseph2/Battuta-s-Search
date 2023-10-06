@@ -10,7 +10,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import opennlp.tools.stemmer.Stemmer;
@@ -135,13 +139,41 @@ public class InvertedIndexProcessor {
 		return qList;
 	}
 
-	public static void exactSearch(List<TreeSet<String>> query, InvertedIndex mapMethods) {
+	/**
+	 * @param query Words to be searched in the inverted index
+	 * @param mapMethods mapMethods contains the structure for the read data
+	 * @return list of the query
+	 */
+	public static Map<String, List<Map<String, Object>>> exactSearch(List<TreeSet<String>> query, InvertedIndex mapMethods) {
+
+		Map<String, List<Map<String, Object>>> results = new TreeMap<>();
 
 		for (TreeSet<String> entry : query) {
-			int qCount = 0;
+			Map<String, Integer> locationCounts = new HashMap<>();
+
 			for (String word : entry) {
-				qCount += mapMethods.getWordFrequencyAtLocation(word, "");
+				Set<String> locations = mapMethods.getLocations(word);
+				for (String loc : locations) {
+					int wordCountAtLocation = mapMethods.getWordFrequencyAtLocation(word, loc);
+					locationCounts.put(loc, locationCounts.getOrDefault(loc, 0) + wordCountAtLocation);
+				}
 			}
+
+			List<Map<String, Object>> currentResults = new ArrayList<>();
+			for (var locEntry : locationCounts.entrySet()) {
+				Map<String, Object> resultData = new HashMap<>();
+				resultData.put("count", locEntry.getValue());
+				resultData.put("score", 1.00000000);
+				resultData.put("where", locEntry.getKey());
+				currentResults.add(resultData);
+			}
+
+			results.put(String.join(" ", entry), currentResults);
 		}
+
+		System.out.println(JsonFormatter.writeSearchResultJson(results));
+
+		return results;
 	}
+
 }
