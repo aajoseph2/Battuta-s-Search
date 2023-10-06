@@ -35,7 +35,7 @@ public class InvertedIndex {
 	/**
 	 * @return a copy of the index. ensures encapsulation
 	 */
-	public TreeMap<String, TreeMap<String, TreeSet<Integer>>> constructIndexRepresentation() { // TODO Remove
+	public TreeMap<String, TreeMap<String, TreeSet<Integer>>> constructIndexRepresentation() {
 		TreeMap<String, TreeMap<String, TreeSet<Integer>>> representation = new TreeMap<>();
 
 		for (String word : getWords()) {
@@ -213,7 +213,6 @@ public class InvertedIndex {
 	 * @throws IOException If file is not able to be written
 	 */
 	public static void writeJson(Path path, InvertedIndex index) throws IOException {
-		// TODO JsonFormatter.writeIndexJson(index, path);
 		Files.write(path, JsonFormatter.writeIndexJson(index).getBytes());
 	}
 

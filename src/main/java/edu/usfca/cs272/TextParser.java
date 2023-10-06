@@ -17,8 +17,6 @@ import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM;
 
-// TODO Practice refactoring here
-
 /**
  * Utility class for parsing, cleaning, and stemming text and text files into
  * collections of processed words.
@@ -147,8 +145,6 @@ public class TextParser {
 	 * @see #uniqueStems(String, Stemmer)
 	 */
 	public static TreeSet<String> uniqueStems(Path input) throws IOException {
-		// TODO Make more efficient (avoid the StringBuilder... reuse addStems as much
-		// as possible)
 		StringBuilder inputText = new StringBuilder();
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;
