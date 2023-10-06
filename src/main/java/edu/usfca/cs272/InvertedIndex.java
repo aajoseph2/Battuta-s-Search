@@ -158,6 +158,11 @@ public class InvertedIndex {
 		return hasWord(word) ? index.get(word).size() : 0;
 	}
 
+	public int getTotalWordsForLocation(String location) {
+		return counts.getOrDefault(location, 0);
+	}
+
+
 	/**
 	 * Returns the number of times a word appears in a specific location in the
 	 * index.

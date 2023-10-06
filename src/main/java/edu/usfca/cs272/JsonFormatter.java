@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -484,103 +483,103 @@ public class JsonFormatter {
 		return writeIndexJson(formatMap, buffer, 1);
 	}
 
-	public static void writeSearchResultJson(Map<String, List<Map<String, Object>>> results, Writer writer, int indent)
-			throws IOException {
-		writer.write("{\n");
-
-		var iterator = results.entrySet().iterator();
-		while (iterator.hasNext()) {
-			var entry = iterator.next();
-
-			String searchQuery = entry.getKey();
-			List<Map<String, Object>> resultList = entry.getValue();
-
-			writeQuote(searchQuery, writer, indent + 1);
-			writer.write(": ");
-			writeArrayObjectsForSearchResults(resultList, writer, indent + 1);
-
-
-			if (iterator.hasNext()) {
-				writer.write(",");
-			}
-			writer.write("\n");
-		}
-		writeIndent(writer, indent);
-		writer.write("}");
-	}
-
-	public static void writeSearchResultJson(Map<String, List<Map<String, Object>>> results, Path path)
-			throws IOException {
-		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
-			writeSearchResultJson(results, writer, 0);
-		}
-	}
-
-	public static String writeSearchResultJson(Map<String, List<Map<String, Object>>> results) {
-		try {
-			StringWriter writer = new StringWriter();
-			writeSearchResultJson(results, writer, 0);
-			return writer.toString();
-		}
-		catch (IOException e) {
-			return null;
-		}
-	}
-
-	public static void writeArrayObjectsForSearchResults(Collection<? extends Map<String, Object>> elements, Writer writer, int indent) throws IOException {
-		writer.write("[\n");
-		var iterator = elements.iterator();
-
-		while (iterator.hasNext()) {
-			var element = iterator.next();
-
-			writeIndent(writer, indent + 1);
-
-			writeGenericObject(element, writer, indent + 1);
-
-			if (iterator.hasNext()) {
-				writer.write(",");
-			}
-
-			writer.write("\n");
-		}
-
-		writeIndent(writer, indent);
-		writer.write("]");
-	}
-
-	public static void writeGenericObject(Map<String, Object> elements, Writer writer, int indent) throws IOException {
-		writer.write("{\n");
-
-		Iterator<Map.Entry<String, Object>> iterator = elements.entrySet().iterator();
-
-		while (iterator.hasNext()) {
-			Map.Entry<String, Object> entry = iterator.next();
-			String key = entry.getKey();
-			Object value = entry.getValue();
-
-			writeIndent(writer, indent + 1);
-			writer.write('"');
-			writer.write(key);
-			writer.write("\": ");
-
-			if (value instanceof Number) {
-				writer.write(value.toString());
-			} else if (value instanceof String) {
-				writer.write('"');
-				writer.write((String)value);
-				writer.write('"');
-			}
-
-			if (iterator.hasNext()) {
-				writer.write(",");
-			}
-			writer.write("\n");
-		}
-
-		writeIndent(writer, indent);
-		writer.write("}");
-	}
+//	public static void writeSearchResultJson(Map<String, List<Map<String, Object>>> results, Writer writer, int indent)
+//			throws IOException {
+//		writer.write("{\n");
+//
+//		var iterator = results.entrySet().iterator();
+//		while (iterator.hasNext()) {
+//			var entry = iterator.next();
+//
+//			String searchQuery = entry.getKey();
+//			List<Map<String, Object>> resultList = entry.getValue();
+//
+//			writeQuote(searchQuery, writer, indent + 1);
+//			writer.write(": ");
+//			writeArrayObjectsForSearchResults(resultList, writer, indent + 1);
+//
+//
+//			if (iterator.hasNext()) {
+//				writer.write(",");
+//			}
+//			writer.write("\n");
+//		}
+//		writeIndent(writer, indent);
+//		writer.write("}");
+//	}
+//
+//	public static void writeSearchResultJson(Map<String, List<Map<String, Object>>> results, Path path)
+//			throws IOException {
+//		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
+//			writeSearchResultJson(results, writer, 0);
+//		}
+//	}
+//
+//	public static String writeSearchResultJson(Map<String, List<Map<String, Object>>> results) {
+//		try {
+//			StringWriter writer = new StringWriter();
+//			writeSearchResultJson(results, writer, 0);
+//			return writer.toString();
+//		}
+//		catch (IOException e) {
+//			return null;
+//		}
+//	}
+//
+//	public static void writeArrayObjectsForSearchResults(Collection<? extends Map<String, Object>> elements, Writer writer, int indent) throws IOException {
+//		writer.write("[\n");
+//		var iterator = elements.iterator();
+//
+//		while (iterator.hasNext()) {
+//			var element = iterator.next();
+//
+//			writeIndent(writer, indent + 1);
+//
+//			writeGenericObject(element, writer, indent + 1);
+//
+//			if (iterator.hasNext()) {
+//				writer.write(",");
+//			}
+//
+//			writer.write("\n");
+//		}
+//
+//		writeIndent(writer, indent);
+//		writer.write("]");
+//	}
+//
+//	public static void writeGenericObject(Map<String, Object> elements, Writer writer, int indent) throws IOException {
+//		writer.write("{\n");
+//
+//		Iterator<Map.Entry<String, Object>> iterator = elements.entrySet().iterator();
+//
+//		while (iterator.hasNext()) {
+//			Map.Entry<String, Object> entry = iterator.next();
+//			String key = entry.getKey();
+//			Object value = entry.getValue();
+//
+//			writeIndent(writer, indent + 1);
+//			writer.write('"');
+//			writer.write(key);
+//			writer.write("\": ");
+//
+//			if (value instanceof Number) {
+//				writer.write(value.toString());
+//			} else if (value instanceof String) {
+//				writer.write('"');
+//				writer.write((String)value);
+//				writer.write('"');
+//			}
+//
+//			if (iterator.hasNext()) {
+//				writer.write(",");
+//			}
+//			writer.write("\n");
+//		}
+//
+//		writeIndent(writer, indent);
+//		writer.write("}");
+//	}
 
 
 	/*

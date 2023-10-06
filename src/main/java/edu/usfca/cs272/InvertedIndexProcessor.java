@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,12 +145,13 @@ public class InvertedIndexProcessor {
 	 * @param mapMethods mapMethods contains the structure for the read data
 	 * @return list of the query
 	 */
-	public static Map<String, List<Map<String, Object>>> exactSearch(List<TreeSet<String>> query, InvertedIndex mapMethods) {
+	public static Map<String, List<SearchResult>> exactSearch(List<TreeSet<String>> query, InvertedIndex mapMethods) {
 
-		Map<String, List<Map<String, Object>>> results = new TreeMap<>();
+		Map<String, List<SearchResult>> results = new TreeMap<>();
 
 		for (TreeSet<String> entry : query) {
 			Map<String, Integer> locationCounts = new HashMap<>();
+			int totalWords = 0;
 
 			for (String word : entry) {
 				Set<String> locations = mapMethods.getLocations(word);
@@ -159,19 +161,21 @@ public class InvertedIndexProcessor {
 				}
 			}
 
-			List<Map<String, Object>> currentResults = new ArrayList<>();
+			List<SearchResult> currentResults = new ArrayList<>();
 			for (var locEntry : locationCounts.entrySet()) {
-				Map<String, Object> resultData = new HashMap<>();
-				resultData.put("count", locEntry.getValue());
-				resultData.put("score", 1.00000000);
-				resultData.put("where", locEntry.getKey());
-				currentResults.add(resultData);
+				totalWords = mapMethods.getTotalWordsForLocation(locEntry.getKey());
+				double score = (double) locEntry.getValue() / totalWords;
+				currentResults.add(new SearchResult(locEntry.getKey(), locEntry.getValue(), score));
 			}
+			Collections.sort(currentResults);
 
 			results.put(String.join(" ", entry), currentResults);
 		}
 
-		System.out.println(JsonFormatter.writeSearchResultJson(results));
+		System.out.println(results.toString());
+
+		//System.out.println(JsonFormatter.writeSearchResultJson(results));
+
 
 		return results;
 	}

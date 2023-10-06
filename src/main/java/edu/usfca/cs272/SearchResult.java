@@ -1,27 +1,45 @@
 package edu.usfca.cs272;
 
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+public class SearchResult implements Comparable<SearchResult> {
+	private int count;
+	private double score;
+	private String where;
 
-public class SearchResult {
-	public static int count;
-	public static double score;
-	public static String where;
+	public SearchResult(String where, int count, double score) {
+		this.where = where;
+		this.count = count;
+		this.score = score;
+	}
 
-	public static TreeMap<String, List<Map<String, Object>>> searchData;
+	public int getCount() {
+		return count;
+	}
 
+	public double getScore() {
+		return score;
+	}
 
+	public String getWhere() {
+		return where;
+	}
 
-	// Constructor, getters, setters, and other methods...
-	/**
-	 * @param count
-	 * @param score
-	 * @param where
-	 */
-//	public SearchResult(int count, double score, String where) {
-//		this.count = count;
-//		this.score = score;
-//		this.where = where;
-//	}
+	@Override
+	public int compareTo(SearchResult other) {
+		int scoreComparison = Double.compare(other.score, this.score);
+		if (scoreComparison != 0) {
+			return scoreComparison;
+		}
+
+		int countComparison = Integer.compare(other.count, this.count);
+		if (countComparison != 0) {
+			return countComparison;
+		}
+
+		return this.where.compareToIgnoreCase(other.where);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("Where: %s, Count: %d, Score: %.4f", where, count, score);
+	}
 }
