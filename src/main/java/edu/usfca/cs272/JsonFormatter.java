@@ -485,6 +485,11 @@ public class JsonFormatter {
 		return writeIndexJson(formatMap, buffer, 1);
 	}
 
+	/**
+	 * @param results The data structure containing the search data
+	 * @return string of formatted json
+	 * @throws IOException if file is unreadable
+	 */
 	public static String writeSearchResults(Map<String, List<SearchResult>> results) throws IOException {
 		StringWriter writer = new StringWriter();
 

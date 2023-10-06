@@ -158,6 +158,10 @@ public class InvertedIndex {
 		return hasWord(word) ? index.get(word).size() : 0;
 	}
 
+	/**
+	 * @param location file location used as key
+	 * @return count of total words
+	 */
 	public int getTotalWordsForLocation(String location) {
 		return counts.getOrDefault(location, 0);
 	}

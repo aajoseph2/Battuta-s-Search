@@ -120,7 +120,6 @@ public class InvertedIndexProcessor {
 	/**
 	 * @param location Where the query is being retrieved from
 	 * @param mapMethods mapMethods contains the structure for the read data
-	 * @return List that contians the sets of queries to be read
 	 * @throws IOException If file is unreadable
 	 */
 	public static void processQuery(Path location, InvertedIndex mapMethods) throws IOException {
@@ -143,8 +142,7 @@ public class InvertedIndexProcessor {
 	/**
 	 * @param query Words to be searched in the inverted index
 	 * @param mapMethods mapMethods contains the structure for the read data
-	 * @return list of the query
-	 * @throws IOException
+	 * @throws IOException If file is unreadable
 	 */
 	public static void exactSearch(List<TreeSet<String>> query, InvertedIndex mapMethods) throws IOException {
 
