@@ -9,8 +9,10 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -483,104 +485,56 @@ public class JsonFormatter {
 		return writeIndexJson(formatMap, buffer, 1);
 	}
 
-//	public static void writeSearchResultJson(Map<String, List<Map<String, Object>>> results, Writer writer, int indent)
-//			throws IOException {
-//		writer.write("{\n");
-//
-//		var iterator = results.entrySet().iterator();
-//		while (iterator.hasNext()) {
-//			var entry = iterator.next();
-//
-//			String searchQuery = entry.getKey();
-//			List<Map<String, Object>> resultList = entry.getValue();
-//
-//			writeQuote(searchQuery, writer, indent + 1);
-//			writer.write(": ");
-//			writeArrayObjectsForSearchResults(resultList, writer, indent + 1);
-//
-//
-//			if (iterator.hasNext()) {
-//				writer.write(",");
-//			}
-//			writer.write("\n");
-//		}
-//		writeIndent(writer, indent);
-//		writer.write("}");
-//	}
-//
-//	public static void writeSearchResultJson(Map<String, List<Map<String, Object>>> results, Path path)
-//			throws IOException {
-//		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
-//			writeSearchResultJson(results, writer, 0);
-//		}
-//	}
-//
-//	public static String writeSearchResultJson(Map<String, List<Map<String, Object>>> results) {
-//		try {
-//			StringWriter writer = new StringWriter();
-//			writeSearchResultJson(results, writer, 0);
-//			return writer.toString();
-//		}
-//		catch (IOException e) {
-//			return null;
-//		}
-//	}
-//
-//	public static void writeArrayObjectsForSearchResults(Collection<? extends Map<String, Object>> elements, Writer writer, int indent) throws IOException {
-//		writer.write("[\n");
-//		var iterator = elements.iterator();
-//
-//		while (iterator.hasNext()) {
-//			var element = iterator.next();
-//
-//			writeIndent(writer, indent + 1);
-//
-//			writeGenericObject(element, writer, indent + 1);
-//
-//			if (iterator.hasNext()) {
-//				writer.write(",");
-//			}
-//
-//			writer.write("\n");
-//		}
-//
-//		writeIndent(writer, indent);
-//		writer.write("]");
-//	}
-//
-//	public static void writeGenericObject(Map<String, Object> elements, Writer writer, int indent) throws IOException {
-//		writer.write("{\n");
-//
-//		Iterator<Map.Entry<String, Object>> iterator = elements.entrySet().iterator();
-//
-//		while (iterator.hasNext()) {
-//			Map.Entry<String, Object> entry = iterator.next();
-//			String key = entry.getKey();
-//			Object value = entry.getValue();
-//
-//			writeIndent(writer, indent + 1);
-//			writer.write('"');
-//			writer.write(key);
-//			writer.write("\": ");
-//
-//			if (value instanceof Number) {
-//				writer.write(value.toString());
-//			} else if (value instanceof String) {
-//				writer.write('"');
-//				writer.write((String)value);
-//				writer.write('"');
-//			}
-//
-//			if (iterator.hasNext()) {
-//				writer.write(",");
-//			}
-//			writer.write("\n");
-//		}
-//
-//		writeIndent(writer, indent);
-//		writer.write("}");
-//	}
+	public static String writeSearchResults(Map<String, List<SearchResult>> results) throws IOException {
+		StringWriter writer = new StringWriter();
 
+		writer.write("{\n");
+		Iterator<Map.Entry<String, List<SearchResult>>> iterator = results.entrySet().iterator();
+
+		while (iterator.hasNext()) {
+			Map.Entry<String, List<SearchResult>> entry = iterator.next();
+
+			writeQuote(entry.getKey(), writer, 1);
+			writer.write(": [\n");
+
+			List<SearchResult> searchResults = entry.getValue();
+			for (int i = 0; i < searchResults.size(); i++) {
+				SearchResult result = searchResults.get(i);
+
+				writeIndent("{\n", writer, 2);
+
+				writeQuote("count", writer, 3);
+				writer.write(": " + result.getCount() + ",\n");
+
+				writeIndent("", writer, 3);
+				writeQuote("score", writer, 0);
+				writer.write(": " + new DecimalFormat("0.00000000").format(result.getScore()) + ",\n");
+
+				writeIndent("", writer, 3);
+				writeQuote("where", writer, 0);
+				writer.write(": " + "\"" + result.getWhere() + "\"\n");
+
+				writeIndent("}", writer, 2);
+
+				if (i < searchResults.size() - 1) {
+					writer.write(",");
+				}
+
+				writer.write("\n");
+			}
+
+			writeIndent("]", writer, 1);
+
+			if (iterator.hasNext()) {
+				writer.write(",");
+			}
+
+			writer.write("\n");
+		}
+
+		writer.write("}\n");
+		return writer.toString();
+	}
 
 	/*
 	 * TODO public static String writeIndexJson(Map<String, ? extends Map<String, ?

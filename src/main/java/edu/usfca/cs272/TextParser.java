@@ -147,7 +147,8 @@ public class TextParser {
 	 * @see #uniqueStems(String, Stemmer)
 	 */
 	public static TreeSet<String> uniqueStems(Path input) throws IOException {
-		// TODO Make more efficient (avoid the StringBuilder... reuse addStems as much as possible)
+		// TODO Make more efficient (avoid the StringBuilder... reuse addStems as much
+		// as possible)
 		StringBuilder inputText = new StringBuilder();
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;

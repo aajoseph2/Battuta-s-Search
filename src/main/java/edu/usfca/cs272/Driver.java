@@ -28,6 +28,8 @@ public class Driver {
 		InvertedIndex index = new InvertedIndex();
 
 		if (parser.hasFlag("-text")) {
+			SearchResult.query.clear();
+			SearchResult.qWords.clear();
 			Path path = parser.getPath("-text");
 			if (path != null) {
 				try {
@@ -68,19 +70,27 @@ public class Driver {
 
 			if (qPath != null) {
 				try {
-					InvertedIndexProcessor.exactSearch(InvertedIndexProcessor.processQuery(qPath, index), index);
+					InvertedIndexProcessor.processQuery(qPath, index);
 				}
 				catch (IOException e) {
-					System.out.println("Error writing index to file: " + e.getMessage());
+					System.out.println("Error writing query to file: " + e.getMessage());
 				}
-			} else {
+			}
+			else {
 				System.out.println("Must input query path!");
 			}
 		}
 
 		if (parser.hasFlag("-results")) {
 			Path resPath = parser.getPath("-results", Path.of("results.json"));
-			System.out.println("Results path: " + resPath);
+			System.out.println(resPath);
+			try {
+				InvertedIndexProcessor.exactSearch(SearchResult.qWords, index);
+				SearchResult.writeQueryJson(resPath, SearchResult.query);
+			}
+			catch (IOException e) {
+				System.out.println("Error writing results to file: " + e.getMessage());
+			}
 		}
 	}
 }

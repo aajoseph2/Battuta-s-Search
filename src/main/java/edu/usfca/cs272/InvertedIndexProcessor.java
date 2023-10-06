@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import opennlp.tools.stemmer.Stemmer;
@@ -124,30 +123,32 @@ public class InvertedIndexProcessor {
 	 * @return List that contians the sets of queries to be read
 	 * @throws IOException If file is unreadable
 	 */
-	public static List<TreeSet<String>> processQuery(Path location, InvertedIndex mapMethods) throws IOException {
+	public static void processQuery(Path location, InvertedIndex mapMethods) throws IOException {
 
-		List<TreeSet<String>> qList = new ArrayList<TreeSet<String>>();
+		// List<TreeSet<String>> qList = new ArrayList<TreeSet<String>>();
+
 		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String[] words = TextParser.parse(line);
 				var buffer = TextParser.uniqueStems(Arrays.toString(words));
 				if (!buffer.isEmpty()) {
-					qList.add(TextParser.uniqueStems(Arrays.toString(words)));
+					SearchResult.qWords.add(TextParser.uniqueStems(Arrays.toString(words)));
 				}
 			}
 		}
-		return qList;
+		// return qWords;
 	}
 
 	/**
 	 * @param query Words to be searched in the inverted index
 	 * @param mapMethods mapMethods contains the structure for the read data
 	 * @return list of the query
+	 * @throws IOException
 	 */
-	public static Map<String, List<SearchResult>> exactSearch(List<TreeSet<String>> query, InvertedIndex mapMethods) {
+	public static void exactSearch(List<TreeSet<String>> query, InvertedIndex mapMethods) throws IOException {
 
-		Map<String, List<SearchResult>> results = new TreeMap<>();
+		// Map<String, List<SearchResult>> SearchResult.query = new TreeMap<>();
 
 		for (TreeSet<String> entry : query) {
 			Map<String, Integer> locationCounts = new HashMap<>();
@@ -169,15 +170,12 @@ public class InvertedIndexProcessor {
 			}
 			Collections.sort(currentResults);
 
-			results.put(String.join(" ", entry), currentResults);
+			SearchResult.query.put(String.join(" ", entry), currentResults);
 		}
 
-		System.out.println(results.toString());
+		// System.out.println(JsonFormatter.writeSearchResults(SearchResult.query));
 
-		//System.out.println(JsonFormatter.writeSearchResultJson(results));
-
-
-		return results;
+		// return SearchResult.query;
 	}
 
 }
