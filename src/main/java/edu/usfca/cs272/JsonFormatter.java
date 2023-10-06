@@ -423,7 +423,7 @@ public class JsonFormatter {
 	 * @throws IOException if file is unreadable
 	 */
 	// TODO Set should be Collection, return void
-	public static String writeIndexJson(Map<String, ? extends Map<String, ? extends Set<? extends Number>>> index,
+	public static String writeIndexJson(Map<String, ? extends Map<String, ? extends Collection<? extends Number>>> index,
 			Writer writer, int indent) throws IOException {
 
 		var iterator = index.entrySet().iterator();
@@ -433,6 +433,7 @@ public class JsonFormatter {
 		while (iterator.hasNext()) {
 			var entry = iterator.next();
 			String stem = entry.getKey();
+
 			// TODO JsonFormatter.writeObjectArrays(entry.getValue(), writer, indent + 1);
 			String loc = JsonFormatter.writeObjectArrays(entry.getValue());
 
@@ -479,7 +480,6 @@ public class JsonFormatter {
 	 * @throws IOException if file is unreable
 	 */
 	public static String writeIndexJson(InvertedIndex mapMethods) throws IOException {
-		// var formatMap = mapMethods.getInvertedIndex();
 		var formatMap = mapMethods.constructIndexRepresentation();
 		StringWriter buffer = new StringWriter();
 		return writeIndexJson(formatMap, buffer, 1);

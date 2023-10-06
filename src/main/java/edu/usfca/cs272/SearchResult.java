@@ -10,8 +10,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Search object class that has count, score, and where. These objects will
- * be used as the values within the Map<String, List<SearchResult>> query = new TreeMap<>();
+ * Search object class that has count, score, and where. These objects will be
+ * used as the values within the Map<String, List<SearchResult>> query = new
+ * TreeMap<>();
  *
  */
 public class SearchResult implements Comparable<SearchResult> {

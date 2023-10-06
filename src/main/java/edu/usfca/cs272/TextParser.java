@@ -157,7 +157,6 @@ public class TextParser {
 			}
 		}
 		return uniqueStems(inputText.toString());
-
 	}
 
 	/**
