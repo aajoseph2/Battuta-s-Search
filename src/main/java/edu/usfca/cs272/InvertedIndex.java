@@ -1,6 +1,8 @@
 package edu.usfca.cs272;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -30,26 +32,6 @@ public class InvertedIndex {
 	public InvertedIndex() {
 		counts = new TreeMap<>();
 		index = new TreeMap<>();
-	}
-
-	/**
-	 * @return a copy of the index. ensures encapsulation
-	 */
-	public TreeMap<String, TreeMap<String, TreeSet<Integer>>> constructIndexRepresentation() {
-		TreeMap<String, TreeMap<String, TreeSet<Integer>>> representation = new TreeMap<>();
-
-		for (String word : getWords()) {
-			TreeMap<String, TreeSet<Integer>> innerMap = new TreeMap<>();
-
-			for (String location : getLocations(word)) {
-				TreeSet<Integer> positions = new TreeSet<>(getPositions(word, location));
-				innerMap.put(location, positions);
-			}
-
-			representation.put(word, innerMap);
-		}
-
-		return representation;
 	}
 
 	/**
@@ -208,12 +190,17 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * Writes JSON formatted data from the given inverted index to a file.
+	 *
 	 * @param path File to be written to
-	 * @param index Data to be used in file write
-	 * @throws IOException If file is not able to be written
+	 * @param mapMethods Data source for generating the JSON
+	 * @throws IOException If there's an issue writing to the file
 	 */
-	public static void writeJson(Path path, InvertedIndex index) throws IOException {
-		Files.write(path, JsonFormatter.writeIndexJson(index).getBytes());
+	public static void writeJson(Path path, InvertedIndex mapMethods) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+			var index = mapMethods.index;
+			JsonFormatter.writeIndexJson(index, writer, 1);
+		}
 	}
 
 	@Override

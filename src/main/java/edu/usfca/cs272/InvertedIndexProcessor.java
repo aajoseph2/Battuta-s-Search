@@ -123,9 +123,6 @@ public class InvertedIndexProcessor {
 	 * @throws IOException If file is unreadable
 	 */
 	public static void processQuery(Path location, InvertedIndex mapMethods) throws IOException {
-
-		// List<TreeSet<String>> qList = new ArrayList<TreeSet<String>>();
-
 		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -145,8 +142,6 @@ public class InvertedIndexProcessor {
 	 * @throws IOException If file is unreadable
 	 */
 	public static void exactSearch(List<TreeSet<String>> query, InvertedIndex mapMethods) throws IOException {
-
-		// Map<String, List<SearchResult>> SearchResult.query = new TreeMap<>();
 
 		for (TreeSet<String> entry : query) {
 			Map<String, Integer> locationCounts = new HashMap<>();
@@ -170,10 +165,6 @@ public class InvertedIndexProcessor {
 
 			SearchResult.query.put(String.join(" ", entry), currentResults);
 		}
-
-		// System.out.println(JsonFormatter.writeSearchResults(SearchResult.query));
-
-		// return SearchResult.query;
 	}
 
 }

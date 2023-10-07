@@ -53,12 +53,7 @@ public class ArgumentParser {
 		if (arg == null || arg.length() <= 1) {
 			return false;
 		}
-
-		if (arg.startsWith("-") && !Character.isDigit(arg.charAt(1)) && !Character.isWhitespace(arg.charAt(1))) {
-			return true;
-		}
-
-		return false;
+		return arg.startsWith("-") && !Character.isDigit(arg.charAt(1)) && !Character.isWhitespace(arg.charAt(1));
 	}
 
 	/**
@@ -204,19 +199,10 @@ public class ArgumentParser {
 	 * @see Integer#parseInt(String)
 	 */
 	public int getInteger(String flag, int backup) {
-
-		String value = getString(flag);
-
-		if (value != null) {
-			try {
-				return Integer.parseInt(value);
-			}
-			catch (NumberFormatException e) {
-				System.out.println("Cannot parse words!");
-				return backup;
-			}
+		try {
+			return Integer.parseInt(map.get(flag));
 		}
-		else {
+		catch (NumberFormatException | NullPointerException e) {
 			return backup;
 		}
 	}
