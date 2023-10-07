@@ -11,8 +11,7 @@ import java.util.TreeSet;
 
 /**
  * Search object class that has count, score, and where. These objects will be
- * used as the values within the Map<String, List<SearchResult>> query = new
- * TreeMap<>();
+ * used as the values within the map structure
  *
  */
 public class SearchResult implements Comparable<SearchResult> {
