@@ -33,26 +33,6 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * @return a copy of the index. ensures encapsulation
-	 */
-	public TreeMap<String, TreeMap<String, TreeSet<Integer>>> constructIndexRepresentation() { // TODO Remove
-		TreeMap<String, TreeMap<String, TreeSet<Integer>>> representation = new TreeMap<>();
-
-		for (String word : getWords()) {
-			TreeMap<String, TreeSet<Integer>> innerMap = new TreeMap<>();
-
-			for (String location : getLocations(word)) {
-				TreeSet<Integer> positions = new TreeSet<>(getPositions(word, location));
-				innerMap.put(location, positions);
-			}
-
-			representation.put(word, innerMap);
-		}
-
-		return representation;
-	}
-
-	/**
 	 * wrapper add method
 	 *
 	 * @param location File name to stored as key
@@ -209,11 +189,12 @@ public class InvertedIndex {
 
 	/**
 	 * @param path File to be written to
-	 * @param index Data to be used in file write
+	 * @param mapMethods Data to be used in file write
 	 * @throws IOException If file is not able to be written
 	 */
-	public static void writeJson(Path path, InvertedIndex index) throws IOException {
-		// TODO JsonFormatter.writeIndexJson(index, path);
+	public static void writeJson(Path path, InvertedIndex mapMethods) throws IOException {
+
+		var index = mapMethods.index;
 		Files.write(path, JsonFormatter.writeIndexJson(index).getBytes());
 	}
 

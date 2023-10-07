@@ -178,7 +178,6 @@ public class JsonFormatter {
 	 * @see #writeIndent(String, Writer, int)
 	 */
 	public static void writeObject(Map<String, ? extends Number> elements, Writer writer, int indent) throws IOException {
-		// TODO Use the if/while approach in all of these methods
 		writer.write("{\n");
 
 		Iterator<? extends Map.Entry<String, ? extends Number>> iterator = elements.entrySet().iterator();
@@ -479,10 +478,11 @@ public class JsonFormatter {
 	 *   within writeJsonToFile()
 	 * @throws IOException if file is unreable
 	 */
-	public static String writeIndexJson(InvertedIndex mapMethods) throws IOException {
-		var formatMap = mapMethods.constructIndexRepresentation();
+	public static String writeIndexJson(Map<String, ? extends Map<String, ?
+		  extends Set<? extends Number>>> index) throws IOException {
+		//var formatMap = mapMethods.constructIndexRepresentation();
 		StringWriter buffer = new StringWriter();
-		return writeIndexJson(formatMap, buffer, 1);
+		return writeIndexJson(index, buffer, 1);
 	}
 
 	/**
@@ -540,12 +540,4 @@ public class JsonFormatter {
 		writer.write("}\n");
 		return writer.toString();
 	}
-
-	/*
-	 * TODO public static String writeIndexJson(Map<String, ? extends Map<String, ?
-	 * extends Set<? extends Number>>> index, Path path, int indent) throws
-	 * IOException { try (StringWriter writer = new StringWriter()) {
-	 * writeIndexJson(index, writer, indent); return writer.toString(); } }
-	 */
-
 }
