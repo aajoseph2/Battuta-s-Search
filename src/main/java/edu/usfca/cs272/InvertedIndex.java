@@ -1,6 +1,8 @@
 package edu.usfca.cs272;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -188,14 +190,17 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * Writes JSON formatted data from the given inverted index to a file.
+	 *
 	 * @param path File to be written to
-	 * @param mapMethods Data to be used in file write
-	 * @throws IOException If file is not able to be written
+	 * @param mapMethods Data source for generating the JSON
+	 * @throws IOException If there's an issue writing to the file
 	 */
 	public static void writeJson(Path path, InvertedIndex mapMethods) throws IOException {
-
-		var index = mapMethods.index;
-		Files.write(path, JsonFormatter.writeIndexJson(index).getBytes());
+		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+			var index = mapMethods.index;
+			JsonFormatter.writeIndexJson(index, writer, 1);
+		}
 	}
 
 	@Override
