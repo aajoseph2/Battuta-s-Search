@@ -32,8 +32,16 @@ public class InvertedIndexProcessor {
 	 * @param flag if original directory is a directory or text file
 	 * @throws IOException if file is unreadable
 	 */
-	public static void processPath(Path path, InvertedIndex index, boolean flag) throws IOException {
-
+	public static void processPath(Path path, InvertedIndex index, boolean flag) throws IOException { // TODO Remove flag
+		/* TODO 
+		if (Files.isDirectory(path)) {
+			processDirectory(path, index, flag);
+		}
+		else {
+			processText(path, index);
+		}
+		*/
+		
 		if (Files.isDirectory(path)) {
 			processDirectory(path, index, flag);
 		}
@@ -57,6 +65,15 @@ public class InvertedIndexProcessor {
 	public static void processDirectory(Path input, InvertedIndex index, boolean flag) throws IOException {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 			for (Path entry : stream) {
+				/* TODO 
+				if (Files.isDirectory(path)) {
+					processDirectory(path, inde);
+				}
+				else if (isTextFile(path)) {
+					processText(path, index);
+				}
+				*/
+				
 				processPath(entry, index, flag);
 			}
 		}

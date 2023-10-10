@@ -97,6 +97,7 @@ public class JsonFormatter {
 		Iterator<? extends Number> iterator = elements.iterator();
 
 		if (iterator.hasNext()) {
+			// TODO Move the \n into here
 			writeNumberElement(iterator, writer, indent + 1);
 		}
 
@@ -164,8 +165,8 @@ public class JsonFormatter {
 	public static void writeObject(Map<String, ? extends Number> elements, Writer writer, int indent) throws IOException {
 		writer.write("{");
 
-		if (!elements.isEmpty()) {
-			writer.write("\n");
+		if (!elements.isEmpty()) { // TODO Shouldn't need the isEmpty check anymore
+			writer.write("\n"); // TODO Remove
 
 			Iterator<? extends Map.Entry<String, ? extends Number>> iterator = elements.entrySet().iterator();
 
@@ -175,11 +176,11 @@ public class JsonFormatter {
 
 			while (iterator.hasNext()) {
 				writer.write(",");
-				writer.write("\n");
+				writer.write("\n"); // TODO Remove
 				writeObjectElement(iterator, writer, indent + 1);
 			}
 
-			writer.write("\n");
+			writer.write("\n"); // TODO Remove???
 			writeIndent(writer, indent);
 		}
 		else {
@@ -188,6 +189,24 @@ public class JsonFormatter {
 
 		writer.write("}");
 	}
+	
+	/*
+	 * TODO
+	 * 
+	 * output [
+	 * 
+	 * if there is a first element
+	 * 		output newline
+	 * 		output element
+	 * 
+	 * while there are more
+	 * 		output comma
+	 * 		output newline
+	 * 		output element
+	 * 
+	 * output indented ]
+	 * 
+	 */
 
 	/**
 	 * Writes the elements as a pretty JSON object to file.
@@ -235,7 +254,7 @@ public class JsonFormatter {
 	private static void writeArrayObjectElement(Iterator<? extends Map<String, ? extends Number>> iterator, Writer writer,
 			int indent) throws IOException {
 		var element = iterator.next();
-
+		// TODO writer.write("\n");
 		writeIndent(writer, indent + 1);
 		writeObject(element, writer, indent + 1);
 	}
@@ -359,6 +378,7 @@ public class JsonFormatter {
 	 */
 	public static String writeObjectArrays(Map<String, ? extends Collection<? extends Number>> elements, Writer writer,
 			int indent) throws IOException {
+		// TODO Same if/while approach
 		writer.write("{\n");
 
 		var iterator = elements.entrySet().iterator();
