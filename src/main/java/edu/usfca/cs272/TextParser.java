@@ -90,7 +90,7 @@ public class TextParser {
 	 */
 	public static ArrayList<String> listStems(String line, Stemmer stemmer) {
 		ArrayList<String> stemList = new ArrayList<>();
-		String[] words = parse(line);
+		String[] words = parse(line); // TODO addStems
 		for (String word : words) {
 			stemList.add(stemmer.stem(word).toString());
 		}
@@ -128,7 +128,7 @@ public class TextParser {
 	 */
 	public static TreeSet<String> uniqueStems(String line, Stemmer stemmer) {
 		String[] words = parse(line);
-		TreeSet<String> set = new TreeSet<>();
+		TreeSet<String> set = new TreeSet<>(); // TODO addStems
 		for (String word : words) {
 			set.add(stemmer.stem(word).toString());
 		}
@@ -195,6 +195,7 @@ public class TextParser {
 	 */
 	public static ArrayList<TreeSet<String>> listUniqueStems(Path input) throws IOException {
 		ArrayList<TreeSet<String>> listOfStems = new ArrayList<>();
+		// TODO Create a stemmer here and reuse
 
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;

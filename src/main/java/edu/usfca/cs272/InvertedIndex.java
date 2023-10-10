@@ -126,7 +126,7 @@ public class InvertedIndex {
 	 * @param location : path key to get the word count in fileCountsInfo
 	 * @return the word count of specific file.
 	 */
-	public Integer getWordCountForFile(String location) {
+	public Integer getWordCountForFile(String location) { // TODO get => num
 		return counts.getOrDefault(location, 0);
 	}
 
@@ -157,6 +157,7 @@ public class InvertedIndex {
 	 * @return number of times the word appears at the given location
 	 */
 	public int getWordFrequencyAtLocation(String word, String location) {
+		// TODO return getPositions(word, location).size();
 		return hasLocation(word, location) ? index.get(word).get(location).size() : 0;
 	}
 
@@ -196,7 +197,10 @@ public class InvertedIndex {
 	 * @param mapMethods Data source for generating the JSON
 	 * @throws IOException If there's an issue writing to the file
 	 */
+	// TODO public void writeJson(Path path) throws IOException {
 	public static void writeJson(Path path, InvertedIndex mapMethods) throws IOException {
+		// TODO JsonFormatter.writeIndexJson(index, path, 1);
+		
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			var index = mapMethods.index;
 			JsonFormatter.writeIndexJson(index, writer, 1);
