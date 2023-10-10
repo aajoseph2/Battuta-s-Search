@@ -9,10 +9,8 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 /**
  * Outputs several simple data structures in "pretty" JSON format where newlines
@@ -496,59 +494,5 @@ public class JsonFormatter {
 		writeIndexJson(index, buffer, 1);
 	}
 
-	/**
-	 * @param results The data structure containing the search data
-	 * @return string of formatted json
-	 * @throws IOException if file is unreadable
-	 */
-	public static String writeSearchResults(Map<String, List<SearchResult>> results) throws IOException {
-		StringWriter writer = new StringWriter();
 
-		writer.write("{\n");
-		Iterator<Map.Entry<String, List<SearchResult>>> iterator = results.entrySet().iterator();
-
-		while (iterator.hasNext()) {
-			Map.Entry<String, List<SearchResult>> entry = iterator.next();
-
-			writeQuote(entry.getKey(), writer, 1);
-			writer.write(": [\n");
-
-			List<SearchResult> searchResults = entry.getValue();
-			for (int i = 0; i < searchResults.size(); i++) {
-				SearchResult result = searchResults.get(i);
-
-				writeIndent("{\n", writer, 2);
-
-				writeQuote("count", writer, 3);
-				writer.write(": " + result.getCount() + ",\n");
-
-				writeIndent("", writer, 3);
-				writeQuote("score", writer, 0);
-				writer.write(": " + new DecimalFormat("0.00000000").format(result.getScore()) + ",\n");
-
-				writeIndent("", writer, 3);
-				writeQuote("where", writer, 0);
-				writer.write(": " + "\"" + result.getWhere() + "\"\n");
-
-				writeIndent("}", writer, 2);
-
-				if (i < searchResults.size() - 1) {
-					writer.write(",");
-				}
-
-				writer.write("\n");
-			}
-
-			writeIndent("]", writer, 1);
-
-			if (iterator.hasNext()) {
-				writer.write(",");
-			}
-
-			writer.write("\n");
-		}
-
-		writer.write("}\n");
-		return writer.toString();
-	}
 }
