@@ -29,26 +29,15 @@ public class InvertedIndexProcessor {
 	 *
 	 * @param path Given file contents
 	 * @param index map to be used for indexing data
-	 * @param flag if original directory is a directory or text file
+
 	 * @throws IOException if file is unreadable
 	 */
-	public static void processPath(Path path, InvertedIndex index, boolean flag) throws IOException { // TODO Remove flag
-		/* TODO 
+	public static void processPath(Path path, InvertedIndex index) throws IOException {
+
 		if (Files.isDirectory(path)) {
-			processDirectory(path, index, flag);
+			processDirectory(path, index);
 		}
 		else {
-			processText(path, index);
-		}
-		*/
-		
-		if (Files.isDirectory(path)) {
-			processDirectory(path, index, flag);
-		}
-		else if (isTextFile(path) && flag) {
-			processText(path, index);
-		}
-		else if (!flag) {
 			processText(path, index);
 		}
 	}
@@ -59,22 +48,17 @@ public class InvertedIndexProcessor {
 	 *
 	 * @param input the directory
 	 * @param index contains the structure for the read data
-	 * @param flag if original directory is a directory or text file
 	 * @throws IOException If file is unable to be read, then throw an exception.
 	 */
-	public static void processDirectory(Path input, InvertedIndex index, boolean flag) throws IOException {
+	public static void processDirectory(Path input, InvertedIndex index) throws IOException {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 			for (Path entry : stream) {
-				/* TODO 
-				if (Files.isDirectory(path)) {
-					processDirectory(path, inde);
+				if (Files.isDirectory(entry)) {
+					processDirectory(entry, index);
 				}
-				else if (isTextFile(path)) {
-					processText(path, index);
+				else if (isTextFile(entry)) {
+					processText(entry, index);
 				}
-				*/
-				
-				processPath(entry, index, flag);
 			}
 		}
 	}

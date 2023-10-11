@@ -90,11 +90,7 @@ public class TextParser {
 	 */
 	public static ArrayList<String> listStems(String line, Stemmer stemmer) {
 		ArrayList<String> stemList = new ArrayList<>();
-		String[] words = parse(line); // TODO addStems
-		for (String word : words) {
-			stemList.add(stemmer.stem(word).toString());
-		}
-
+		addStems(line, stemmer, stemList);
 		return stemList;
 
 	}
@@ -127,11 +123,8 @@ public class TextParser {
 	 * @see Stemmer#stem(CharSequence)
 	 */
 	public static TreeSet<String> uniqueStems(String line, Stemmer stemmer) {
-		String[] words = parse(line);
-		TreeSet<String> set = new TreeSet<>(); // TODO addStems
-		for (String word : words) {
-			set.add(stemmer.stem(word).toString());
-		}
+		TreeSet<String> set = new TreeSet<>();
+		addStems(line, stemmer, set);
 		return set;
 	}
 

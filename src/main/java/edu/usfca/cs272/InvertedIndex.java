@@ -1,9 +1,6 @@
 package edu.usfca.cs272;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Set;
@@ -126,7 +123,7 @@ public class InvertedIndex {
 	 * @param location : path key to get the word count in fileCountsInfo
 	 * @return the word count of specific file.
 	 */
-	public Integer getWordCountForFile(String location) { // TODO get => num
+	public Integer numCountForFile(String location) {
 		return counts.getOrDefault(location, 0);
 	}
 
@@ -136,7 +133,7 @@ public class InvertedIndex {
 	 * @param word the word to check
 	 * @return number of times the word appears
 	 */
-	public int getWordFrequency(String word) {
+	public int numWordFrequency(String word) {
 		return hasWord(word) ? index.get(word).size() : 0;
 	}
 
@@ -144,7 +141,7 @@ public class InvertedIndex {
 	 * @param location file location used as key
 	 * @return count of total words
 	 */
-	public int getTotalWordsForLocation(String location) {
+	public int numTotalWordsForLocation(String location) {
 		return counts.getOrDefault(location, 0);
 	}
 
@@ -156,9 +153,8 @@ public class InvertedIndex {
 	 * @param location the location (file) to check
 	 * @return number of times the word appears at the given location
 	 */
-	public int getWordFrequencyAtLocation(String word, String location) {
-		// TODO return getPositions(word, location).size();
-		return hasLocation(word, location) ? index.get(word).get(location).size() : 0;
+	public int numWordFrequencyAtLocation(String word, String location) {
+		return getPositions(word, location).size();
 	}
 
 	/**
@@ -194,17 +190,11 @@ public class InvertedIndex {
 	 * Writes JSON formatted data from the given inverted index to a file.
 	 *
 	 * @param path File to be written to
-	 * @param mapMethods Data source for generating the JSON
 	 * @throws IOException If there's an issue writing to the file
 	 */
-	// TODO public void writeJson(Path path) throws IOException {
-	public static void writeJson(Path path, InvertedIndex mapMethods) throws IOException {
-		// TODO JsonFormatter.writeIndexJson(index, path, 1);
-		
-		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-			var index = mapMethods.index;
-			JsonFormatter.writeIndexJson(index, writer, 1);
-		}
+	public void writeJson(Path path) throws IOException {
+		JsonFormatter.writeIndexJson(index, path, 1);
+
 	}
 
 	@Override

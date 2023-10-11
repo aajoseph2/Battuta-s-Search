@@ -1,7 +1,6 @@
 package edu.usfca.cs272;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -31,8 +30,7 @@ public class Driver {
 			Path path = parser.getPath("-text");
 			if (path != null) {
 				try {
-					boolean flag = Files.isDirectory(path);
-					InvertedIndexProcessor.processPath(path, index, flag);
+					InvertedIndexProcessor.processPath(path, index);
 				}
 				catch (IOException e) {
 					System.out.println("Missing file path to read!\n");
@@ -56,7 +54,7 @@ public class Driver {
 		if (parser.hasFlag("-index")) {
 			try {
 				Path indexPath = parser.getPath("-index", Path.of("index.json"));
-				InvertedIndex.writeJson(indexPath, index);
+				index.writeJson(indexPath);
 			}
 			catch (IOException e) {
 				System.out.println("Error writing index to file: " + e.getMessage());
