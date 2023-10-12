@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+
 /**
  * Outputs several simple data structures in "pretty" JSON format where newlines
  * are used to separate elements and nested elements are indented using spaces.
@@ -93,17 +94,16 @@ public class JsonFormatter {
 	 * @see #writeIndent(String, Writer, int)
 	 */
 	public static void writeArray(Collection<? extends Number> elements, Writer writer, int indent) throws IOException {
-		writer.write("[\n");
+		writer.write("[");
 		Iterator<? extends Number> iterator = elements.iterator();
 
 		if (iterator.hasNext()) {
-			// TODO Move the \n into here
+			writer.write("\n");
 			writeNumberElement(iterator, writer, indent + 1);
 		}
 
 		while (iterator.hasNext()) {
-			writer.write(",");
-			writer.write("\n");
+			writer.write(",\n");
 			writeNumberElement(iterator, writer, indent + 1);
 		}
 
@@ -164,49 +164,22 @@ public class JsonFormatter {
 	 */
 	public static void writeObject(Map<String, ? extends Number> elements, Writer writer, int indent) throws IOException {
 		writer.write("{");
+		Iterator<? extends Map.Entry<String, ? extends Number>> iterator = elements.entrySet().iterator();
 
-		if (!elements.isEmpty()) { // TODO Shouldn't need the isEmpty check anymore
-			writer.write("\n"); // TODO Remove
-
-			Iterator<? extends Map.Entry<String, ? extends Number>> iterator = elements.entrySet().iterator();
-
-			if (iterator.hasNext()) {
-				writeObjectElement(iterator, writer, indent + 1);
-			}
-
-			while (iterator.hasNext()) {
-				writer.write(",");
-				writer.write("\n"); // TODO Remove
-				writeObjectElement(iterator, writer, indent + 1);
-			}
-
-			writer.write("\n"); // TODO Remove???
-			writeIndent(writer, indent);
-		}
-		else {
+		if (iterator.hasNext()) {
 			writer.write("\n");
+			writeObjectElement(iterator, writer, indent + 1);
 		}
 
+		while (iterator.hasNext()) {
+			writer.write(",\n");
+			writeObjectElement(iterator, writer, indent + 1);
+		}
+
+		writer.write("\n");
+		writeIndent(writer, indent);
 		writer.write("}");
 	}
-	
-	/*
-	 * TODO
-	 * 
-	 * output [
-	 * 
-	 * if there is a first element
-	 * 		output newline
-	 * 		output element
-	 * 
-	 * while there are more
-	 * 		output comma
-	 * 		output newline
-	 * 		output element
-	 * 
-	 * output indented ]
-	 * 
-	 */
 
 	/**
 	 * Writes the elements as a pretty JSON object to file.
@@ -246,6 +219,29 @@ public class JsonFormatter {
 	}
 
 	/**
+	 * Writes a single keyvalue pair from the provided iterator to writer.
+	 *
+	 * @param iterator Iterator over entries of the map. The next entry in the
+	 *   iterator is processed by this method.
+	 * @param writer The Writer to which the keyvalue pair is written.
+	 * @param indent Indentation level for the current key val pair being written.
+	 *   Helps format nested structures.
+	 * @throws IOException If file unwritable
+	 */
+	private static void writeObjectElement(Iterator<? extends Map.Entry<String, ? extends Number>> iterator,
+			Writer writer, int indent) throws IOException {
+		Map.Entry<String, ? extends Number> entry = iterator.next();
+		String elementString = entry.getKey();
+		Number elementNum = entry.getValue();
+
+		writeIndent(writer, indent);
+		writer.write('"');
+		writer.write(elementString);
+		writer.write("\": ");
+		writer.write(elementNum.toString());
+	}
+
+	/**
 	 * @param iterator of passed map struture to iterate
 	 * @param writer the writer to use
 	 * @param indent number of spaces to indent
@@ -254,7 +250,7 @@ public class JsonFormatter {
 	private static void writeArrayObjectElement(Iterator<? extends Map<String, ? extends Number>> iterator, Writer writer,
 			int indent) throws IOException {
 		var element = iterator.next();
-		// TODO writer.write("\n");
+		writer.write("\n");
 		writeIndent(writer, indent + 1);
 		writeObject(element, writer, indent + 1);
 	}
@@ -278,7 +274,7 @@ public class JsonFormatter {
 	 */
 	public static void writeArrayObjects(Collection<? extends Map<String, ? extends Number>> elements, Writer writer,
 			int indent) throws IOException {
-		writer.write("[\n");
+		writer.write("[");
 
 		var iterator = elements.iterator();
 
@@ -313,29 +309,6 @@ public class JsonFormatter {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
 			writeArrayObjects(elements, writer, 0);
 		}
-	}
-
-	/**
-	 * Writes a single keyvalue pair from the provided iterator to writer.
-	 *
-	 * @param iterator Iterator over entries of the map. The next entry in the
-	 *   iterator is processed by this method.
-	 * @param writer The Writer to which the keyvalue pair is written.
-	 * @param indent Indentation level for the current key val pair being written.
-	 *   Helps format nested structures.
-	 * @throws IOException If file unwritable
-	 */
-	private static void writeObjectElement(Iterator<? extends Map.Entry<String, ? extends Number>> iterator,
-			Writer writer, int indent) throws IOException {
-		Map.Entry<String, ? extends Number> entry = iterator.next();
-		String elementString = entry.getKey();
-		Number elementNum = entry.getValue();
-
-		writeIndent(writer, indent);
-		writer.write('"');
-		writer.write(elementString);
-		writer.write("\": ");
-		writer.write(elementNum.toString());
 	}
 
 	/**
@@ -470,7 +443,7 @@ public class JsonFormatter {
 		while (iterator.hasNext()) {
 			var entry = iterator.next();
 			String stem = entry.getKey();
-			String loc = JsonFormatter.writeObjectArrays(entry.getValue());
+			String loc = writeObjectArrays(entry.getValue());
 
 			writeQuote(stem, writer, indent);
 			writer.write(": ");
@@ -513,6 +486,5 @@ public class JsonFormatter {
 		StringWriter buffer = new StringWriter();
 		writeIndexJson(index, buffer, 1);
 	}
-
 
 }

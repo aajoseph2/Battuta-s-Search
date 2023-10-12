@@ -29,7 +29,7 @@ public class InvertedIndexProcessor {
 	 *
 	 * @param path Given file contents
 	 * @param index map to be used for indexing data
-
+	 * 
 	 * @throws IOException if file is unreadable
 	 */
 	public static void processPath(Path path, InvertedIndex index) throws IOException {
