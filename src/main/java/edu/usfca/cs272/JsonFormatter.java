@@ -75,7 +75,7 @@ public class JsonFormatter {
 	private static void writeNumberElement(Iterator<? extends Number> iterator, Writer writer, int indent)
 			throws IOException {
 		Number element = iterator.next();
-		writeIndent(writer, indent);
+		writeIndent(writer, indent + 1);
 		writer.write(element.toString());
 	}
 
@@ -108,7 +108,7 @@ public class JsonFormatter {
 		}
 
 		writer.write("\n");
-		writeIndent(writer, indent);
+		writeIndent(writer, indent + 1);
 		writer.write("]");
 	}
 
@@ -242,20 +242,6 @@ public class JsonFormatter {
 	}
 
 	/**
-	 * @param iterator of passed map struture to iterate
-	 * @param writer the writer to use
-	 * @param indent number of spaces to indent
-	 * @throws IOException if file is unwritable
-	 */
-	private static void writeArrayObjectElement(Iterator<? extends Map<String, ? extends Number>> iterator, Writer writer,
-			int indent) throws IOException {
-		var element = iterator.next();
-		writer.write("\n");
-		writeIndent(writer, indent + 1);
-		writeObject(element, writer, indent + 1);
-	}
-
-	/**
 	 * Writes the elements as a pretty JSON array with nested objects. The generic
 	 * notation used allows this method to be used for any type of collection with
 	 * any type of nested map of String keys to number objects.
@@ -352,36 +338,32 @@ public class JsonFormatter {
 	public static String writeObjectArrays(Map<String, ? extends Collection<? extends Number>> elements, Writer writer,
 			int indent) throws IOException {
 		// TODO Same if/while approach
-		writer.write("{\n");
+		writer.write("{");
 
 		var iterator = elements.entrySet().iterator();
 
-		while (iterator.hasNext()) {
-			var entry = iterator.next();
-
-			String elementString = entry.getKey();
-			Collection<? extends Number> elementCollection = entry.getValue();
-
-			writer.write("  ");
-			writeQuote(elementString, writer, indent + 1);
-			writer.write(": ");
-
-			if (elementCollection != null && !elementCollection.isEmpty()) {
-				writeArray(elementCollection, writer, indent + 2);
-			}
-			else {
-				writer.write("[\n");
-				writeIndent(writer, indent + 1);
-				writer.write("]");
-			}
-
-			if (iterator.hasNext()) {
-				writer.write(",");
-			}
+		if (!iterator.hasNext()) {
 			writer.write("\n");
+			var elem = iterator.next();
+			var elemKey = elem.getKey();
+			var elemval = elem.getValue();
+			writeIndent(writer, indent + 1);
+			writeQuote(elemKey, writer, indent + 1);
+			writer.write(": ");
+			writeArray(elemval, writer, indent + 1);
 		}
 
-		writeIndent(writer, indent);
+		while (iterator.hasNext()) {
+			writer.write("\n");
+			var elem = iterator.next();
+			var elemKey = elem.getKey();
+			var elemval = elem.getValue();
+			writeIndent(writer, indent + 1);
+			writeQuote(elemKey, writer, indent + 1);
+			writer.write(": ");
+			writeArray(elemval, writer, indent + 1);
+		}
+		writer.write("\n");
 
 		return writer.toString();
 	}
@@ -440,7 +422,7 @@ public class JsonFormatter {
 
 		writeIndent("{\n", writer, 0);
 
-		while (iterator.hasNext()) {
+		if (iterator.hasNext()) {
 			var entry = iterator.next();
 			String stem = entry.getKey();
 			String loc = writeObjectArrays(entry.getValue());
@@ -448,19 +430,37 @@ public class JsonFormatter {
 			writeQuote(stem, writer, indent);
 			writer.write(": ");
 			writer.write(loc);
-
 			writeIndent("}", writer, indent);
-
-			if (iterator.hasNext()) {
-				writer.write(",");
-				writeIndent("\n", writer, indent - 1);
-			}
-			else {
-				writeIndent("\n", writer, indent - 1);
-			}
 		}
 
-		writeIndent("}", writer, indent - 1);
+		while (iterator.hasNext()) {
+			writeIndent(",\n", writer, indent - 1);
+
+			var entry = iterator.next();
+			String stem = entry.getKey();
+			String loc = writeObjectArrays(entry.getValue());
+
+			writeQuote(stem, writer, indent);
+			writer.write(": ");
+			writer.write(loc);
+			writeIndent("}", writer, indent);
+		}
+
+		writeIndent("\n}", writer, indent - 1);
+	}
+
+	/**
+	 * @param iterator of passed map struture to iterate
+	 * @param writer the writer to use
+	 * @param indent number of spaces to indent
+	 * @throws IOException if file is unwritable
+	 */
+	private static void writeArrayObjectElement(Iterator<? extends Map<String, ? extends Number>> iterator, Writer writer,
+			int indent) throws IOException {
+		var element = iterator.next();
+		writer.write("\n");
+		writeIndent(writer, indent + 1);
+		writeObject(element, writer, indent + 1);
 	}
 
 	/**

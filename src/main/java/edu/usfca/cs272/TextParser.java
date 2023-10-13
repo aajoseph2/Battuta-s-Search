@@ -188,12 +188,13 @@ public class TextParser {
 	 */
 	public static ArrayList<TreeSet<String>> listUniqueStems(Path input) throws IOException {
 		ArrayList<TreeSet<String>> listOfStems = new ArrayList<>();
-		// TODO Create a stemmer here and reuse
+
+		Stemmer stem = new SnowballStemmer(ENGLISH);
 
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;
 			while ((line = reader.readLine()) != null) {
-				TreeSet<String> stemsForLine = uniqueStems(line);
+				TreeSet<String> stemsForLine = uniqueStems(line, stem);
 				listOfStems.add(stemsForLine);
 			}
 		}
