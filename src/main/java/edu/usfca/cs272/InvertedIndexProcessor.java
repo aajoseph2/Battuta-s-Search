@@ -134,40 +134,57 @@ public class InvertedIndexProcessor {
 				}
 			}
 		}
-		// return qWords;
 	}
 
 	/**
-	 * @param query Words to be searched in the inverted index
-	 * @param mapMethods mapMethods contains the structure for the read data
-	 * @throws IOException If file is unreadable
+	 * Performs a search based on the provided query and the search mode
+	 * (exact/partial).
+	 *
+	 * @param query The list of query terms to search for.
+	 * @param mapMethods The InvertedIndex instance containing the methods for
+	 *   searching.
+	 * @param isExact A flag to determine if the search should be exact or partial.
+	 * @throws IOException If there is an error during searching.
 	 */
-	public static void exactSearch(List<TreeSet<String>> query, InvertedIndex mapMethods) throws IOException {
-
+	public static void search(List<TreeSet<String>> query, InvertedIndex mapMethods, boolean isExact) throws IOException {
 		for (TreeSet<String> entry : query) {
 			Map<String, Integer> locationCounts = new HashMap<>();
-			int totalWords = 0;
 
 			for (String word : entry) {
-				Set<String> locations = mapMethods.getLocations(word);
-				for (String loc : locations) {
-					int wordCountAtLocation = mapMethods.numWordFrequencyAtLocation(word, loc);
-					locationCounts.put(loc, locationCounts.getOrDefault(loc, 0) + wordCountAtLocation);
+				Set<String> relevantWords = !isExact ? Collections.singleton(word) : mapMethods.prefixSearch(word);
+
+				for (String relevantWord : relevantWords) {
+					Set<String> locations = mapMethods.getLocations(relevantWord);
+
+					for (String loc : locations) {
+						int wordCountAtLocation = mapMethods.numWordFrequencyAtLocation(relevantWord, loc);
+						locationCounts.put(loc, locationCounts.getOrDefault(loc, 0) + wordCountAtLocation);
+					}
 				}
 			}
 
-			List<SearchResult> currentResults = new ArrayList<>();
-			for (var locEntry : locationCounts.entrySet()) {
-				totalWords = mapMethods.numTotalWordsForLocation(locEntry.getKey());
-				double score = (double) locEntry.getValue() / totalWords;
-				currentResults.add(new SearchResult(locEntry.getKey(), locEntry.getValue(), score));
-			}
-			Collections.sort(currentResults);
-
+			List<SearchResult> currentResults = compileResults(locationCounts, mapMethods);
 			SearchResult.query.put(String.join(" ", entry), currentResults);
 		}
 	}
 
+	/**
+	 * @param locationCounts The map containing word count for each location.
+	 * @param mapMethods The InvertedIndex instance containing the methods for
+	 *   retrieving total word count.
+	 * @return A sorted list of SearchResult objects.
+	 */
+	private static List<SearchResult> compileResults(Map<String, Integer> locationCounts, InvertedIndex mapMethods) {
+		List<SearchResult> currentResults = new ArrayList<>();
 
+		for (var locEntry : locationCounts.entrySet()) {
+			int totalWords = mapMethods.numTotalWordsForLocation(locEntry.getKey());
+			double score = (double) locEntry.getValue() / totalWords;
+			currentResults.add(new SearchResult(locEntry.getKey(), locEntry.getValue(), score));
+		}
+
+		Collections.sort(currentResults);
+		return currentResults;
+	}
 
 }

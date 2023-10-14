@@ -65,33 +65,34 @@ public class Driver {
 				System.out.println("Error writing index to file: " + e.getMessage());
 			}
 		}
-	if (parser.hasFlag("-query")) {
-	Path qPath = parser.getPath("-query");
+		if (parser.hasFlag("-query")) {
+			Path qPath = parser.getPath("-query");
 
-	if (qPath != null) {
-		try {
-			InvertedIndexProcessor.processQuery(qPath, index);
+			if (qPath != null) {
+				try {
+					InvertedIndexProcessor.processQuery(qPath, index);
+				}
+				catch (IOException e) {
+					System.out.println("Error writing query to file: " + e.getMessage());
+				}
+			}
+			else {
+				System.out.println("Must input query path!");
+			}
 		}
-		catch (IOException e) {
-			System.out.println("Error writing query to file: " + e.getMessage());
-		}
-	}
-	else {
-		System.out.println("Must input query path!");
-	}
-}
 
-if (parser.hasFlag("-results")) {
-	Path resPath = parser.getPath("-results", Path.of("results.json"));
-	System.out.println(resPath);
-	try {
-		InvertedIndexProcessor.exactSearch(SearchResult.qWords, index);
-		SearchResult.writeQueryJson(resPath, SearchResult.query);
-	}
-	catch (IOException e) {
-		System.out.println("Error writing results to file: " + e.getMessage());
-	}
-}
+		if (parser.hasFlag("-results")) {
+			Path resPath = parser.getPath("-results", Path.of("results.json"));
+			try {
+				boolean isExact = parser.hasFlag("-partial");
+					InvertedIndexProcessor.search(SearchResult.qWords, index, isExact);
+					SearchResult.writeQueryJson(resPath, SearchResult.query);
+			}
+			catch (IOException e) {
+				System.out.println("Error writing results to file: " + e.getMessage());
+			}
+		}
+
 
 	}
 }

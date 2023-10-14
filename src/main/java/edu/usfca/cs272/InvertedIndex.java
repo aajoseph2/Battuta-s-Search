@@ -194,7 +194,21 @@ public class InvertedIndex {
 	 */
 	public void writeJson(Path path) throws IOException {
 		JsonFormatter.writeIndexJson(index, path, 1);
+	}
 
+	/**
+	 * @param prefix  The prefix string to search for.
+	 * @return A set of words that start with the provided prefix.
+	 */
+	public Set<String> prefixSearch(String prefix) {
+		String endKey = prefix;
+
+		if (!prefix.isEmpty()) {
+			char lastChar = prefix.charAt(prefix.length() - 1);
+			endKey = prefix.substring(0, prefix.length() - 1) + (char) (lastChar + 1);
+		}
+
+		return new TreeSet<>(index.subMap(prefix, endKey).keySet());
 	}
 
 	@Override

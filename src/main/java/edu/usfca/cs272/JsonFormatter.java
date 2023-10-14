@@ -70,19 +70,6 @@ public class JsonFormatter {
 	}
 
 	/**
-	 * @param iterator The iterator that provides the numbers to be written.
-	 * @param writer The writer to which the number is written.
-	 * @param indent The number of spaces used for indentation.
-	 * @throws IOException If theres an issue writing to the provided writer.
-	 */
-	private static void writeNumberElement(Iterator<? extends Number> iterator, Writer writer, int indent)
-			throws IOException {
-		Number element = iterator.next();
-		writeIndent(writer, indent + 1);
-		writer.write(element.toString());
-	}
-
-	/**
 	 * Writes the elements as a pretty JSON array.
 	 *
 	 * @param elements the elements to write
@@ -149,6 +136,19 @@ public class JsonFormatter {
 		catch (IOException e) {
 			return null;
 		}
+	}
+
+	/**
+	 * @param iterator The iterator that provides the numbers to be written.
+	 * @param writer The writer to which the number is written.
+	 * @param indent The number of spaces used for indentation.
+	 * @throws IOException If theres an issue writing to the provided writer.
+	 */
+	private static void writeNumberElement(Iterator<? extends Number> iterator, Writer writer, int indent)
+			throws IOException {
+		Number element = iterator.next();
+		writeIndent(writer, indent + 1);
+		writer.write(element.toString());
 	}
 
 	/**
@@ -461,27 +461,6 @@ public class JsonFormatter {
 	}
 
 	/**
-	 * Helper method to write an entry of the index in JSON format to the provided
-	 * writer.
-	 *
-	 * @param iterator the iterator over the index entries
-	 * @param writer the writer to use for output
-	 * @param indent the number of spaces to use for indentation
-	 * @throws IOException if unable to write to writer
-	 */
-	private static void writeEntry(
-			Iterator<? extends Entry<String, ? extends Map<String, ? extends Collection<? extends Number>>>> iterator,
-			Writer writer, int indent) throws IOException {
-		var entry = iterator.next();
-		String stem = entry.getKey();
-
-		writeQuote(stem, writer, indent);
-		writer.write(": ");
-		writeObjectArrays(entry.getValue(), writer, indent - 1);
-		writeIndent("}", writer, indent);
-	}
-
-	/**
 	 * @param index map filled with data
 	 * @param path path the file path to use
 	 * @param indent indent increment number within writeJsonToFile()
@@ -503,6 +482,27 @@ public class JsonFormatter {
 			throws IOException {
 		StringWriter buffer = new StringWriter();
 		writeIndexJson(index, buffer, 1);
+	}
+
+	/**
+	 * Helper method to write an entry of the index in JSON format to the provided
+	 * writer.
+	 *
+	 * @param iterator the iterator over the index entries
+	 * @param writer the writer to use for output
+	 * @param indent the number of spaces to use for indentation
+	 * @throws IOException if unable to write to writer
+	 */
+	private static void writeEntry(
+			Iterator<? extends Entry<String, ? extends Map<String, ? extends Collection<? extends Number>>>> iterator,
+			Writer writer, int indent) throws IOException {
+		var entry = iterator.next();
+		String stem = entry.getKey();
+	
+		writeQuote(stem, writer, indent);
+		writer.write(": ");
+		writeObjectArrays(entry.getValue(), writer, indent - 1);
+		writeIndent("}", writer, indent);
 	}
 
 	/**
