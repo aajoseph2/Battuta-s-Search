@@ -8,6 +8,14 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
@@ -29,7 +37,7 @@ public class InvertedIndexProcessor {
 	 *
 	 * @param path Given file contents
 	 * @param index map to be used for indexing data
-	 * 
+	 *
 	 * @throws IOException if file is unreadable
 	 */
 	public static void processPath(Path path, InvertedIndex index) throws IOException {
@@ -109,5 +117,57 @@ public class InvertedIndexProcessor {
 			mapMethods.addWordCount(location, pos - 1);
 		}
 	}
+
+	/**
+	 * @param location Where the query is being retrieved from
+	 * @param mapMethods mapMethods contains the structure for the read data
+	 * @throws IOException If file is unreadable
+	 */
+	public static void processQuery(Path location, InvertedIndex mapMethods) throws IOException {
+		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] words = TextParser.parse(line);
+				var buffer = TextParser.uniqueStems(Arrays.toString(words));
+				if (!buffer.isEmpty()) {
+					SearchResult.qWords.add(TextParser.uniqueStems(Arrays.toString(words)));
+				}
+			}
+		}
+		// return qWords;
+	}
+
+	/**
+	 * @param query Words to be searched in the inverted index
+	 * @param mapMethods mapMethods contains the structure for the read data
+	 * @throws IOException If file is unreadable
+	 */
+	public static void exactSearch(List<TreeSet<String>> query, InvertedIndex mapMethods) throws IOException {
+
+		for (TreeSet<String> entry : query) {
+			Map<String, Integer> locationCounts = new HashMap<>();
+			int totalWords = 0;
+
+			for (String word : entry) {
+				Set<String> locations = mapMethods.getLocations(word);
+				for (String loc : locations) {
+					int wordCountAtLocation = mapMethods.numWordFrequencyAtLocation(word, loc);
+					locationCounts.put(loc, locationCounts.getOrDefault(loc, 0) + wordCountAtLocation);
+				}
+			}
+
+			List<SearchResult> currentResults = new ArrayList<>();
+			for (var locEntry : locationCounts.entrySet()) {
+				totalWords = mapMethods.numTotalWordsForLocation(locEntry.getKey());
+				double score = (double) locEntry.getValue() / totalWords;
+				currentResults.add(new SearchResult(locEntry.getKey(), locEntry.getValue(), score));
+			}
+			Collections.sort(currentResults);
+
+			SearchResult.query.put(String.join(" ", entry), currentResults);
+		}
+	}
+
+
 
 }

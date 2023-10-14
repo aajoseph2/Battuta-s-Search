@@ -3,6 +3,8 @@ package edu.usfca.cs272;
 import java.io.IOException;
 import java.nio.file.Path;
 
+//import javax.naming.directory.SearchResult;
+
 /**
  * Class responsible for running this project based on the provided command-line
  * arguments. See the README for details.
@@ -26,7 +28,10 @@ public class Driver {
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index = new InvertedIndex();
 
+
 		if (parser.hasFlag("-text")) {
+			SearchResult.query.clear();
+			SearchResult.qWords.clear();
 			Path path = parser.getPath("-text");
 			if (path != null) {
 				try {
@@ -60,6 +65,33 @@ public class Driver {
 				System.out.println("Error writing index to file: " + e.getMessage());
 			}
 		}
+	if (parser.hasFlag("-query")) {
+	Path qPath = parser.getPath("-query");
+
+	if (qPath != null) {
+		try {
+			InvertedIndexProcessor.processQuery(qPath, index);
+		}
+		catch (IOException e) {
+			System.out.println("Error writing query to file: " + e.getMessage());
+		}
+	}
+	else {
+		System.out.println("Must input query path!");
+	}
+}
+
+if (parser.hasFlag("-results")) {
+	Path resPath = parser.getPath("-results", Path.of("results.json"));
+	System.out.println(resPath);
+	try {
+		InvertedIndexProcessor.exactSearch(SearchResult.qWords, index);
+		SearchResult.writeQueryJson(resPath, SearchResult.query);
+	}
+	catch (IOException e) {
+		System.out.println("Error writing results to file: " + e.getMessage());
+	}
+}
 
 	}
 }
