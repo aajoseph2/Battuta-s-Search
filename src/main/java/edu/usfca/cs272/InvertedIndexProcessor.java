@@ -117,6 +117,8 @@ public class InvertedIndexProcessor {
 			mapMethods.addWordCount(location, pos - 1);
 		}
 	}
+	
+	// TODO Going to create a QueryProcessor class for some of this logic
 
 	/**
 	 * @param location Where the query is being retrieved from
@@ -127,15 +129,28 @@ public class InvertedIndexProcessor {
 		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
 			String line;
 			while ((line = reader.readLine()) != null) {
+				// TODO should be processQuery(line, mapMethods)
 				String[] words = TextParser.parse(line);
-				var buffer = TextParser.uniqueStems(Arrays.toString(words));
+				var buffer = TextParser.uniqueStems(Arrays.toString(words)); // TODO uniqueStems(line) ??
 				if (!buffer.isEmpty()) {
-					SearchResult.qWords.add(TextParser.uniqueStems(Arrays.toString(words)));
+					SearchResult.qWords.add(TextParser.uniqueStems(Arrays.toString(words))); // TODO Repeated operation
 				}
 			}
 		}
 		// return qWords;
 	}
+	
+	/*
+	 * TODO In this new QueryProcessor create a method..
+	 * 
+	 * public void processQuery(String line, ....) {
+	 *    stem the line
+	 *    collect the search results
+	 *    store the results in the map
+	 * }
+	 * 
+	 * change your processQuery(Path file, ...) to call this method per line
+	 */
 
 	/**
 	 * @param query Words to be searched in the inverted index
@@ -144,6 +159,8 @@ public class InvertedIndexProcessor {
 	 */
 	public static void exactSearch(List<TreeSet<String>> query, InvertedIndex mapMethods) throws IOException {
 
+		// TODO Move the core logic here into the inverted index
+		// TODO public List<SearchResult> exactSearch(Set<String> queries) from 1 line in the file
 		for (TreeSet<String> entry : query) {
 			Map<String, Integer> locationCounts = new HashMap<>();
 			int totalWords = 0;
@@ -164,6 +181,7 @@ public class InvertedIndexProcessor {
 			}
 			Collections.sort(currentResults);
 
+			// TODO Move where the results are stored, moves into the new processQuery method
 			SearchResult.query.put(String.join(" ", entry), currentResults);
 		}
 	}

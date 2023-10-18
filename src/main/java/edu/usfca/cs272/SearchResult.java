@@ -39,6 +39,7 @@ public class SearchResult implements Comparable<SearchResult> {
 		this.score = score;
 	}
 
+	// TODO Move query data structure as non-static member to the new QueryProcessor class
 	/**
 	 * Structure of word query as the key, and the SearchResult as the value
 	 */
@@ -46,7 +47,7 @@ public class SearchResult implements Comparable<SearchResult> {
 	/**
 	 * Query line to be searched for witin a given file location
 	 */
-	public static List<TreeSet<String>> qWords = new ArrayList<>();
+	public static List<TreeSet<String>> qWords = new ArrayList<>(); // TODO Remove as a member??
 
 	/**
 	 * @return word frequency
