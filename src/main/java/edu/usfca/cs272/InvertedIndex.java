@@ -2,7 +2,11 @@ package edu.usfca.cs272;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -194,7 +198,62 @@ public class InvertedIndex {
 	 */
 	public void writeJson(Path path) throws IOException {
 		JsonFormatter.writeIndexJson(index, path, 1);
+	}
 
+	/**
+	 * @param prefix The prefix string to search for.
+	 * @return A set of words that start with the provided prefix.
+	 */
+	public Set<String> prefixSearch(String prefix) {
+		String endKey = prefix;
+
+		if (!prefix.isEmpty()) {
+			char lastChar = prefix.charAt(prefix.length() - 1);
+			endKey = prefix.substring(0, prefix.length() - 1) + (char) (lastChar + 1);
+		}
+		return new TreeSet<>(index.subMap(prefix, endKey).keySet());
+	}
+
+	/**
+	 * Performs a search based on the provided query and the search mode (exact or
+	 * partial).
+	 * 
+	 * @param queryWords words in query line to be searched
+	 * @param isExact A flag to determine if the search should be exact or partial.
+	 * @return the search result
+	 * @throws IOException If there is an error during searching.
+	 */
+
+	public List<SearchResult> search(TreeSet<String> queryWords, boolean isExact) throws IOException {
+		Map<String, Integer> locationCounts = new HashMap<>();
+
+		for (String word : queryWords) {
+			Set<String> relevantWords = !isExact ? Collections.singleton(word) : prefixSearch(word);
+			for (String relevantWord : relevantWords) {
+				for (String loc : getLocations(relevantWord)) {
+					locationCounts.put(loc, locationCounts.getOrDefault(loc, 0) + numWordFrequencyAtLocation(relevantWord, loc));
+				}
+			}
+		}
+		return compileResults(locationCounts);
+	}
+
+	/**
+	 * @param locationCounts The map containing word count for each location.
+	 *   retrieving total word count.
+	 * @return A sorted list of SearchResult objects.
+	 */
+	private List<SearchResult> compileResults(Map<String, Integer> locationCounts) {
+		List<SearchResult> currentResults = new ArrayList<>();
+
+		for (var locEntry : locationCounts.entrySet()) {
+			int totalWords = numTotalWordsForLocation(locEntry.getKey());
+			double score = (double) locEntry.getValue() / totalWords;
+			currentResults.add(new SearchResult(locEntry.getKey(), locEntry.getValue(), score));
+		}
+
+		Collections.sort(currentResults);
+		return currentResults;
 	}
 
 	@Override

@@ -3,11 +3,8 @@ package edu.usfca.cs272;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * Search object class that has count, score, and where. These objects will be
@@ -38,16 +35,6 @@ public class SearchResult implements Comparable<SearchResult> {
 		this.count = count;
 		this.score = score;
 	}
-
-	// TODO Move query data structure as non-static member to the new QueryProcessor class
-	/**
-	 * Structure of word query as the key, and the SearchResult as the value
-	 */
-	public static Map<String, List<SearchResult>> query = new TreeMap<>();
-	/**
-	 * Query line to be searched for witin a given file location
-	 */
-	public static List<TreeSet<String>> qWords = new ArrayList<>(); // TODO Remove as a member??
 
 	/**
 	 * @return word frequency

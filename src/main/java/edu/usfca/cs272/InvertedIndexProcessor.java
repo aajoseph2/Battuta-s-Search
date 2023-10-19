@@ -8,14 +8,6 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
@@ -117,75 +109,4 @@ public class InvertedIndexProcessor {
 			mapMethods.addWordCount(location, pos - 1);
 		}
 	}
-	
-	// TODO Going to create a QueryProcessor class for some of this logic
-
-	/**
-	 * @param location Where the query is being retrieved from
-	 * @param mapMethods mapMethods contains the structure for the read data
-	 * @throws IOException If file is unreadable
-	 */
-	public static void processQuery(Path location, InvertedIndex mapMethods) throws IOException {
-		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				// TODO should be processQuery(line, mapMethods)
-				String[] words = TextParser.parse(line);
-				var buffer = TextParser.uniqueStems(Arrays.toString(words)); // TODO uniqueStems(line) ??
-				if (!buffer.isEmpty()) {
-					SearchResult.qWords.add(TextParser.uniqueStems(Arrays.toString(words))); // TODO Repeated operation
-				}
-			}
-		}
-		// return qWords;
-	}
-	
-	/*
-	 * TODO In this new QueryProcessor create a method..
-	 * 
-	 * public void processQuery(String line, ....) {
-	 *    stem the line
-	 *    collect the search results
-	 *    store the results in the map
-	 * }
-	 * 
-	 * change your processQuery(Path file, ...) to call this method per line
-	 */
-
-	/**
-	 * @param query Words to be searched in the inverted index
-	 * @param mapMethods mapMethods contains the structure for the read data
-	 * @throws IOException If file is unreadable
-	 */
-	public static void exactSearch(List<TreeSet<String>> query, InvertedIndex mapMethods) throws IOException {
-
-		// TODO Move the core logic here into the inverted index
-		// TODO public List<SearchResult> exactSearch(Set<String> queries) from 1 line in the file
-		for (TreeSet<String> entry : query) {
-			Map<String, Integer> locationCounts = new HashMap<>();
-			int totalWords = 0;
-
-			for (String word : entry) {
-				Set<String> locations = mapMethods.getLocations(word);
-				for (String loc : locations) {
-					int wordCountAtLocation = mapMethods.numWordFrequencyAtLocation(word, loc);
-					locationCounts.put(loc, locationCounts.getOrDefault(loc, 0) + wordCountAtLocation);
-				}
-			}
-
-			List<SearchResult> currentResults = new ArrayList<>();
-			for (var locEntry : locationCounts.entrySet()) {
-				totalWords = mapMethods.numTotalWordsForLocation(locEntry.getKey());
-				double score = (double) locEntry.getValue() / totalWords;
-				currentResults.add(new SearchResult(locEntry.getKey(), locEntry.getValue(), score));
-			}
-			Collections.sort(currentResults);
-
-			// TODO Move where the results are stored, moves into the new processQuery method
-			SearchResult.query.put(String.join(" ", entry), currentResults);
-		}
-	}
-
-
-
 }
