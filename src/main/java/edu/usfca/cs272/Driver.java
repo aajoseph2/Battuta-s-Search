@@ -3,7 +3,7 @@ package edu.usfca.cs272;
 import java.io.IOException;
 import java.nio.file.Path;
 
-//import javax.naming.directory.SearchResult;
+//import javax.naming.directory.SearchResult; TODO Remove
 
 /**
  * Class responsible for running this project based on the provided command-line
@@ -65,7 +65,7 @@ public class Driver {
 				System.out.println("Error writing index to file: " + e.getMessage());
 			}
 		}
-	if (parser.hasFlag("-query")) {
+	if (parser.hasFlag("-query")) { // TODO Fix up formatting and variable names
 	Path qPath = parser.getPath("-query");
 
 	if (qPath != null) {
@@ -85,7 +85,7 @@ if (parser.hasFlag("-results")) {
 	Path resPath = parser.getPath("-results", Path.of("results.json"));
 	System.out.println(resPath);
 	try {
-		InvertedIndexProcessor.exactSearch(SearchResult.qWords, index);
+		InvertedIndexProcessor.exactSearch(SearchResult.qWords, index); // TODO Should happen in -query flag?
 		SearchResult.writeQueryJson(resPath, SearchResult.query);
 	}
 	catch (IOException e) {
