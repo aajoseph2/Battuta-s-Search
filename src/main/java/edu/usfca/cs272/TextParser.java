@@ -34,6 +34,8 @@ public class TextParser {
 	public static final Pattern CLEAN_REGEX = Pattern.compile("(?U)[^\\p{Alpha}\\p{Space}]+");
 
 	/**
+	 * TODO Go back to all your code and make sure your Javadoc is filled in!
+	 * 
 	 * @param text text to be parsed
 	 * @return cleaned text
 	 */
@@ -109,7 +111,6 @@ public class TextParser {
 	public static ArrayList<String> listStems(String line) {
 		Stemmer stem = new SnowballStemmer(ENGLISH);
 		return listStems(line, stem);
-
 	}
 
 	/**
@@ -188,7 +189,6 @@ public class TextParser {
 	 */
 	public static ArrayList<TreeSet<String>> listUniqueStems(Path input) throws IOException {
 		ArrayList<TreeSet<String>> listOfStems = new ArrayList<>();
-
 		Stemmer stem = new SnowballStemmer(ENGLISH);
 
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {

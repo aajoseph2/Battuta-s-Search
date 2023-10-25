@@ -12,6 +12,8 @@ import java.nio.file.Path;
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
+// TODO Fix up where the blank lines are in all of your classes! Be consistent!
+
 /**
  * The InvertedIndexProcessor class provides functionalities for reading,
  * processing, and converting textual data into structured formats suitable for
@@ -104,6 +106,16 @@ public class InvertedIndexProcessor {
 				}
 			}
 		}
+		
+		/*
+		 * TODO At this point, we need to remove this operation from here. It is
+		 * efficient, but we need something better encapsulated such that the word count
+		 * matches exactly what is stored in the index at all times. Remind me to
+		 * explain why in our next appointment.
+		 *
+		 * That means instead of once per file, you need to update the count once per
+		 * word. See the index for details.
+		 */		
 
 		if (pos > 1) {
 			mapMethods.addWordCount(location, pos - 1);
