@@ -34,8 +34,9 @@ public class TextParser {
 	public static final Pattern CLEAN_REGEX = Pattern.compile("(?U)[^\\p{Alpha}\\p{Space}]+");
 
 	/**
-	 * TODO Go back to all your code and make sure your Javadoc is filled in!
-	 * 
+	 * Removes any unwanted characters or formatting from the input text. Normalizes
+	 * the text to form NFD and converts to lowercase
+	 *
 	 * @param text text to be parsed
 	 * @return cleaned text
 	 */
@@ -46,6 +47,8 @@ public class TextParser {
 	}
 
 	/**
+	 * Splits the provided text into individual words or tokens using predefined split patterns
+	 *
 	 * @param text text to be parsed
 	 * @return splitted text
 	 */
@@ -68,7 +71,6 @@ public class TextParser {
 	 * @param line the line of words to clean, split, and stem
 	 * @param stemmer the stemmer to use
 	 * @param stems the collection to add stems
-	 *
 	 * @see #parse(String)
 	 * @see Stemmer#stem(CharSequence)
 	 * @see Collection#add(Object)
@@ -86,7 +88,6 @@ public class TextParser {
 	 * @param line the line of words to clean, split, and stem
 	 * @param stemmer the stemmer to use
 	 * @return a list of cleaned and stemmed words in parsed order
-	 *
 	 * @see #parse(String)
 	 * @see Stemmer#stem(CharSequence)
 	 */
@@ -94,7 +95,6 @@ public class TextParser {
 		ArrayList<String> stemList = new ArrayList<>();
 		addStems(line, stemmer, stemList);
 		return stemList;
-
 	}
 
 	/**
@@ -103,7 +103,6 @@ public class TextParser {
 	 *
 	 * @param line the line of words to parse and stem
 	 * @return a list of cleaned and stemmed words in parsed order
-	 *
 	 * @see SnowballStemmer#SnowballStemmer(ALGORITHM)
 	 * @see ALGORITHM#ENGLISH
 	 * @see #listStems(String, Stemmer)
@@ -119,7 +118,6 @@ public class TextParser {
 	 * @param line the line of words to parse and stem
 	 * @param stemmer the stemmer to use
 	 * @return a sorted set of unique cleaned and stemmed words
-	 *
 	 * @see #parse(String)
 	 * @see Stemmer#stem(CharSequence)
 	 */
@@ -152,7 +150,6 @@ public class TextParser {
 	 * @param input the input file to parse and stem
 	 * @return a sorted set of unique cleaned and stemmed words from file
 	 * @throws IOException if unable to read or parse file
-	 *
 	 * @see SnowballStemmer
 	 * @see ALGORITHM#ENGLISH
 	 * @see StandardCharsets#UTF_8
@@ -161,14 +158,12 @@ public class TextParser {
 	public static TreeSet<String> uniqueStems(Path input) throws IOException {
 		TreeSet<String> uniqueStems = new TreeSet<>();
 		Stemmer stem = new SnowballStemmer(ENGLISH);
-
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				addStems(line, stem, uniqueStems);
 			}
 		}
-
 		return uniqueStems;
 	}
 
@@ -179,9 +174,8 @@ public class TextParser {
 	 *
 	 * @param input the input file to parse and stem
 	 * @return a list where each item is the sets of unique sorted stems parsed from
-	 *   a single line of the input file
+	 * a single line of the input file
 	 * @throws IOException if unable to read or parse file
-	 *
 	 * @see SnowballStemmer
 	 * @see ALGORITHM#ENGLISH
 	 * @see StandardCharsets#UTF_8
@@ -190,7 +184,6 @@ public class TextParser {
 	public static ArrayList<TreeSet<String>> listUniqueStems(Path input) throws IOException {
 		ArrayList<TreeSet<String>> listOfStems = new ArrayList<>();
 		Stemmer stem = new SnowballStemmer(ENGLISH);
-
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;
 			while ((line = reader.readLine()) != null) {

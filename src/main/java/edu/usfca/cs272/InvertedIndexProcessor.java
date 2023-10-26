@@ -12,8 +12,6 @@ import java.nio.file.Path;
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
-// TODO Fix up where the blank lines are in all of your classes! Be consistent!
-
 /**
  * The InvertedIndexProcessor class provides functionalities for reading,
  * processing, and converting textual data into structured formats suitable for
@@ -31,11 +29,9 @@ public class InvertedIndexProcessor {
 	 *
 	 * @param path Given file contents
 	 * @param index map to be used for indexing data
-	 *
 	 * @throws IOException if file is unreadable
 	 */
 	public static void processPath(Path path, InvertedIndex index) throws IOException {
-
 		if (Files.isDirectory(path)) {
 			processDirectory(path, index);
 		}
@@ -74,7 +70,6 @@ public class InvertedIndexProcessor {
 	public static boolean isTextFile(Path input) {
 		String fileNameLower = input.getFileName().toString().toLowerCase();
 		return fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text");
-
 	}
 
 	/**
@@ -90,35 +85,19 @@ public class InvertedIndexProcessor {
 	 * @throws IOException IOException In case file cannot be read
 	 */
 	public static void processText(Path input, InvertedIndex mapMethods) throws IOException {
-
 		int pos = 1;
 		String location = input.toString();
-
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			String line;
 			Stemmer stemmer = new SnowballStemmer(ENGLISH);
 			while ((line = reader.readLine()) != null) {
 				String[] words = TextParser.parse(line);
-
 				for (String word : words) {
 					mapMethods.addData(stemmer.stem(word).toString(), location, pos);
+					mapMethods.addWordCount(location, pos);
 					pos++;
 				}
 			}
-		}
-		
-		/*
-		 * TODO At this point, we need to remove this operation from here. It is
-		 * efficient, but we need something better encapsulated such that the word count
-		 * matches exactly what is stored in the index at all times. Remind me to
-		 * explain why in our next appointment.
-		 *
-		 * That means instead of once per file, you need to update the count once per
-		 * word. See the index for details.
-		 */		
-
-		if (pos > 1) {
-			mapMethods.addWordCount(location, pos - 1);
 		}
 	}
 }

@@ -81,7 +81,7 @@ public class Driver {
 		if (parser.hasFlag("-results")) {
 			Path resPath = parser.getPath("-results", Path.of("results.json"));
 			try {
-				SearchResult.writeQueryJson(resPath, queryClass.query);
+				InvertedIndex.SearchResult.writeQueryJson(resPath, queryClass.query);
 			}
 			catch (IOException e) {
 				System.out.println("Error writing results to file: " + e.getMessage());

@@ -507,32 +507,32 @@ public class JsonFormatter {
 	}
 
 	/*
-	 * TODO You know how to make the writeSearchResults more general and reusable now! 
-	 * Try 1 general method for a search result, 1 for a collection of results, and 
+	 * TODO You know how to make the writeSearchResults more general and reusable now!
+	 * Try 1 general method for a search result, 1 for a collection of results, and
 	 * 1 general method for a map of a collection of results... then create the 2 other
 	 * convenience methods for that last one too!
 	 */
-	
+
 	/**
 	 * @param results The data structure containing the search data
 	 * @return string of formatted json
 	 * @throws IOException if file is unreadable
 	 */
-	public static String writeSearchResults(Map<String, List<SearchResult>> results) throws IOException {
+	public static String writeSearchResults(Map<String, List<InvertedIndex.SearchResult>> results) throws IOException {
 		StringWriter writer = new StringWriter();
 
 		writer.write("{\n");
-		Iterator<Map.Entry<String, List<SearchResult>>> iterator = results.entrySet().iterator();
+		Iterator<Map.Entry<String, List<InvertedIndex.SearchResult>>> iterator = results.entrySet().iterator();
 
 		while (iterator.hasNext()) {
-			Map.Entry<String, List<SearchResult>> entry = iterator.next();
+			Map.Entry<String, List<InvertedIndex.SearchResult>> entry = iterator.next();
 
 			writeQuote(entry.getKey(), writer, 1);
 			writer.write(": [\n");
 
-			List<SearchResult> searchResults = entry.getValue();
+			List<InvertedIndex.SearchResult> searchResults = entry.getValue();
 			for (int i = 0; i < searchResults.size(); i++) {
-				SearchResult result = searchResults.get(i);
+				InvertedIndex.SearchResult result = searchResults.get(i);
 
 				writeIndent("{\n", writer, 2);
 

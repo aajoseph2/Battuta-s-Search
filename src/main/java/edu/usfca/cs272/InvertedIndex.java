@@ -1,6 +1,9 @@
 package edu.usfca.cs272;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,7 +61,7 @@ public class InvertedIndex {
 		index.putIfAbsent(word, new TreeMap<>());
 		index.get(word).putIfAbsent(location, new TreeSet<>());
 		index.get(word).get(location).add(num);
-		
+
 		/*
 		 * TODO We now need to update the word count here instead, so the index and the
 		 * counts are always in sync with each other and better encapsulated. There are
@@ -236,7 +239,7 @@ public class InvertedIndex {
 	/**
 	 * Performs a search based on the provided query and the search mode (exact or
 	 * partial).
-	 * 
+	 *
 	 * @param queryWords words in query line to be searched
 	 * @param isExact A flag to determine if the search should be exact or partial.
 	 * @return the search result
@@ -251,13 +254,13 @@ public class InvertedIndex {
 		 * exact versus partial search. Go ahead and create 2 separate methods and don't
 		 * worry about the duplicate code yet. We'll optimize first, then remove the
 		 * duplicate code after.
-		 * 
+		 *
 		 * TODO Search has to be as efficient as possible (even if your other methods
 		 * are as compact as possible). Avoid your public methods and directly access
-		 * the underlying index and counts data structures as much as possible, and 
-		 * loop through entry sets instead of key sets. 
+		 * the underlying index and counts data structures as much as possible, and
+		 * loop through entry sets instead of key sets.
 		 */
-		
+
 		for (String word : queryWords) {
 			Set<String> relevantWords = !isExact ? Collections.singleton(word) : prefixSearch(word);
 			for (String relevantWord : relevantWords) {
@@ -290,6 +293,92 @@ public class InvertedIndex {
 	@Override
 	public String toString() {
 		return "InvertedIndex{" + "counts=" + counts + ", index=" + index + '}';
+	}
+
+	/**
+	 * Search object class that has count, score, and where. These objects will be
+	 * used as the values within the map structure
+	 */
+	public class SearchResult implements Comparable<SearchResult> {
+		/**
+		 * Count of given word from a given file
+		 */
+		private int count;
+		/**
+		 * Score of given query
+		 */
+		private double score;
+		/**
+		 * Location of a query search
+		 */
+		private final String where;
+
+		/**
+		 * @param where location of word query location
+		 * @param count count of all words in the query, within the given "where"
+		 * @param score score of count of words from the given query
+		 */
+		public SearchResult(String where, int count, double score) {
+			this.where = where;
+			this.count = count;
+			this.score = score;
+		}
+
+		/**
+		 * @return word frequency
+		 */
+		public int getCount() {
+			return count;
+		}
+
+		/**
+		 * @return score of given query
+		 */
+		public double getScore() {
+			return score;
+		}
+
+		/**
+		 * @return get location of the given query
+		 */
+		public String getWhere() {
+			return where;
+		}
+
+		@Override
+		public int compareTo(SearchResult other) {
+			int scoreComparison = Double.compare(other.score, this.score);
+			if (scoreComparison != 0) {
+				return scoreComparison;
+			}
+
+			int countComparison = Integer.compare(other.count, this.count);
+			if (countComparison != 0) {
+				return countComparison;
+			}
+
+			return this.where.compareToIgnoreCase(other.where);
+		}
+
+		/**
+		 * Writes the provided search results to a file in JSON format.Takes map of
+		 * query strings corresponding search results and converts the structure into a
+		 * json formatted string.
+		 *
+		 * @param path file path to be outputted
+		 * @param results the updated query structure to be translated into json
+		 * @throws IOException if file is not able to written
+		 */
+		public static void writeQueryJson(Path path, Map<String, List<SearchResult>> results) throws IOException {
+			try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+				writer.write(JsonFormatter.writeSearchResults(results));
+			}
+		}
+
+		@Override
+		public String toString() {
+			return String.format("Where: %s, Count: %d, Score: %.4f", where, count, score);
+		}
 	}
 
 }
