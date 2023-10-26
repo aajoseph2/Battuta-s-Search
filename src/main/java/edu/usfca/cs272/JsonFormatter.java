@@ -268,6 +268,7 @@ public class JsonFormatter {
 		var iterator = elements.iterator();
 
 		if (iterator.hasNext()) {
+			// TODO Why is this one different from the others? What happened to writer.write("\n");
 			writeArrayObjectElement(iterator, writer, indent);
 		}
 
@@ -505,6 +506,13 @@ public class JsonFormatter {
 		writeIndexJson(index, buffer, 1);
 	}
 
+	/*
+	 * TODO You know how to make the writeSearchResults more general and reusable now! 
+	 * Try 1 general method for a search result, 1 for a collection of results, and 
+	 * 1 general method for a map of a collection of results... then create the 2 other
+	 * convenience methods for that last one too!
+	 */
+	
 	/**
 	 * @param results The data structure containing the search data
 	 * @return string of formatted json

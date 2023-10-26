@@ -6,10 +6,19 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+/*
+ * TODO The values of the members of this class are fully dependent on a
+ * specific instance of a specific inverted index. In other words, different
+ * inverted indexes (one generated from text files and another generated from
+ * web pages) will generate different search results for the same query. When a
+ * class is so fully dependent on another like this, we nest them! Make this a
+ * nested class within inverted index. When you do that, should it be a static
+ * nested class or should it be a non-static inner class?
+ */
+
 /**
  * Search object class that has count, score, and where. These objects will be
  * used as the values within the map structure
- *
  */
 public class SearchResult implements Comparable<SearchResult> {
 	/**
@@ -23,7 +32,7 @@ public class SearchResult implements Comparable<SearchResult> {
 	/**
 	 * Location of a query search
 	 */
-	private String where;
+	private String where; // TODO make final
 
 	/**
 	 * @param where location of word query location
@@ -73,12 +82,14 @@ public class SearchResult implements Comparable<SearchResult> {
 	}
 
 	/**
+	 * TODO Fill in 
+	 * 
 	 * @param path file path to be outputted
 	 * @param results the updated query structure to be translated into json
 	 * @throws IOException if file is not able to written
 	 */
 	public static void writeQueryJson(Path path, Map<String, List<SearchResult>> results) throws IOException {
-		Files.write(path, JsonFormatter.writeSearchResults(results).getBytes());
+		Files.write(path, JsonFormatter.writeSearchResults(results).getBytes()); // TODO Not efficient! 
 	}
 
 	@Override

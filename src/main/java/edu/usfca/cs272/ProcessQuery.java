@@ -16,12 +16,37 @@ import java.util.TreeMap;
  * given indexed structures
  */
 public class ProcessQuery {
+	
+	/*
+	 * TODO You know how to think about classes with instance data like the query
+	 * map now! Practice those design principles and (1) encapsulate this data and
+	 * (2) create safe useful methods for accessing that data.
+	 */
 
 	/**
 	 * Structure of word query as the key, and the SearchResult as the value
 	 */
 	public Map<String, List<SearchResult>> query = new TreeMap<>();
 
+	/*
+	 * TODO Take a non-static approach in this class. Unlike your inverted index
+	 * processor class, this one needs to store extra information and doesn't work
+	 * as well as a class with only static methods.
+	 */
+	
+	/*
+	 * TODO Consider the query line "hello world". When does that query line
+	 * generate the same results (and thus should be stored in the same query map)?
+	 * If we have two different inverted index instances (one built from text files,
+	 * another built from web pages), do they return the same list of results? How
+	 * about doing an exact versus partial search for that query line?
+	 * 
+	 * If it does not result in the same results, it should not be stored in the
+	 * same query map. In that cause, instead of making those values parameters of a
+	 * method as below, it should be parameters sent to the constructor of this
+	 * class and stored as final members.
+	 */
+	
 	/**
 	 * @param location Where the query is being retrieved from
 	 * @param mapMethods mapMethods contains the structure for the read data
@@ -50,12 +75,21 @@ public class ProcessQuery {
 	 */
 	public static void processQuery(String line, InvertedIndex mapMethods, boolean isExact, ProcessQuery query)
 			throws IOException {
+		// TODO Why do you need to parse the line before passing it to uniqueStems?
 		String[] words = TextParser.parse(line);
 		var buffer = TextParser.uniqueStems(Arrays.toString(words));
 		if (!buffer.isEmpty()) {
 			List<SearchResult> currentResults = mapMethods.search(buffer, isExact);
 			query.query.put(String.join(" ", buffer), currentResults);
 
+			/*
+			 * TODO Check out the input/query/respect.txt query file and compare that file
+			 * to the search results in expected/exact/exact-respect-stems.json file. Notice
+			 * how many lines are in the query file, versus how many unique lines show up in
+			 * the results. How many times does yout code need to calculate those search
+			 * results? How many times does your code re-calculate those results when it
+			 * doesn't need to?
+			 */
 		}
 	}
 

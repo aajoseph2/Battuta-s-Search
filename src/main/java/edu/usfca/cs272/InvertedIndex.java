@@ -41,7 +41,7 @@ public class InvertedIndex {
 	 * @param location File name to stored as key
 	 * @param count words counts within the fn, for the value
 	 */
-	public void addWordCount(String location, Integer count) {
+	public void addWordCount(String location, Integer count) { // TODO Remove or make private (see other comments)
 		counts.put(location, count);
 	}
 
@@ -58,6 +58,25 @@ public class InvertedIndex {
 		index.putIfAbsent(word, new TreeMap<>());
 		index.get(word).putIfAbsent(location, new TreeSet<>());
 		index.get(word).get(location).add(num);
+		
+		/*
+		 * TODO We now need to update the word count here instead, so the index and the
+		 * counts are always in sync with each other and better encapsulated. There are
+		 * two ways to go about this (choose one):
+		 *
+		 * 1) Every time a NEW word, location, position is added, increase the count for
+		 * that location by 1. For example, if we add hello in hello.txt at position 12,
+		 * we increase the word count by 1 for hello.txt. This is more direct and easier
+		 * to implement now, but slightly complicates multithreading later.
+		 *
+		 * 2) Keep the maximum position found for a location as the word count. For
+		 * example, if we add hello in hello.txt at position 12, we know there must be
+		 * at least 12 words in hello.txt. If later on world in hello.txt at position
+		 * 29, we know there is at least 29 words. But, if we add earth.txt in hello.txt
+		 * in position 3, we do nothing because we still know there were at least 29
+		 * words. This is harder to reason about now and not a direct measurement, but
+		 * slightly easier to multithread.
+		 */
 	}
 
 	/**
@@ -227,6 +246,18 @@ public class InvertedIndex {
 	public List<SearchResult> search(TreeSet<String> queryWords, boolean isExact) throws IOException {
 		Map<String, Integer> locationCounts = new HashMap<>();
 
+		/*
+		 * TODO We can improve the efficiency here of search, but it is different for
+		 * exact versus partial search. Go ahead and create 2 separate methods and don't
+		 * worry about the duplicate code yet. We'll optimize first, then remove the
+		 * duplicate code after.
+		 * 
+		 * TODO Search has to be as efficient as possible (even if your other methods
+		 * are as compact as possible). Avoid your public methods and directly access
+		 * the underlying index and counts data structures as much as possible, and 
+		 * loop through entry sets instead of key sets. 
+		 */
+		
 		for (String word : queryWords) {
 			Set<String> relevantWords = !isExact ? Collections.singleton(word) : prefixSearch(word);
 			for (String relevantWord : relevantWords) {

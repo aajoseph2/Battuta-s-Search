@@ -25,7 +25,7 @@ public class Driver {
 
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index = new InvertedIndex();
-		ProcessQuery queryClass = new ProcessQuery();
+		ProcessQuery queryClass = new ProcessQuery(); // TODO QueryProcessor is a better name for this class
 
 		if (parser.hasFlag("-text")) {
 			Path contentsPath = parser.getPath("-text");
@@ -39,7 +39,7 @@ public class Driver {
 			}
 		}
 		else {
-			System.out.println("Must input a Text file to read!");
+			System.out.println("Must input a text file to read!");
 		}
 
 		if (parser.hasFlag("-counts")) {
