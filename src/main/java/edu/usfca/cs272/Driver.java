@@ -25,7 +25,7 @@ public class Driver {
 
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index = new InvertedIndex();
-		ProcessQuery queryClass = new ProcessQuery(); // TODO QueryProcessor is a better name for this class
+		QueryProcessor queryClass = new QueryProcessor();
 
 		if (parser.hasFlag("-text")) {
 			Path contentsPath = parser.getPath("-text");
@@ -67,7 +67,7 @@ public class Driver {
 			if (queryPath != null) {
 				try {
 					boolean isExact = parser.hasFlag("-partial");
-					ProcessQuery.processQuery(queryPath, index, isExact, queryClass);
+					QueryProcessor.queryProcessor(queryPath, index, isExact, queryClass);
 				}
 				catch (IOException e) {
 					System.out.println("Error writing query to file: " + e.getMessage());

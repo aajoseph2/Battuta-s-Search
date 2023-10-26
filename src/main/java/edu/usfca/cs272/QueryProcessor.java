@@ -15,7 +15,7 @@ import java.util.TreeMap;
  * Processes queries that are used to as the worsd to be searched for from the
  * given indexed structures
  */
-public class ProcessQuery {
+public class QueryProcessor {
 
 	/*
 	 * TODO You know how to think about classes with instance data like the query
@@ -54,12 +54,12 @@ public class ProcessQuery {
 	 * @param query structure containing searched data
 	 * @throws IOException If file is unreadable
 	 */
-	public static void processQuery(Path location, InvertedIndex mapMethods, boolean isExact, ProcessQuery query)
+	public static void queryProcessor(Path location, InvertedIndex mapMethods, boolean isExact, QueryProcessor query)
 			throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
 			String line;
 			while ((line = reader.readLine()) != null) {
-				processQuery(line, mapMethods, isExact, query);
+				queryProcessor(line, mapMethods, isExact, query);
 			}
 		}
 	}
@@ -73,7 +73,7 @@ public class ProcessQuery {
 	 * @param query structure containing searched data
 	 * @throws IOException If file is unreadable
 	 */
-	public static void processQuery(String line, InvertedIndex mapMethods, boolean isExact, ProcessQuery query)
+	public static void queryProcessor(String line, InvertedIndex mapMethods, boolean isExact, QueryProcessor query)
 			throws IOException {
 		String[] words = line.split(" ");
 		var buffer = TextParser.uniqueStems(Arrays.toString(words));

@@ -94,7 +94,6 @@ public class InvertedIndexProcessor {
 				String[] words = TextParser.parse(line);
 				for (String word : words) {
 					mapMethods.addData(stemmer.stem(word).toString(), location, pos);
-					mapMethods.addWordCount(location, pos);
 					pos++;
 				}
 			}

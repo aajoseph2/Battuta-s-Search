@@ -39,16 +39,6 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * wrapper add method
-	 *
-	 * @param location File name to stored as key
-	 * @param count words counts within the fn, for the value
-	 */
-	public void addWordCount(String location, Integer count) { // TODO Remove or make private (see other comments)
-		counts.put(location, count);
-	}
-
-	/**
 	 * This method processes data from the textProcess methods, where the data will
 	 * be inputted into maps, which are used to build a final data structure to read
 	 * the counts and index of the file contents.
@@ -60,26 +50,10 @@ public class InvertedIndex {
 	public void addData(String word, String location, Integer num) {
 		index.putIfAbsent(word, new TreeMap<>());
 		index.get(word).putIfAbsent(location, new TreeSet<>());
-		index.get(word).get(location).add(num);
 
-		/*
-		 * TODO We now need to update the word count here instead, so the index and the
-		 * counts are always in sync with each other and better encapsulated. There are
-		 * two ways to go about this (choose one):
-		 *
-		 * 1) Every time a NEW word, location, position is added, increase the count for
-		 * that location by 1. For example, if we add hello in hello.txt at position 12,
-		 * we increase the word count by 1 for hello.txt. This is more direct and easier
-		 * to implement now, but slightly complicates multithreading later.
-		 *
-		 * 2) Keep the maximum position found for a location as the word count. For
-		 * example, if we add hello in hello.txt at position 12, we know there must be
-		 * at least 12 words in hello.txt. If later on world in hello.txt at position
-		 * 29, we know there is at least 29 words. But, if we add earth.txt in hello.txt
-		 * in position 3, we do nothing because we still know there were at least 29
-		 * words. This is harder to reason about now and not a direct measurement, but
-		 * slightly easier to multithread.
-		 */
+		if (index.get(word).get(location).add(num)) {
+			counts.put(location, counts.getOrDefault(location, 0) + 1);
+		}
 	}
 
 	/**
