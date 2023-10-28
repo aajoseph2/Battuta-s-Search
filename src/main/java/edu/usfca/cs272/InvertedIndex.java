@@ -19,7 +19,7 @@ import java.util.TreeSet;
 public class InvertedIndex {
 
 	/**
-	 * The final -counts map that builds the file path and counts.
+	 * The final counts map that builds the file path and counts.
 	 */
 	private final TreeMap<String, Integer> counts;
 	/**
@@ -98,6 +98,8 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * Sorted map of word counts in Counts
+	 *
 	 * @return the CountsInfo in the Driver class
 	 */
 	public SortedMap<String, Integer> getWordCounts() {
@@ -135,6 +137,8 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * Total word count in specified location
+	 *
 	 * @param location file location used as key
 	 * @return count of total words
 	 */
@@ -194,6 +198,8 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * Logic for determing prefix for partial search
+	 *
 	 * @param prefix The prefix string to search for.
 	 * @return A set of words that start with the provided prefix.
 	 */
@@ -208,53 +214,84 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Performs a search based on the provided query and the search mode (exact or
-	 * partial).
+	 * Performs a search based on the provided query and the search mode
 	 *
 	 * @param queryWords words in query line to be searched
 	 * @param isExact A flag to determine if the search should be exact or partial.
 	 * @return the search result
 	 * @throws IOException If there is an error during searching.
 	 */
-
 	public List<SearchResult> search(TreeSet<String> queryWords, boolean isExact) throws IOException {
+		if (isExact) {
+			return exactSearch(queryWords);
+		}
+		else {
+			return partialSearch(queryWords);
+		}
+	}
+
+	/**
+	 * Performs an exact search based on the provided set of query words. This
+	 * method only looks for the exact word matches within the inverted index.
+	 *
+	 * @param queryWords The set of words intended for the exact search.
+	 * @return A list of search results based on the exact matches.
+	 * @throws IOException If there is an error during the search.
+	 */
+	private List<SearchResult> exactSearch(TreeSet<String> queryWords) throws IOException {
 		Map<String, Integer> locationCounts = new HashMap<>();
 
-		/*
-		 * TODO We can improve the efficiency here of search, but it is different for
-		 * exact versus partial search. Go ahead and create 2 separate methods and don't
-		 * worry about the duplicate code yet. We'll optimize first, then remove the
-		 * duplicate code after.
-		 *
-		 * TODO Search has to be as efficient as possible (even if your other methods
-		 * are as compact as possible). Avoid your public methods and directly access
-		 * the underlying index and counts data structures as much as possible, and
-		 * loop through entry sets instead of key sets.
-		 */
-
 		for (String word : queryWords) {
-			Set<String> relevantWords = !isExact ? Collections.singleton(word) : prefixSearch(word);
-			for (String relevantWord : relevantWords) {
-				for (String loc : getLocations(relevantWord)) {
-					locationCounts.put(loc, locationCounts.getOrDefault(loc, 0) + numWordFrequencyAtLocation(relevantWord, loc));
+			if (index.containsKey(word)) {
+				for (var locEntry : index.get(word).entrySet()) {
+					String loc = locEntry.getKey();
+					int frequency = locEntry.getValue().size();
+					locationCounts.put(loc, locationCounts.getOrDefault(loc, 0) + frequency);
 				}
 			}
 		}
 		return compileResults(locationCounts);
 	}
 
+	/**
+	 * Performs a partial search based on the provided set of query words. This
+	 * method will return matches for words that start with any of the query words,
+	 * using a prefix search.
+	 *
+	 * @param queryWords The set of words intended for the partial search.
+	 * @return A list of search results based on partial matches.
+	 * @throws IOException If there is an error during the search.
+	 */
+	private List<SearchResult> partialSearch(TreeSet<String> queryWords) throws IOException {
+		Map<String, Integer> locationCounts = new HashMap<>();
 
+		for (String word : queryWords) {
+			Set<String> relevantWords = prefixSearch(word);
+			for (String relevantWord : relevantWords) {
+				if (index.containsKey(relevantWord)) {
+					for (var locEntry : index.get(relevantWord).entrySet()) {
+						String loc = locEntry.getKey();
+						int frequency = locEntry.getValue().size();
+						locationCounts.put(loc, locationCounts.getOrDefault(loc, 0) + frequency);
+					}
+				}
+			}
+		}
+		return compileResults(locationCounts);
+	}
 
 	/**
+	 * Compiles the exacr and partial search methods
+	 *
 	 * @param locationCounts The map containing word count for each location.
-	 *   retrieving total word count.
+	 * retrieving total word count.
 	 * @return A sorted list of SearchResult objects.
 	 */
 	private List<SearchResult> compileResults(Map<String, Integer> locationCounts) {
 		List<SearchResult> currentResults = new ArrayList<>();
 
 		for (var locEntry : locationCounts.entrySet()) {
-			int totalWords = numTotalWordsForLocation(locEntry.getKey());
+			int totalWords = counts.getOrDefault(locEntry.getKey(), 0);
 			double score = (double) locEntry.getValue() / totalWords;
 			currentResults.add(new SearchResult(locEntry.getKey(), locEntry.getValue(), score));
 		}
@@ -287,6 +324,8 @@ public class InvertedIndex {
 		private final String where;
 
 		/**
+		 * Constructor for SearchResult class, describes the structure of data
+		 *
 		 * @param where location of word query location
 		 * @param count count of all words in the query, within the given "where"
 		 * @param score score of count of words from the given query
@@ -298,6 +337,8 @@ public class InvertedIndex {
 		}
 
 		/**
+		 * word count getter
+		 *
 		 * @return word frequency
 		 */
 		public int getCount() {
@@ -305,6 +346,8 @@ public class InvertedIndex {
 		}
 
 		/**
+		 * Score of search getter
+		 *
 		 * @return score of given query
 		 */
 		public double getScore() {
@@ -312,6 +355,8 @@ public class InvertedIndex {
 		}
 
 		/**
+		 * Retrieving where a word is stored
+		 *
 		 * @return get location of the given query
 		 */
 		public String getWhere() {

@@ -25,7 +25,7 @@ public class Driver {
 
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index = new InvertedIndex();
-		boolean isExact = parser.hasFlag("-partial");
+		boolean isExact = !parser.hasFlag("-partial");
 		QueryProcessor queryClass = new QueryProcessor(index, isExact);
 
 		if (parser.hasFlag("-text")) {
