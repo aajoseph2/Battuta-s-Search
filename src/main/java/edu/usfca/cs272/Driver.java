@@ -25,7 +25,8 @@ public class Driver {
 
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index = new InvertedIndex();
-		QueryProcessor queryClass = new QueryProcessor();
+		boolean isExact = parser.hasFlag("-partial");
+		QueryProcessor queryClass = new QueryProcessor(index, isExact);
 
 		if (parser.hasFlag("-text")) {
 			Path contentsPath = parser.getPath("-text");
@@ -66,8 +67,7 @@ public class Driver {
 			Path queryPath = parser.getPath("-query");
 			if (queryPath != null) {
 				try {
-					boolean isExact = parser.hasFlag("-partial");
-					QueryProcessor.queryProcessor(queryPath, index, isExact, queryClass);
+					queryClass.queryProcessor(queryPath);
 				}
 				catch (IOException e) {
 					System.out.println("Error writing query to file: " + e.getMessage());
@@ -81,7 +81,7 @@ public class Driver {
 		if (parser.hasFlag("-results")) {
 			Path resPath = parser.getPath("-results", Path.of("results.json"));
 			try {
-				InvertedIndex.SearchResult.writeQueryJson(resPath, queryClass.query);
+				queryClass.writeQueryJson(resPath, queryClass);
 			}
 			catch (IOException e) {
 				System.out.println("Error writing results to file: " + e.getMessage());

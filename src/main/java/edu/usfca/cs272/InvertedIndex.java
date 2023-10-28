@@ -1,9 +1,6 @@
 package edu.usfca.cs272;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -246,6 +243,8 @@ public class InvertedIndex {
 		return compileResults(locationCounts);
 	}
 
+
+
 	/**
 	 * @param locationCounts The map containing word count for each location.
 	 *   retrieving total word count.
@@ -332,21 +331,6 @@ public class InvertedIndex {
 			}
 
 			return this.where.compareToIgnoreCase(other.where);
-		}
-
-		/**
-		 * Writes the provided search results to a file in JSON format.Takes map of
-		 * query strings corresponding search results and converts the structure into a
-		 * json formatted string.
-		 *
-		 * @param path file path to be outputted
-		 * @param results the updated query structure to be translated into json
-		 * @throws IOException if file is not able to written
-		 */
-		public static void writeQueryJson(Path path, Map<String, List<SearchResult>> results) throws IOException {
-			try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-				writer.write(JsonFormatter.writeSearchResults(results));
-			}
 		}
 
 		@Override
