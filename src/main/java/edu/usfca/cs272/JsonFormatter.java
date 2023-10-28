@@ -88,10 +88,9 @@ public class JsonFormatter {
 	 * @param elements the elements to write
 	 * @param writer the writer to use
 	 * @param indent the initial indent level; the first bracket is not indented,
-	 *   inner elements are indented by one, and the last bracket is indented at the
-	 *   initial indentation level
+	 * inner elements are indented by one, and the last bracket is indented at the
+	 * initial indentation level
 	 * @throws IOException if an IO error occurs
-	 *
 	 * @see Writer#write(String)
 	 * @see #writeIndent(Writer, int)
 	 * @see #writeIndent(String, Writer, int)
@@ -136,7 +135,6 @@ public class JsonFormatter {
 	 *
 	 * @param elements the elements to use
 	 * @return a {@link String} containing the elements in pretty JSON format
-	 *
 	 * @see StringWriter
 	 * @see #writeArray(Collection, Writer, int)
 	 */
@@ -157,10 +155,9 @@ public class JsonFormatter {
 	 * @param elements the elements to write
 	 * @param writer the writer to use
 	 * @param indent the initial indent level; the first bracket is not indented,
-	 *   inner elements are indented by one, and the last bracket is indented at the
-	 *   initial indentation level
+	 * inner elements are indented by one, and the last bracket is indented at the
+	 * initial indentation level
 	 * @throws IOException if an IO error occurs
-	 *
 	 * @see Writer#write(String)
 	 * @see #writeIndent(Writer, int)
 	 * @see #writeIndent(String, Writer, int)
@@ -190,7 +187,6 @@ public class JsonFormatter {
 	 * @param elements the elements to write
 	 * @param path the file path to use
 	 * @throws IOException if an IO error occurs
-	 *
 	 * @see Files#newBufferedReader(Path, java.nio.charset.Charset)
 	 * @see StandardCharsets#UTF_8
 	 * @see #writeObject(Map, Writer, int)
@@ -206,7 +202,6 @@ public class JsonFormatter {
 	 *
 	 * @param elements the elements to use
 	 * @return a {@link String} containing the elements in pretty JSON format
-	 *
 	 * @see StringWriter
 	 * @see #writeObject(Map, Writer, int)
 	 */
@@ -225,10 +220,10 @@ public class JsonFormatter {
 	 * Writes a single keyvalue pair from the provided iterator to writer.
 	 *
 	 * @param iterator Iterator over entries of the map. The next entry in the
-	 *   iterator is processed by this method.
+	 * iterator is processed by this method.
 	 * @param writer The Writer to which the keyvalue pair is written.
 	 * @param indent Indentation level for the current key val pair being written.
-	 *   Helps format nested structures.
+	 * Helps format nested structures.
 	 * @throws IOException If file unwritable
 	 */
 	private static void writeObjectElement(Iterator<? extends Map.Entry<String, ? extends Number>> iterator,
@@ -252,10 +247,9 @@ public class JsonFormatter {
 	 * @param elements the elements to write
 	 * @param writer the writer to use
 	 * @param indent the initial indent level; the first bracket is not indented,
-	 *   inner elements are indented by one, and the last bracket is indented at the
-	 *   initial indentation level
+	 * inner elements are indented by one, and the last bracket is indented at the
+	 * initial indentation level
 	 * @throws IOException if an IO error occurs
-	 *
 	 * @see Writer#write(String)
 	 * @see #writeIndent(Writer, int)
 	 * @see #writeIndent(String, Writer, int)
@@ -268,7 +262,7 @@ public class JsonFormatter {
 		var iterator = elements.iterator();
 
 		if (iterator.hasNext()) {
-			// TODO Why is this one different from the others? What happened to writer.write("\n");
+			writer.write("\n");
 			writeArrayObjectElement(iterator, writer, indent);
 		}
 
@@ -289,7 +283,6 @@ public class JsonFormatter {
 	 * @param elements the elements to write
 	 * @param path the file path to use
 	 * @throws IOException if an IO error occurs
-	 *
 	 * @see Files#newBufferedReader(Path, java.nio.charset.Charset)
 	 * @see StandardCharsets#UTF_8
 	 * @see #writeArrayObjects(Collection)
@@ -306,7 +299,6 @@ public class JsonFormatter {
 	 *
 	 * @param elements the elements to use
 	 * @return a {@link String} containing the elements in pretty JSON format
-	 *
 	 * @see StringWriter
 	 * @see #writeArrayObjects(Collection)
 	 */
@@ -322,6 +314,8 @@ public class JsonFormatter {
 	}
 
 	/**
+	 * Helper method for writeArrayObjects
+	 *
 	 * @param iterator of passed map struture to iterate
 	 * @param writer the writer to use
 	 * @param indent number of spaces to indent
@@ -330,7 +324,6 @@ public class JsonFormatter {
 	private static void writeArrayObjectElement(Iterator<? extends Map<String, ? extends Number>> iterator, Writer writer,
 			int indent) throws IOException {
 		var element = iterator.next();
-		writer.write("\n");
 		writeIndent(writer, indent + 1);
 		writeObject(element, writer, indent + 1);
 	}
@@ -343,10 +336,9 @@ public class JsonFormatter {
 	 * @param elements the elements to write
 	 * @param writer the writer to use
 	 * @param indent the initial indent level; the first bracket is not indented,
-	 *   inner elements are indented by one, and the last bracket is indented at the
-	 *   initial indentation level
+	 * inner elements are indented by one, and the last bracket is indented at the
+	 * initial indentation level
 	 * @throws IOException if an IO error occurs
-	 *
 	 * @see Writer#write(String)
 	 * @see #writeIndent(Writer, int)
 	 * @see #writeIndent(String, Writer, int)
@@ -377,7 +369,6 @@ public class JsonFormatter {
 	 * @param elements the elements to write
 	 * @param path the file path to use
 	 * @throws IOException if an IO error occurs
-	 *
 	 * @see Files#newBufferedReader(Path, java.nio.charset.Charset)
 	 * @see StandardCharsets#UTF_8
 	 * @see #writeObjectArrays(Map, Writer, int)
@@ -394,7 +385,6 @@ public class JsonFormatter {
 	 *
 	 * @param elements the elements to use
 	 * @return a {@link String} containing the elements in pretty JSON format
-	 *
 	 * @see StringWriter
 	 * @see #writeObjectArrays(Map, Writer, int)
 	 */
@@ -432,14 +422,6 @@ public class JsonFormatter {
 	 * @param writer String appender to be parsed into json format
 	 * @param indent indent increment number
 	 * @throws IOException if file is unreadable
-	 */
-	/**
-	 * Writes the JSON representation of the index to the provided writer.
-	 *
-	 * @param index the inverted index to write as JSON
-	 * @param writer the writer to use for output
-	 * @param indent the number of spaces to use for indentation
-	 * @throws IOException if unable to write to writer
 	 */
 	public static void writeIndexJson(Map<String, ? extends Map<String, ? extends Collection<? extends Number>>> index,
 			Writer writer, int indent) throws IOException {
@@ -483,6 +465,8 @@ public class JsonFormatter {
 	}
 
 	/**
+	 * Helper to write index to json
+	 *
 	 * @param index map filled with data
 	 * @param path path the file path to use
 	 * @param indent indent increment number within writeJsonToFile()
@@ -496,8 +480,10 @@ public class JsonFormatter {
 	}
 
 	/**
+	 * Helper to write index to json
+	 *
 	 * @param index contains the structure for the read data within
-	 *   writeJsonToFile()
+	 * writeJsonToFile()
 	 * @throws IOException if file is unreable
 	 */
 	public static void writeIndexJson(Map<String, ? extends Map<String, ? extends Collection<? extends Number>>> index)
@@ -506,67 +492,114 @@ public class JsonFormatter {
 		writeIndexJson(index, buffer, 1);
 	}
 
-	/*
-	 * TODO You know how to make the writeSearchResults more general and reusable now!
-	 * Try 1 general method for a search result, 1 for a collection of results, and
-	 * 1 general method for a map of a collection of results... then create the 2 other
-	 * convenience methods for that last one too!
+	/**
+	 * Writes a single search result to the provided writer.
+	 *
+	 * @param result  The search result to write.
+	 * @param writer  The output writer.
+	 * @param indent  The number of spaces for indentation.
+	 * @throws IOException if unable to write to writer.
 	 */
+	private static void writeSingleResult(InvertedIndex.SearchResult result, Writer writer, int indent)
+			throws IOException {
+		writeIndent("{\n", writer, indent - 1);
+
+		writeQuote("count", writer, indent);
+		writer.write(": " + result.getCount() + ",\n");
+
+		writeQuote("score", writer, indent);
+		writer.write(": " + new DecimalFormat("0.00000000").format(result.getScore()) + ",\n");
+
+		writeQuote("where", writer, indent);
+		writer.write(": \"" + result.getWhere() + "\"\n");
+
+		writeIndent("}", writer, indent - 1);
+	}
 
 	/**
-	 * @param results The data structure containing the search data
-	 * @return string of formatted json
-	 * @throws IOException if file is unreadable
+	 * Writes a collection of search results to the provided writer.
+	 *
+	 * @param results The list of search results.
+	 * @param writer  The output writer.
+	 * @param indent  The number of spaces for indentation.
+	 * @throws IOException if unable to write to writer.
+	 */
+	private static void writeResultCollection(List<InvertedIndex.SearchResult> results, Writer writer, int indent)
+			throws IOException {
+		var iterator = results.iterator();
+
+		writeIndent("[", writer, indent - 2);
+
+		if (iterator.hasNext()) {
+			writer.write("\n");
+			writeSingleResult(iterator.next(), writer, indent + 1);
+		}
+
+		while (iterator.hasNext()) {
+			writer.write(",\n");
+			writeSingleResult(iterator.next(), writer, indent + 1);
+		}
+
+		writer.write("\n");
+		writeIndent("]", writer, 1);
+	}
+
+	/**
+	 * Converts a map of search results into a formatted JSON string.
+	 *
+	 * @param results The map of search results.
+	 * @return A formatted JSON string.
+	 * @throws IOException if unable to write to writer.
 	 */
 	public static String writeSearchResults(Map<String, List<InvertedIndex.SearchResult>> results) throws IOException {
 		StringWriter writer = new StringWriter();
+		var iterator = results.entrySet().iterator();
 
 		writer.write("{\n");
-		Iterator<Map.Entry<String, List<InvertedIndex.SearchResult>>> iterator = results.entrySet().iterator();
 
-		while (iterator.hasNext()) {
+		if (iterator.hasNext()) {
 			Map.Entry<String, List<InvertedIndex.SearchResult>> entry = iterator.next();
-
 			writeQuote(entry.getKey(), writer, 1);
-			writer.write(": [\n");
-
-			List<InvertedIndex.SearchResult> searchResults = entry.getValue();
-			for (int i = 0; i < searchResults.size(); i++) {
-				InvertedIndex.SearchResult result = searchResults.get(i);
-
-				writeIndent("{\n", writer, 2);
-
-				writeQuote("count", writer, 3);
-				writer.write(": " + result.getCount() + ",\n");
-
-				writeIndent("", writer, 3);
-				writeQuote("score", writer, 0);
-				writer.write(": " + new DecimalFormat("0.00000000").format(result.getScore()) + ",\n");
-
-				writeIndent("", writer, 3);
-				writeQuote("where", writer, 0);
-				writer.write(": " + "\"" + result.getWhere() + "\"\n");
-
-				writeIndent("}", writer, 2);
-
-				if (i < searchResults.size() - 1) {
-					writer.write(",");
-				}
-
-				writer.write("\n");
-			}
-
-			writeIndent("]", writer, 1);
-
-			if (iterator.hasNext()) {
-				writer.write(",");
-			}
-
-			writer.write("\n");
+			writer.write(": ");
+			writeResultCollection(entry.getValue(), writer, 2);
 		}
 
-		writer.write("}\n");
+		while (iterator.hasNext()) {
+			writer.write(",\n");
+			Map.Entry<String, List<InvertedIndex.SearchResult>> entry = iterator.next();
+			writeQuote(entry.getKey(), writer, 1);
+			writer.write(": ");
+			writeResultCollection(entry.getValue(), writer, 2);
+		}
+
+		writer.write("\n}");
 		return writer.toString();
+	}
+
+	/**
+	 * Writes results into file
+	 *
+	 * @param results The map of search results.
+	 * @param path file path
+	 * @throws IOException if unable to write to writer.
+	 */
+	public static void writeSearchResultsToFile(Map<String, List<InvertedIndex.SearchResult>> results, Path path)
+			throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+			writer.write(writeSearchResults(results));
+		}
+	}
+
+	/**
+	 * Converts a map of search results into a formatted JSON string.
+	 *
+	 * @param results The map of search results.
+	 * @return A formatted JSON string.
+	 * @throws IOException if unable to write to writer.
+	 */
+	public static String writeSearchResultsToString(Map<String, List<InvertedIndex.SearchResult>> results)
+			throws IOException {
+		return writeSearchResults(results);
 	}
 
 }
