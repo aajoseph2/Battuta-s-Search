@@ -508,6 +508,7 @@ public class JsonFormatter {
 		writer.write(": " + result.getCount() + ",\n");
 
 		writeQuote("score", writer, indent);
+		// TODO String.format
 		writer.write(": " + new DecimalFormat("0.00000000").format(result.getScore()) + ",\n");
 
 		writeQuote("where", writer, indent);
@@ -544,6 +545,7 @@ public class JsonFormatter {
 		writeIndent("]", writer, 1);
 	}
 
+	// TODO Take in a Writer and indent level parameters
 	/**
 	 * Converts a map of search results into a formatted JSON string.
 	 *
@@ -586,7 +588,7 @@ public class JsonFormatter {
 	public static void writeSearchResultsToFile(Map<String, List<InvertedIndex.SearchResult>> results, Path path)
 			throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-			writer.write(writeSearchResults(results));
+			writer.write(writeSearchResults(results)); // TODO Pass in the writer
 		}
 	}
 
@@ -599,7 +601,7 @@ public class JsonFormatter {
 	 */
 	public static String writeSearchResultsToString(Map<String, List<InvertedIndex.SearchResult>> results)
 			throws IOException {
-		return writeSearchResults(results);
+		return writeSearchResults(results); // TODO Pass in the writer
 	}
 
 }

@@ -33,6 +33,8 @@ public class QueryProcessor {
 	 * Flag indicating the search mode
 	 */
 	private final boolean isExact;
+	
+	// TODO private final Stemmer stemmer; 
 
 
 	/**
@@ -66,12 +68,18 @@ public class QueryProcessor {
 	 * @throws IOException If file is unreadable
 	 */
 	public void queryProcessor(String line) throws IOException {
+		/* TODO 
+		var buffer = TextParser.uniqueStems(line, stemmer);
+		String processedQuery = String.join(" ", buffer);
+		*/
+		
 		String[] words = line.split(" ");
 		var buffer = TextParser.uniqueStems(Arrays.toString(words));
 		String processedQuery = String.join(" ", buffer);
+		
 		if (!buffer.isEmpty() && !hasQuery(processedQuery)) {
 			List<InvertedIndex.SearchResult> currentResults = mapMethods.search(buffer, isExact);
-			addQueryResults(processedQuery, currentResults);
+			addQueryResults(processedQuery, currentResults); // TODO this.query.put(str, results);
 		}
 	}
 
@@ -84,6 +92,10 @@ public class QueryProcessor {
 	public Map<String, List<InvertedIndex.SearchResult>> getQueryMap() {
 		return Collections.unmodifiableMap(query);
 	}
+	
+	/*
+	 * TODO getQueryLines(), getQueryResults(String queryLine)
+	 */
 
 	/**
 	 * Checks if a specific query exists in the query map.
@@ -91,7 +103,8 @@ public class QueryProcessor {
 	 * @param str The query to check
 	 * @return True if the query exists, false otherwise
 	 */
-	public boolean hasQuery(String str) {
+	public boolean hasQuery(String str) { // TODO hasQueryLine(String queryLine)
+		// TODO Re-process the queryLine to match how it is stored
 		return query.containsKey(str);
 	}
 
@@ -101,7 +114,7 @@ public class QueryProcessor {
 	 * @param str The processed query.
 	 * @param results The search results associated with the query.
 	 */
-	private void addQueryResults(String str, List<InvertedIndex.SearchResult> results) {
+	private void addQueryResults(String str, List<InvertedIndex.SearchResult> results) { // TODO Remove
 		this.query.put(str, results);
 	}
 
@@ -123,9 +136,12 @@ public class QueryProcessor {
 	 * @param results the updated query structure to be translated into json
 	 * @throws IOException if file is not able to written
 	 */
+	// TODO Remove results parameter
 	public void writeQueryJson(Path path, QueryProcessor results) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-			writer.write(JsonFormatter.writeSearchResults(results.query));
+			writer.write(JsonFormatter.writeSearchResults(results.query)); // TODO this.query
 		}
 	}
+	
+	// TODO toString
 }
