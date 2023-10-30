@@ -203,7 +203,7 @@ public class InvertedIndex {
 	 * @param prefix The prefix string to search for.
 	 * @return A set of words that start with the provided prefix.
 	 */
-	public Set<String> prefixSearch(String prefix) {
+	public Set<String> prefixSearch(String prefix) { // TODO Remove
 		String endKey = prefix;
 
 		if (!prefix.isEmpty()) {
@@ -221,6 +221,7 @@ public class InvertedIndex {
 	 * @return the search result
 	 * @throws IOException If there is an error during searching.
 	 */
+	// TODO Set<String> queryWords (and exact and partial search)
 	public List<SearchResult> search(TreeSet<String> queryWords, boolean isExact) throws IOException {
 		if (isExact) {
 			return exactSearch(queryWords);
@@ -239,6 +240,33 @@ public class InvertedIndex {
 	 * @throws IOException If there is an error during the search.
 	 */
 	private List<SearchResult> exactSearch(TreeSet<String> queryWords) throws IOException {
+		/* TODO 
+		Map<String, SearchResult> locationCounts = new HashMap<>();
+		List<SearchResult> currentResults = new ArrayList<>();
+		
+		for (String word : queryWords) {
+			var locations = index.get(word);
+			if (locations != null) {
+				for (var locEntry : locations.entrySet()) {
+					String loc = locEntry.getKey();
+					int frequency = locEntry.getValue().size();
+					
+					if (locationCounts.containsKey(loc)) {
+						locationCounts.get(loc).updateCount(frequency);
+					}
+					else {
+						SearchResult result = new SearchResult(loc, frequency, 0);
+						locationCounts.put(loc, result);
+						currentResults.add(result);
+					}
+				}
+			}
+		}
+		
+		Collections.sort(currentResults);
+		return currentResults;
+		*/
+		
 		Map<String, Integer> locationCounts = new HashMap<>();
 
 		for (String word : queryWords) {
@@ -266,7 +294,11 @@ public class InvertedIndex {
 		Map<String, Integer> locationCounts = new HashMap<>();
 
 		for (String word : queryWords) {
-			Set<String> relevantWords = prefixSearch(word);
+			/* TODO 
+			var locations = index.tailMap(word);
+			if locations != null, loop through entrySet
+			*/
+			Set<String> relevantWords = prefixSearch(word); // TODO 
 			for (String relevantWord : relevantWords) {
 				if (index.containsKey(relevantWord)) {
 					for (var locEntry : index.get(relevantWord).entrySet()) {
@@ -287,7 +319,7 @@ public class InvertedIndex {
 	 * retrieving total word count.
 	 * @return A sorted list of SearchResult objects.
 	 */
-	private List<SearchResult> compileResults(Map<String, Integer> locationCounts) {
+	private List<SearchResult> compileResults(Map<String, Integer> locationCounts) { // TODO Remove
 		List<SearchResult> currentResults = new ArrayList<>();
 
 		for (var locEntry : locationCounts.entrySet()) {
