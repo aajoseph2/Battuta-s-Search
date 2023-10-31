@@ -81,7 +81,7 @@ public class Driver {
 		if (parser.hasFlag("-results")) {
 			Path resPath = parser.getPath("-results", Path.of("results.json"));
 			try {
-				queryClass.writeQueryJson(resPath, queryClass);
+				queryClass.writeQueryJson(resPath);
 			}
 			catch (IOException e) {
 				System.out.println("Error writing results to file: " + e.getMessage());

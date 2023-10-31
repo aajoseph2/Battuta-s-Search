@@ -9,7 +9,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -508,8 +507,7 @@ public class JsonFormatter {
 		writer.write(": " + result.getCount() + ",\n");
 
 		writeQuote("score", writer, indent);
-		// TODO String.format
-		writer.write(": " + new DecimalFormat("0.00000000").format(result.getScore()) + ",\n");
+		writer.write(": " + String.format("%.8f", result.getScore()) + ",\n");
 
 		writeQuote("where", writer, indent);
 		writer.write(": \"" + result.getWhere() + "\"\n");
@@ -545,39 +543,41 @@ public class JsonFormatter {
 		writeIndent("]", writer, 1);
 	}
 
-	// TODO Take in a Writer and indent level parameters
 	/**
 	 * Converts a map of search results into a formatted JSON string.
 	 *
 	 * @param results The map of search results.
+	 * @param writer The output writer.
+	 * @param indent The number of spaces for indentation.
 	 * @return A formatted JSON string.
 	 * @throws IOException if unable to write to writer.
 	 */
-	public static String writeSearchResults(Map<String, List<InvertedIndex.SearchResult>> results) throws IOException {
-		StringWriter writer = new StringWriter();
+	public static String writeSearchResults(Map<String, List<InvertedIndex.SearchResult>> results, Writer writer, int indent) throws IOException {
 		var iterator = results.entrySet().iterator();
 
 		writer.write("{\n");
 
 		if (iterator.hasNext()) {
 			Map.Entry<String, List<InvertedIndex.SearchResult>> entry = iterator.next();
-			writeQuote(entry.getKey(), writer, 1);
+			writeQuote(entry.getKey(), writer, indent);
 			writer.write(": ");
-			writeResultCollection(entry.getValue(), writer, 2);
+			writeResultCollection(entry.getValue(), writer, indent + 1);
 		}
 
 		while (iterator.hasNext()) {
 			writer.write(",\n");
 			Map.Entry<String, List<InvertedIndex.SearchResult>> entry = iterator.next();
-			writeQuote(entry.getKey(), writer, 1);
+			writeQuote(entry.getKey(), writer, indent);
 			writer.write(": ");
-			writeResultCollection(entry.getValue(), writer, 2);
+			writeResultCollection(entry.getValue(), writer, indent + 1);
 		}
 
 		writer.write("\n}");
 		return writer.toString();
 	}
 
+
+	//Should i even keep this method below?
 	/**
 	 * Writes results into file
 	 *
@@ -588,7 +588,8 @@ public class JsonFormatter {
 	public static void writeSearchResultsToFile(Map<String, List<InvertedIndex.SearchResult>> results, Path path)
 			throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-			writer.write(writeSearchResults(results)); // TODO Pass in the writer
+			StringWriter buffer = new StringWriter();
+			writer.write(writeSearchResults(results, buffer, 1));
 		}
 	}
 
@@ -601,7 +602,8 @@ public class JsonFormatter {
 	 */
 	public static String writeSearchResultsToString(Map<String, List<InvertedIndex.SearchResult>> results)
 			throws IOException {
-		return writeSearchResults(results); // TODO Pass in the writer
+		StringWriter buffer = new StringWriter();
+		return writeSearchResults(results, buffer, 1);
 	}
 
 }

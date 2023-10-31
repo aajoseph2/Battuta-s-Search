@@ -1,6 +1,7 @@
 package edu.usfca.cs272;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,11 +9,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import opennlp.tools.stemmer.Stemmer;
+import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
 /**
  * Processes queries that are used to as the worsd to be searched for from the
@@ -33,8 +36,8 @@ public class QueryProcessor {
 	 * Flag indicating the search mode
 	 */
 	private final boolean isExact;
-	
-	// TODO private final Stemmer stemmer; 
+
+	// TODO private final Stemmer stemmer;
 
 
 	/**
@@ -68,18 +71,15 @@ public class QueryProcessor {
 	 * @throws IOException If file is unreadable
 	 */
 	public void queryProcessor(String line) throws IOException {
-		/* TODO 
+
+		Stemmer stemmer = new SnowballStemmer(ENGLISH);
+
 		var buffer = TextParser.uniqueStems(line, stemmer);
 		String processedQuery = String.join(" ", buffer);
-		*/
-		
-		String[] words = line.split(" ");
-		var buffer = TextParser.uniqueStems(Arrays.toString(words));
-		String processedQuery = String.join(" ", buffer);
-		
+
 		if (!buffer.isEmpty() && !hasQuery(processedQuery)) {
 			List<InvertedIndex.SearchResult> currentResults = mapMethods.search(buffer, isExact);
-			addQueryResults(processedQuery, currentResults); // TODO this.query.put(str, results);
+			this.query.put(processedQuery, currentResults);
 		}
 	}
 
@@ -92,7 +92,7 @@ public class QueryProcessor {
 	public Map<String, List<InvertedIndex.SearchResult>> getQueryMap() {
 		return Collections.unmodifiableMap(query);
 	}
-	
+
 	/*
 	 * TODO getQueryLines(), getQueryResults(String queryLine)
 	 */
@@ -133,15 +133,13 @@ public class QueryProcessor {
 	 * json formatted string.
 	 *
 	 * @param path file path to be outputted
-	 * @param results the updated query structure to be translated into json
 	 * @throws IOException if file is not able to written
 	 */
-	// TODO Remove results parameter
-	public void writeQueryJson(Path path, QueryProcessor results) throws IOException {
+	public void writeQueryJson(Path path) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-			writer.write(JsonFormatter.writeSearchResults(results.query)); // TODO this.query
+			writer.write(JsonFormatter.writeSearchResultsToString(this.query));
 		}
 	}
-	
+
 	// TODO toString
 }

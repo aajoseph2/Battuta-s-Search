@@ -221,8 +221,7 @@ public class InvertedIndex {
 	 * @return the search result
 	 * @throws IOException If there is an error during searching.
 	 */
-	// TODO Set<String> queryWords (and exact and partial search)
-	public List<SearchResult> search(TreeSet<String> queryWords, boolean isExact) throws IOException {
+	public List<SearchResult> search(Set<String> queryWords, boolean isExact) throws IOException {
 		if (isExact) {
 			return exactSearch(queryWords);
 		}
@@ -239,18 +238,18 @@ public class InvertedIndex {
 	 * @return A list of search results based on the exact matches.
 	 * @throws IOException If there is an error during the search.
 	 */
-	private List<SearchResult> exactSearch(TreeSet<String> queryWords) throws IOException {
-		/* TODO 
+	private List<SearchResult> exactSearch(Set<String> queryWords) throws IOException {
+		/* TODO
 		Map<String, SearchResult> locationCounts = new HashMap<>();
 		List<SearchResult> currentResults = new ArrayList<>();
-		
+
 		for (String word : queryWords) {
 			var locations = index.get(word);
 			if (locations != null) {
 				for (var locEntry : locations.entrySet()) {
 					String loc = locEntry.getKey();
 					int frequency = locEntry.getValue().size();
-					
+
 					if (locationCounts.containsKey(loc)) {
 						locationCounts.get(loc).updateCount(frequency);
 					}
@@ -262,11 +261,11 @@ public class InvertedIndex {
 				}
 			}
 		}
-		
+
 		Collections.sort(currentResults);
 		return currentResults;
 		*/
-		
+
 		Map<String, Integer> locationCounts = new HashMap<>();
 
 		for (String word : queryWords) {
@@ -290,15 +289,15 @@ public class InvertedIndex {
 	 * @return A list of search results based on partial matches.
 	 * @throws IOException If there is an error during the search.
 	 */
-	private List<SearchResult> partialSearch(TreeSet<String> queryWords) throws IOException {
+	private List<SearchResult> partialSearch(Set<String> queryWords) throws IOException {
 		Map<String, Integer> locationCounts = new HashMap<>();
 
 		for (String word : queryWords) {
-			/* TODO 
+			/* TODO
 			var locations = index.tailMap(word);
 			if locations != null, loop through entrySet
 			*/
-			Set<String> relevantWords = prefixSearch(word); // TODO 
+			Set<String> relevantWords = prefixSearch(word); // TODO
 			for (String relevantWord : relevantWords) {
 				if (index.containsKey(relevantWord)) {
 					for (var locEntry : index.get(relevantWord).entrySet()) {
