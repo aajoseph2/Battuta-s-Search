@@ -10,8 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import opennlp.tools.stemmer.Stemmer;
@@ -28,8 +30,8 @@ public class QueryProcessor {
 	 */
 	private final Map<String, List<InvertedIndex.SearchResult>> query;
 	/**
-	 * Represents the inverted index data structure used for storing and
-	 * searching text data
+	 * Represents the inverted index data structure used for storing and searching
+	 * text data
 	 */
 	private final InvertedIndex mapMethods;
 	/**
@@ -37,11 +39,14 @@ public class QueryProcessor {
 	 */
 	private final boolean isExact;
 
-	// TODO private final Stemmer stemmer;
-
+	/**
+	 * Intended to stem text
+	 */
+	private final Stemmer stemmer = new SnowballStemmer(ENGLISH);
 
 	/**
 	 * Initializes the Query map with empty data structures.
+	 *
 	 * @param mapMethods Inverted index data structure
 	 * @param isExact Flag indicating the search mode
 	 */
@@ -72,8 +77,6 @@ public class QueryProcessor {
 	 */
 	public void queryProcessor(String line) throws IOException {
 
-		Stemmer stemmer = new SnowballStemmer(ENGLISH);
-
 		var buffer = TextParser.uniqueStems(line, stemmer);
 		String processedQuery = String.join(" ", buffer);
 
@@ -83,39 +86,51 @@ public class QueryProcessor {
 		}
 	}
 
-	// Is this ok, for the getQueryMap?
 	/**
 	 * returns unmodifiable view of query map
 	 *
 	 * @return Unmodifiable map of queries and their results
 	 */
 	public Map<String, List<InvertedIndex.SearchResult>> getQueryMap() {
-		return Collections.unmodifiableMap(query);
+		Map<String, List<InvertedIndex.SearchResult>> resultMap = new HashMap<>();
+		for (String queryLine : getQueryLines()) {
+			resultMap.put(queryLine, getQueryResults(queryLine));
+		}
+		return Collections.unmodifiableMap(resultMap);
 	}
 
-	/*
-	 * TODO getQueryLines(), getQueryResults(String queryLine)
+	/**
+	 * Returns the search results for a specific query.
+	 *
+	 * @param queryLine The query to get results for.
+	 * @return Unmodifiable list of search results for the given query.
 	 */
+	public List<InvertedIndex.SearchResult> getQueryResults(String queryLine) {
+		var buffer = TextParser.uniqueStems(queryLine, stemmer);
+		String processedQuery = String.join(" ", buffer);
+
+		return Collections.unmodifiableList(query.getOrDefault(processedQuery, Collections.emptyList()));
+	}
+
+	/**
+	 * Returns a set view of all the queries processed.
+	 *
+	 * @return Set of processed queries.
+	 */
+	public Set<String> getQueryLines() {
+		return Collections.unmodifiableSet(query.keySet());
+	}
 
 	/**
 	 * Checks if a specific query exists in the query map.
 	 *
-	 * @param str The query to check
+	 * @param queryLine The query to check
 	 * @return True if the query exists, false otherwise
 	 */
-	public boolean hasQuery(String str) { // TODO hasQueryLine(String queryLine)
-		// TODO Re-process the queryLine to match how it is stored
-		return query.containsKey(str);
-	}
-
-	/**
-	 * Adds a new query and its corresponding search results to the map.
-	 *
-	 * @param str The processed query.
-	 * @param results The search results associated with the query.
-	 */
-	private void addQueryResults(String str, List<InvertedIndex.SearchResult> results) { // TODO Remove
-		this.query.put(str, results);
+	public boolean hasQuery(String queryLine) {
+		var buffer = TextParser.uniqueStems(queryLine, stemmer);
+		String processedQuery = String.join(" ", buffer);
+		return query.containsKey(processedQuery);
 	}
 
 	/**
@@ -141,5 +156,8 @@ public class QueryProcessor {
 		}
 	}
 
-	// TODO toString
+	@Override
+	public String toString() {
+		return String.format("QueryProcessor [queries=%s, exact mode=%b]", queryCount(), isExact);
+	}
 }

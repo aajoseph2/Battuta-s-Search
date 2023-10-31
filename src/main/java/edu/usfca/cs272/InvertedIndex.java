@@ -188,32 +188,6 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Writes JSON formatted data from the given inverted index to a file.
-	 *
-	 * @param path File to be written to
-	 * @throws IOException If there's an issue writing to the file
-	 */
-	public void writeJson(Path path) throws IOException {
-		JsonFormatter.writeIndexJson(index, path, 1);
-	}
-
-	/**
-	 * Logic for determing prefix for partial search
-	 *
-	 * @param prefix The prefix string to search for.
-	 * @return A set of words that start with the provided prefix.
-	 */
-	public Set<String> prefixSearch(String prefix) { // TODO Remove
-		String endKey = prefix;
-
-		if (!prefix.isEmpty()) {
-			char lastChar = prefix.charAt(prefix.length() - 1);
-			endKey = prefix.substring(0, prefix.length() - 1) + (char) (lastChar + 1);
-		}
-		return new TreeSet<>(index.subMap(prefix, endKey).keySet());
-	}
-
-	/**
 	 * Performs a search based on the provided query and the search mode
 	 *
 	 * @param queryWords words in query line to be searched
@@ -230,6 +204,8 @@ public class InvertedIndex {
 		}
 	}
 
+	//can I make a new method for the duplicate logic in partial and exact search?
+
 	/**
 	 * Performs an exact search based on the provided set of query words. This
 	 * method only looks for the exact word matches within the inverted index.
@@ -239,22 +215,22 @@ public class InvertedIndex {
 	 * @throws IOException If there is an error during the search.
 	 */
 	private List<SearchResult> exactSearch(Set<String> queryWords) throws IOException {
-		/* TODO
 		Map<String, SearchResult> locationCounts = new HashMap<>();
 		List<SearchResult> currentResults = new ArrayList<>();
 
 		for (String word : queryWords) {
-			var locations = index.get(word);
-			if (locations != null) {
-				for (var locEntry : locations.entrySet()) {
+			if (hasWord(word)) {
+				for (var locEntry : index.get(word).entrySet()) {
 					String loc = locEntry.getKey();
 					int frequency = locEntry.getValue().size();
+					int totalWordsForLocation = numTotalWordsForLocation(loc);
 
 					if (locationCounts.containsKey(loc)) {
-						locationCounts.get(loc).updateCount(frequency);
+						locationCounts.get(loc).updateCount(frequency, totalWordsForLocation);
 					}
 					else {
-						SearchResult result = new SearchResult(loc, frequency, 0);
+						double initialScore = (double) frequency / totalWordsForLocation;
+						SearchResult result = new SearchResult(loc, frequency, initialScore);
 						locationCounts.put(loc, result);
 						currentResults.add(result);
 					}
@@ -264,20 +240,6 @@ public class InvertedIndex {
 
 		Collections.sort(currentResults);
 		return currentResults;
-		*/
-
-		Map<String, Integer> locationCounts = new HashMap<>();
-
-		for (String word : queryWords) {
-			if (index.containsKey(word)) {
-				for (var locEntry : index.get(word).entrySet()) {
-					String loc = locEntry.getKey();
-					int frequency = locEntry.getValue().size();
-					locationCounts.put(loc, locationCounts.getOrDefault(loc, 0) + frequency);
-				}
-			}
-		}
-		return compileResults(locationCounts);
 	}
 
 	/**
@@ -290,45 +252,47 @@ public class InvertedIndex {
 	 * @throws IOException If there is an error during the search.
 	 */
 	private List<SearchResult> partialSearch(Set<String> queryWords) throws IOException {
-		Map<String, Integer> locationCounts = new HashMap<>();
+		Map<String, SearchResult> searchResults = new HashMap<>();
+		List<SearchResult> currentResults = new ArrayList<>();
 
 		for (String word : queryWords) {
-			/* TODO
 			var locations = index.tailMap(word);
-			if locations != null, loop through entrySet
-			*/
-			Set<String> relevantWords = prefixSearch(word); // TODO
-			for (String relevantWord : relevantWords) {
-				if (index.containsKey(relevantWord)) {
-					for (var locEntry : index.get(relevantWord).entrySet()) {
-						String loc = locEntry.getKey();
-						int frequency = locEntry.getValue().size();
-						locationCounts.put(loc, locationCounts.getOrDefault(loc, 0) + frequency);
+
+			if (locations != null) {
+				for (var wordEntry : locations.entrySet()) {
+					if (wordEntry.getKey().startsWith(word) && hasWord(wordEntry.getKey())) {
+						for (var locEntry : wordEntry.getValue().entrySet()) {
+							String loc = locEntry.getKey();
+							int frequency = locEntry.getValue().size();
+							int totalWordsForLocation = numTotalWordsForLocation(loc);
+
+							if (searchResults.containsKey(loc)) {
+								searchResults.get(loc).updateCount(frequency, totalWordsForLocation);
+							}
+							else {
+								double initialScore = (double) frequency / totalWordsForLocation;
+								SearchResult result = new SearchResult(loc, frequency, initialScore);
+								searchResults.put(loc, result);
+								currentResults.add(result);
+							}
+						}
 					}
 				}
 			}
 		}
-		return compileResults(locationCounts);
-	}
-
-	/**
-	 * Compiles the exacr and partial search methods
-	 *
-	 * @param locationCounts The map containing word count for each location.
-	 * retrieving total word count.
-	 * @return A sorted list of SearchResult objects.
-	 */
-	private List<SearchResult> compileResults(Map<String, Integer> locationCounts) { // TODO Remove
-		List<SearchResult> currentResults = new ArrayList<>();
-
-		for (var locEntry : locationCounts.entrySet()) {
-			int totalWords = counts.getOrDefault(locEntry.getKey(), 0);
-			double score = (double) locEntry.getValue() / totalWords;
-			currentResults.add(new SearchResult(locEntry.getKey(), locEntry.getValue(), score));
-		}
 
 		Collections.sort(currentResults);
 		return currentResults;
+	}
+
+	/**
+	 * Writes JSON formatted data from the given inverted index to a file.
+	 *
+	 * @param path File to be written to
+	 * @throws IOException If there's an issue writing to the file
+	 */
+	public void writeJson(Path path) throws IOException {
+		JsonFormatter.writeIndexJson(index, path, 1);
 	}
 
 	@Override
@@ -392,6 +356,17 @@ public class InvertedIndex {
 		 */
 		public String getWhere() {
 			return where;
+		}
+
+		/**
+		 * Updates the count of the SearchResult with an additional count.
+		 *
+		 * @param additionalCount The count to be added to the existing count.
+		 * @param totalWords total number of words
+		 */
+		public void updateCount(int additionalCount, int totalWords) {
+			this.count += additionalCount;
+			this.score = (double) this.count / totalWords;
 		}
 
 		@Override

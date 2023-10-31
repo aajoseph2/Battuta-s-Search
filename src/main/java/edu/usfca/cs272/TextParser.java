@@ -133,7 +133,6 @@ public class TextParser {
 	 *
 	 * @param line the line of words to parse and stem
 	 * @return a sorted set of unique cleaned and stemmed words
-	 *
 	 * @see SnowballStemmer#SnowballStemmer(ALGORITHM)
 	 * @see ALGORITHM#ENGLISH
 	 * @see #uniqueStems(String, Stemmer)
