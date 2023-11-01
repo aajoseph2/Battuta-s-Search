@@ -214,15 +214,36 @@ public class InvertedIndex {
 	 * @return A list of search results based on the exact matches.
 	 * @throws IOException If there is an error during the search.
 	 */
-	private List<SearchResult> exactSearch(Set<String> queryWords) throws IOException {
+	private List<SearchResult> exactSearch(Set<String> queryWords) throws IOException { // TODO public, remove throws IOException
 		Map<String, SearchResult> locationCounts = new HashMap<>();
 		List<SearchResult> currentResults = new ArrayList<>();
 
 		for (String word : queryWords) {
+			/* TODO 
+			var locations = index.get(word);
+			
+			if (locations != null) {
+				for (var locEntry : locations.entrySet()) {
+			*/
+			
 			if (hasWord(word)) {
 				for (var locEntry : index.get(word).entrySet()) {
 					String loc = locEntry.getKey();
 					int frequency = locEntry.getValue().size();
+					
+					/* TODO 
+					SearchResult result = locationCounts.get(loc);
+					
+					if (result == null) {
+						result = new SearchResult(loc);
+						locationCounts.put(loc, result);
+						currentResults.add(result);
+					}
+					
+					result.updateCount(frequency);
+					*/
+					
+					
 					int totalWordsForLocation = numTotalWordsForLocation(loc);
 
 					if (locationCounts.containsKey(loc)) {
@@ -251,17 +272,19 @@ public class InvertedIndex {
 	 * @return A list of search results based on partial matches.
 	 * @throws IOException If there is an error during the search.
 	 */
-	private List<SearchResult> partialSearch(Set<String> queryWords) throws IOException {
+	private List<SearchResult> partialSearch(Set<String> queryWords) throws IOException { // TODO public
 		Map<String, SearchResult> searchResults = new HashMap<>();
 		List<SearchResult> currentResults = new ArrayList<>();
 
-		for (String word : queryWords) {
-			var locations = index.tailMap(word);
+		for (String word : queryWords) { // TODO String query : queries
+			var locations = index.tailMap(word); // TODO words
 
 			if (locations != null) {
-				for (var wordEntry : locations.entrySet()) {
+				for (var wordEntry : locations.entrySet()) { 
+					// TODO only needs to test if the word starts with the query
+					// TODO if that is false, BREAK
 					if (wordEntry.getKey().startsWith(word) && hasWord(wordEntry.getKey())) {
-						for (var locEntry : wordEntry.getValue().entrySet()) {
+						for (var locEntry : wordEntry.getValue().entrySet()) { // TODO Move this into a private helper method called by both forms of search
 							String loc = locEntry.getKey();
 							int frequency = locEntry.getValue().size();
 							int totalWordsForLocation = numTotalWordsForLocation(loc);
@@ -325,10 +348,11 @@ public class InvertedIndex {
 		 * @param count count of all words in the query, within the given "where"
 		 * @param score score of count of words from the given query
 		 */
+		// TODO public SearchResult(String where) {
 		public SearchResult(String where, int count, double score) {
 			this.where = where;
-			this.count = count;
-			this.score = score;
+			this.count = count; // TODO 0
+			this.score = score; // TODO 0
 		}
 
 		/**
@@ -364,9 +388,10 @@ public class InvertedIndex {
 		 * @param additionalCount The count to be added to the existing count.
 		 * @param totalWords total number of words
 		 */
+		// TODO private void updateCount(int additionalCount) {
 		public void updateCount(int additionalCount, int totalWords) {
 			this.count += additionalCount;
-			this.score = (double) this.count / totalWords;
+			this.score = (double) this.count / totalWords; // TODO counts.get(where)
 		}
 
 		@Override

@@ -491,6 +491,8 @@ public class JsonFormatter {
 		writeIndexJson(index, buffer, 1);
 	}
 
+	// TODO Make more of these public
+	
 	/**
 	 * Writes a single search result to the provided writer.
 	 *
@@ -577,7 +579,7 @@ public class JsonFormatter {
 	}
 
 
-	//Should i even keep this method below?
+	//Should i even keep this method below? TODO Yes!
 	/**
 	 * Writes results into file
 	 *
@@ -588,6 +590,7 @@ public class JsonFormatter {
 	public static void writeSearchResultsToFile(Map<String, List<InvertedIndex.SearchResult>> results, Path path)
 			throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+			// TODO writeSearchResults(results, writer, 1);
 			StringWriter buffer = new StringWriter();
 			writer.write(writeSearchResults(results, buffer, 1));
 		}
