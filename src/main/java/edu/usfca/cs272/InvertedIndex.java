@@ -250,25 +250,25 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * @param locations
-	 * @param locationCounts
-	 * @param currentResults
+ * @param locations locations where words were found.
+ * @param resultLookup map used to look up and/or store SearchResult objects.
+ * @param searchResults list to store and eventually return the search results.
 	 */
-	private void compileResults(TreeMap<String, TreeSet<Integer>> locations, Map<String, SearchResult> locationCounts,
-			List<SearchResult> currentResults) {
+	private void compileResults(TreeMap<String, TreeSet<Integer>> locations, Map<String, SearchResult> resultLookup,
+			List<SearchResult> searchResults) {
 
 		for (var locEntry : locations.entrySet()) {
 			String loc = locEntry.getKey();
 			int frequency = locEntry.getValue().size();
-			SearchResult result = locationCounts.get(loc);
+			SearchResult result = resultLookup.get(loc);
 			if (result == null) {
 				result = new SearchResult(loc);
-				locationCounts.put(loc, result);
-				currentResults.add(result);
+				resultLookup.put(loc, result);
+				searchResults.add(result);
 			}
 			result.updateCount(frequency);
 		}
-		Collections.sort(currentResults);
+		Collections.sort(searchResults);
 	}
 
 	/**

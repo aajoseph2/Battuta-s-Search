@@ -588,9 +588,7 @@ public class JsonFormatter {
 	public static void writeSearchResultsToFile(Map<String, List<InvertedIndex.SearchResult>> results, Path path)
 			throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-			// TODO writeSearchResults(results, writer, 1);
-			StringWriter buffer = new StringWriter();
-			writer.write(writeSearchResults(results, buffer, 1));
+			writeSearchResults(results, writer, 1);
 		}
 	}
 

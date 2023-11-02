@@ -59,7 +59,7 @@ public class QueryProcessor {
 
 	/**
 	 * TODO Fill in
-	 * 
+	 *
 	 * @param location Where the query is being retrieved from
 	 * @throws IOException If file is unreadable
 	 */
@@ -154,9 +154,8 @@ public class QueryProcessor {
 	 * @throws IOException if file is not able to written
 	 */
 	public void writeQueryJson(Path path) throws IOException {
-		// TODO Call the write method that takes a path
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-			writer.write(JsonFormatter.writeSearchResultsToString(this.query));
+			JsonFormatter.writeSearchResultsToFile(this.query, path);
 		}
 	}
 
