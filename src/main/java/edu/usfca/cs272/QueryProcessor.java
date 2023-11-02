@@ -4,9 +4,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -137,9 +135,7 @@ public class QueryProcessor {
 	 * @throws IOException if file is not able to written
 	 */
 	public void writeQueryJson(Path path) throws IOException {
-		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-			JsonFormatter.writeSearchResultsToFile(this.query, path);
-		}
+		JsonFormatter.writeSearchResultsToFile(this.query, path);
 	}
 
 	@Override
