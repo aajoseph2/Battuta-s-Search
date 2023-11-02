@@ -204,57 +204,33 @@ public class InvertedIndex {
 		}
 	}
 
-	//can I make a new method for the duplicate logic in partial and exact search?
-
 	/**
 	 * Performs an exact search based on the provided set of query words. This
 	 * method only looks for the exact word matches within the inverted index.
 	 *
 	 * @param queryWords The set of words intended for the exact search.
 	 * @return A list of search results based on the exact matches.
-	 * @throws IOException If there is an error during the search.
 	 */
-	private List<SearchResult> exactSearch(Set<String> queryWords) throws IOException { // TODO public, remove throws IOException
+	public List<SearchResult> exactSearch(Set<String> queryWords)  {
 		Map<String, SearchResult> locationCounts = new HashMap<>();
 		List<SearchResult> currentResults = new ArrayList<>();
 
 		for (String word : queryWords) {
-			/* TODO 
 			var locations = index.get(word);
-			
+
 			if (locations != null) {
 				for (var locEntry : locations.entrySet()) {
-			*/
-			
-			if (hasWord(word)) {
-				for (var locEntry : index.get(word).entrySet()) {
 					String loc = locEntry.getKey();
 					int frequency = locEntry.getValue().size();
-					
-					/* TODO 
+
 					SearchResult result = locationCounts.get(loc);
-					
+
 					if (result == null) {
 						result = new SearchResult(loc);
 						locationCounts.put(loc, result);
 						currentResults.add(result);
 					}
-					
 					result.updateCount(frequency);
-					*/
-					
-					
-					int totalWordsForLocation = numTotalWordsForLocation(loc);
-
-					if (locationCounts.containsKey(loc)) {
-						locationCounts.get(loc).updateCount(frequency, totalWordsForLocation);
-					}
-					else {
-						double initialScore = (double) frequency / totalWordsForLocation;
-						SearchResult result = new SearchResult(loc, frequency, initialScore);
-						locationCounts.put(loc, result);
-						currentResults.add(result);
-					}
 				}
 			}
 		}
@@ -270,9 +246,8 @@ public class InvertedIndex {
 	 *
 	 * @param queryWords The set of words intended for the partial search.
 	 * @return A list of search results based on partial matches.
-	 * @throws IOException If there is an error during the search.
 	 */
-	private List<SearchResult> partialSearch(Set<String> queryWords) throws IOException { // TODO public
+	public List<SearchResult> partialSearch(Set<String> queryWords) {
 		Map<String, SearchResult> searchResults = new HashMap<>();
 		List<SearchResult> currentResults = new ArrayList<>();
 
@@ -280,7 +255,7 @@ public class InvertedIndex {
 			var locations = index.tailMap(word); // TODO words
 
 			if (locations != null) {
-				for (var wordEntry : locations.entrySet()) { 
+				for (var wordEntry : locations.entrySet()) {
 					// TODO only needs to test if the word starts with the query
 					// TODO if that is false, BREAK
 					if (wordEntry.getKey().startsWith(word) && hasWord(wordEntry.getKey())) {
@@ -290,11 +265,11 @@ public class InvertedIndex {
 							int totalWordsForLocation = numTotalWordsForLocation(loc);
 
 							if (searchResults.containsKey(loc)) {
-								searchResults.get(loc).updateCount(frequency, totalWordsForLocation);
+								searchResults.get(loc).updateCount(frequency);
 							}
 							else {
 								double initialScore = (double) frequency / totalWordsForLocation;
-								SearchResult result = new SearchResult(loc, frequency, initialScore);
+								SearchResult result = new SearchResult(loc);
 								searchResults.put(loc, result);
 								currentResults.add(result);
 							}
@@ -345,14 +320,11 @@ public class InvertedIndex {
 		 * Constructor for SearchResult class, describes the structure of data
 		 *
 		 * @param where location of word query location
-		 * @param count count of all words in the query, within the given "where"
-		 * @param score score of count of words from the given query
 		 */
-		// TODO public SearchResult(String where) {
-		public SearchResult(String where, int count, double score) {
+		public SearchResult(String where) {
 			this.where = where;
-			this.count = count; // TODO 0
-			this.score = score; // TODO 0
+			this.count = 0;
+			this.score = 0;
 		}
 
 		/**
@@ -386,12 +358,10 @@ public class InvertedIndex {
 		 * Updates the count of the SearchResult with an additional count.
 		 *
 		 * @param additionalCount The count to be added to the existing count.
-		 * @param totalWords total number of words
 		 */
-		// TODO private void updateCount(int additionalCount) {
-		public void updateCount(int additionalCount, int totalWords) {
+		private void updateCount(int additionalCount) {
 			this.count += additionalCount;
-			this.score = (double) this.count / totalWords; // TODO counts.get(where)
+			this.score = (double) this.count / counts.get(where);
 		}
 
 		@Override
