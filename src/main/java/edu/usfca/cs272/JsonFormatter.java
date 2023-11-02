@@ -491,8 +491,6 @@ public class JsonFormatter {
 		writeIndexJson(index, buffer, 1);
 	}
 
-	// TODO Make more of these public
-
 	/**
 	 * Writes a single search result to the provided writer.
 	 *
@@ -501,7 +499,7 @@ public class JsonFormatter {
 	 * @param indent  The number of spaces for indentation.
 	 * @throws IOException if unable to write to writer.
 	 */
-	private static void writeSingleResult(InvertedIndex.SearchResult result, Writer writer, int indent)
+	public static void writeSingleResult(InvertedIndex.SearchResult result, Writer writer, int indent)
 			throws IOException {
 		writeIndent("{\n", writer, indent - 1);
 
@@ -525,7 +523,7 @@ public class JsonFormatter {
 	 * @param indent  The number of spaces for indentation.
 	 * @throws IOException if unable to write to writer.
 	 */
-	private static void writeResultCollection(List<InvertedIndex.SearchResult> results, Writer writer, int indent)
+	public static void writeResultCollection(List<InvertedIndex.SearchResult> results, Writer writer, int indent)
 			throws IOException {
 		var iterator = results.iterator();
 

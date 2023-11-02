@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +42,7 @@ public class QueryProcessor {
 	/**
 	 * Intended to stem text
 	 */
-	private final Stemmer stemmer = new SnowballStemmer(ENGLISH); // TODO Init in the constructor
+	private final Stemmer stemmer;
 
 	/**
 	 * Initializes the Query map with empty data structures.
@@ -55,10 +54,12 @@ public class QueryProcessor {
 		this.query = new TreeMap<>();
 		this.mapMethods = mapMethods;
 		this.isExact = isExact;
+		this.stemmer = new SnowballStemmer(ENGLISH);
 	}
 
 	/**
-	 * TODO Fill in
+	 * processes a query of words when given a file location. Processed line by line
+	 * as reading line by line
 	 *
 	 * @param location Where the query is being retrieved from
 	 * @throws IOException If file is unreadable
@@ -87,19 +88,6 @@ public class QueryProcessor {
 			List<InvertedIndex.SearchResult> currentResults = mapMethods.search(buffer, isExact);
 			this.query.put(processedQuery, currentResults);
 		}
-	}
-
-	/**
-	 * returns unmodifiable view of query map
-	 *
-	 * @return Unmodifiable map of queries and their results
-	 */
-	public Map<String, List<InvertedIndex.SearchResult>> getQueryMap() { // TODO Remove
-		Map<String, List<InvertedIndex.SearchResult>> resultMap = new HashMap<>();
-		for (String queryLine : getQueryLines()) {
-			resultMap.put(queryLine, getQueryResults(queryLine));
-		}
-		return Collections.unmodifiableMap(resultMap);
 	}
 
 	/**
