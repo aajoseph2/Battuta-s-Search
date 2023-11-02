@@ -38,16 +38,25 @@ public class Driver {
 					System.out.println("Missing file path to read!\n");
 				}
 			}
-			/* TODO Move here: else {
+			else {
 				System.out.println("Must input a text file to read!");
 			}
-			*/
 		}
-		else {
-			System.out.println("Must input a text file to read!");
+
+		if (parser.hasFlag("-query")) {
+			Path queryPath = parser.getPath("-query");
+			if (queryPath != null) {
+				try {
+					queryClass.queryProcessor(queryPath);
+				}
+				catch (IOException e) {
+					System.out.println("Error writing query to file: " + e.getMessage());
+				}
+			}
+			else {
+				System.out.println("Must input query path!");
+			}
 		}
-		
-		// TODO if (parser.hasFlag("-query")) {
 
 		if (parser.hasFlag("-counts")) {
 			try {
@@ -66,21 +75,6 @@ public class Driver {
 			}
 			catch (IOException e) {
 				System.out.println("Error writing index to file: " + e.getMessage());
-			}
-		}
-
-		if (parser.hasFlag("-query")) {
-			Path queryPath = parser.getPath("-query");
-			if (queryPath != null) {
-				try {
-					queryClass.queryProcessor(queryPath);
-				}
-				catch (IOException e) {
-					System.out.println("Error writing query to file: " + e.getMessage());
-				}
-			}
-			else {
-				System.out.println("Must input query path!");
 			}
 		}
 
