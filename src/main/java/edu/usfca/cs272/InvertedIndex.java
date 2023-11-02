@@ -241,8 +241,9 @@ public class InvertedIndex {
 			if (words != null) {
 				for (var wordEntry : words.entrySet()) {
 					String word = wordEntry.getKey();
-					if (!word.startsWith(query)) break;
-						compileResults(wordEntry.getValue(), searchResults, currentResults);
+					if (!word.startsWith(query))
+						break;
+					compileResults(wordEntry.getValue(), searchResults, currentResults);
 				}
 			}
 		}
@@ -250,9 +251,9 @@ public class InvertedIndex {
 	}
 
 	/**
- * @param locations locations where words were found.
- * @param resultLookup map used to look up and/or store SearchResult objects.
- * @param searchResults list to store and eventually return the search results.
+	 * @param locations locations where words were found.
+	 * @param resultLookup map used to look up and/or store SearchResult objects.
+	 * @param searchResults list to store and eventually return the search results.
 	 */
 	private void compileResults(TreeMap<String, TreeSet<Integer>> locations, Map<String, SearchResult> resultLookup,
 			List<SearchResult> searchResults) {

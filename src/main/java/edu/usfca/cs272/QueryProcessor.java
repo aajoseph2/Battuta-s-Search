@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Function;
 
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
@@ -32,13 +33,10 @@ public class QueryProcessor {
 	 * Represents the inverted index data structure used for storing and searching
 	 * text data
 	 */
-	private final InvertedIndex mapMethods;
 	/**
-	 * Flag indicating the search mode
+	 * function indicating the search mode
 	 */
-	private final boolean isExact; // TODO Could store instead the FUNCTION needed for either exact or partial search
-	// TODO private final Function<Set<String>, list of results> searchFunction;
-
+	private final Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction;
 	/**
 	 * Intended to stem text
 	 */
@@ -47,13 +45,11 @@ public class QueryProcessor {
 	/**
 	 * Initializes the Query map with empty data structures.
 	 *
-	 * @param mapMethods Inverted index data structure
-	 * @param isExact Flag indicating the search mode
+	 * @param searchFunction indicates the search mode
 	 */
-	public QueryProcessor(InvertedIndex mapMethods, boolean isExact) {
+	public QueryProcessor(Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction) {
 		this.query = new TreeMap<>();
-		this.mapMethods = mapMethods;
-		this.isExact = isExact;
+		this.searchFunction = searchFunction;
 		this.stemmer = new SnowballStemmer(ENGLISH);
 	}
 
@@ -85,7 +81,7 @@ public class QueryProcessor {
 		String processedQuery = String.join(" ", buffer);
 
 		if (!buffer.isEmpty() && !hasQuery(processedQuery)) {
-			List<InvertedIndex.SearchResult> currentResults = mapMethods.search(buffer, isExact);
+			List<InvertedIndex.SearchResult> currentResults = searchFunction.apply(buffer);
 			this.query.put(processedQuery, currentResults);
 		}
 	}
@@ -99,7 +95,6 @@ public class QueryProcessor {
 	public List<InvertedIndex.SearchResult> getQueryResults(String queryLine) {
 		var buffer = TextParser.uniqueStems(queryLine, stemmer);
 		String processedQuery = String.join(" ", buffer);
-
 		return Collections.unmodifiableList(query.getOrDefault(processedQuery, Collections.emptyList()));
 	}
 
@@ -149,6 +144,6 @@ public class QueryProcessor {
 
 	@Override
 	public String toString() {
-		return String.format("QueryProcessor [queries=%s, exact mode=%b]", queryCount(), isExact);
+		return String.format("QueryProcessor [queries=%s]", queryCount());
 	}
 }

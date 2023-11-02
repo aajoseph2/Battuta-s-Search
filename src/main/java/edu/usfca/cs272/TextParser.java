@@ -47,7 +47,8 @@ public class TextParser {
 	}
 
 	/**
-	 * Splits the provided text into individual words or tokens using predefined split patterns
+	 * Splits the provided text into individual words or tokens using predefined
+	 * split patterns
 	 *
 	 * @param text text to be parsed
 	 * @return splitted text
@@ -173,7 +174,7 @@ public class TextParser {
 	 *
 	 * @param input the input file to parse and stem
 	 * @return a list where each item is the sets of unique sorted stems parsed from
-	 * a single line of the input file
+	 *   a single line of the input file
 	 * @throws IOException if unable to read or parse file
 	 * @see SnowballStemmer
 	 * @see ALGORITHM#ENGLISH

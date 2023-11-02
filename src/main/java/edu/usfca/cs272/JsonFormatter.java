@@ -87,8 +87,8 @@ public class JsonFormatter {
 	 * @param elements the elements to write
 	 * @param writer the writer to use
 	 * @param indent the initial indent level; the first bracket is not indented,
-	 * inner elements are indented by one, and the last bracket is indented at the
-	 * initial indentation level
+	 *   inner elements are indented by one, and the last bracket is indented at the
+	 *   initial indentation level
 	 * @throws IOException if an IO error occurs
 	 * @see Writer#write(String)
 	 * @see #writeIndent(Writer, int)
@@ -154,8 +154,8 @@ public class JsonFormatter {
 	 * @param elements the elements to write
 	 * @param writer the writer to use
 	 * @param indent the initial indent level; the first bracket is not indented,
-	 * inner elements are indented by one, and the last bracket is indented at the
-	 * initial indentation level
+	 *   inner elements are indented by one, and the last bracket is indented at the
+	 *   initial indentation level
 	 * @throws IOException if an IO error occurs
 	 * @see Writer#write(String)
 	 * @see #writeIndent(Writer, int)
@@ -219,10 +219,10 @@ public class JsonFormatter {
 	 * Writes a single keyvalue pair from the provided iterator to writer.
 	 *
 	 * @param iterator Iterator over entries of the map. The next entry in the
-	 * iterator is processed by this method.
+	 *   iterator is processed by this method.
 	 * @param writer The Writer to which the keyvalue pair is written.
 	 * @param indent Indentation level for the current key val pair being written.
-	 * Helps format nested structures.
+	 *   Helps format nested structures.
 	 * @throws IOException If file unwritable
 	 */
 	private static void writeObjectElement(Iterator<? extends Map.Entry<String, ? extends Number>> iterator,
@@ -246,8 +246,8 @@ public class JsonFormatter {
 	 * @param elements the elements to write
 	 * @param writer the writer to use
 	 * @param indent the initial indent level; the first bracket is not indented,
-	 * inner elements are indented by one, and the last bracket is indented at the
-	 * initial indentation level
+	 *   inner elements are indented by one, and the last bracket is indented at the
+	 *   initial indentation level
 	 * @throws IOException if an IO error occurs
 	 * @see Writer#write(String)
 	 * @see #writeIndent(Writer, int)
@@ -335,8 +335,8 @@ public class JsonFormatter {
 	 * @param elements the elements to write
 	 * @param writer the writer to use
 	 * @param indent the initial indent level; the first bracket is not indented,
-	 * inner elements are indented by one, and the last bracket is indented at the
-	 * initial indentation level
+	 *   inner elements are indented by one, and the last bracket is indented at the
+	 *   initial indentation level
 	 * @throws IOException if an IO error occurs
 	 * @see Writer#write(String)
 	 * @see #writeIndent(Writer, int)
@@ -482,7 +482,7 @@ public class JsonFormatter {
 	 * Helper to write index to json
 	 *
 	 * @param index contains the structure for the read data within
-	 * writeJsonToFile()
+	 *   writeJsonToFile()
 	 * @throws IOException if file is unreable
 	 */
 	public static void writeIndexJson(Map<String, ? extends Map<String, ? extends Collection<? extends Number>>> index)
@@ -494,9 +494,9 @@ public class JsonFormatter {
 	/**
 	 * Writes a single search result to the provided writer.
 	 *
-	 * @param result  The search result to write.
-	 * @param writer  The output writer.
-	 * @param indent  The number of spaces for indentation.
+	 * @param result The search result to write.
+	 * @param writer The output writer.
+	 * @param indent The number of spaces for indentation.
 	 * @throws IOException if unable to write to writer.
 	 */
 	public static void writeSingleResult(InvertedIndex.SearchResult result, Writer writer, int indent)
@@ -519,8 +519,8 @@ public class JsonFormatter {
 	 * Writes a collection of search results to the provided writer.
 	 *
 	 * @param results The list of search results.
-	 * @param writer  The output writer.
-	 * @param indent  The number of spaces for indentation.
+	 * @param writer The output writer.
+	 * @param indent The number of spaces for indentation.
 	 * @throws IOException if unable to write to writer.
 	 */
 	public static void writeResultCollection(List<InvertedIndex.SearchResult> results, Writer writer, int indent)
@@ -552,7 +552,8 @@ public class JsonFormatter {
 	 * @return A formatted JSON string.
 	 * @throws IOException if unable to write to writer.
 	 */
-	public static String writeSearchResults(Map<String, List<InvertedIndex.SearchResult>> results, Writer writer, int indent) throws IOException {
+	public static String writeSearchResults(Map<String, List<InvertedIndex.SearchResult>> results, Writer writer,
+			int indent) throws IOException {
 		var iterator = results.entrySet().iterator();
 
 		writer.write("{\n");

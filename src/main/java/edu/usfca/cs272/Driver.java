@@ -2,6 +2,9 @@ package edu.usfca.cs272;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Class responsible for running this project based on the provided command-line
@@ -25,8 +28,12 @@ public class Driver {
 
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index = new InvertedIndex();
-		boolean isExact = !parser.hasFlag("-partial");
-		QueryProcessor queryClass = new QueryProcessor(index, isExact);
+
+		Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction = !parser.hasFlag("-partial")
+				? index::exactSearch
+				: index::partialSearch;
+
+		QueryProcessor queryClass = new QueryProcessor(searchFunction);
 
 		if (parser.hasFlag("-text")) {
 			Path contentsPath = parser.getPath("-text");
