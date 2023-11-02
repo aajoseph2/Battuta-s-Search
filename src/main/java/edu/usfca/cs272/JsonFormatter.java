@@ -492,7 +492,7 @@ public class JsonFormatter {
 	}
 
 	// TODO Make more of these public
-	
+
 	/**
 	 * Writes a single search result to the provided writer.
 	 *
@@ -578,8 +578,6 @@ public class JsonFormatter {
 		return writer.toString();
 	}
 
-
-	//Should i even keep this method below? TODO Yes!
 	/**
 	 * Writes results into file
 	 *

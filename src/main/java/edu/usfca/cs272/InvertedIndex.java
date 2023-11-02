@@ -212,13 +212,13 @@ public class InvertedIndex {
 	 * @return A list of search results based on the exact matches.
 	 */
 	public List<SearchResult> exactSearch(Set<String> queryWords) {
-		Map<String, SearchResult> locationCounts = new HashMap<>();
+		Map<String, SearchResult> searchResults = new HashMap<>();
 		List<SearchResult> currentResults = new ArrayList<>();
 
 		for (String word : queryWords) {
-			var locations = index.get(word);
-			if (locations != null) {
-				compileResults(locations, locationCounts, currentResults);
+			var words = index.get(word);
+			if (words != null) {
+				compileResults(words, searchResults, currentResults);
 			}
 		}
 		return currentResults;
@@ -237,35 +237,15 @@ public class InvertedIndex {
 		List<SearchResult> currentResults = new ArrayList<>();
 
 		for (String query : queries) {
-			var locations = index.tailMap(query); // TODO words
-
-			if (locations != null) {
-				for (var wordEntry : locations.entrySet()) {
-					// TODO only needs to test if the word starts with the query
-					// TODO if that is false, BREAK
-					if (wordEntry.getKey().startsWith(query) && hasWord(wordEntry.getKey())) {
-						for (var locEntry : wordEntry.getValue().entrySet()) { // TODO Move this into a private helper method called
-																																		// by both forms of search
-							String loc = locEntry.getKey();
-							int frequency = locEntry.getValue().size();
-							int totalWordsForLocation = numTotalWordsForLocation(loc);
-
-							if (searchResults.containsKey(loc)) {
-								searchResults.get(loc).updateCount(frequency);
-							}
-							else {
-								double initialScore = (double) frequency / totalWordsForLocation;
-								SearchResult result = new SearchResult(loc);
-								searchResults.put(loc, result);
-								currentResults.add(result);
-							}
-						}
-					}
+			var words = index.tailMap(query);
+			if (words != null) {
+				for (var wordEntry : words.entrySet()) {
+					String word = wordEntry.getKey();
+					if (!word.startsWith(query)) break;
+						compileResults(wordEntry.getValue(), searchResults, currentResults);
 				}
 			}
 		}
-
-		Collections.sort(currentResults);
 		return currentResults;
 	}
 
