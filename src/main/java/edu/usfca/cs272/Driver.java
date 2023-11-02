@@ -38,10 +38,16 @@ public class Driver {
 					System.out.println("Missing file path to read!\n");
 				}
 			}
+			/* TODO Move here: else {
+				System.out.println("Must input a text file to read!");
+			}
+			*/
 		}
 		else {
 			System.out.println("Must input a text file to read!");
 		}
+		
+		// TODO if (parser.hasFlag("-query")) {
 
 		if (parser.hasFlag("-counts")) {
 			try {

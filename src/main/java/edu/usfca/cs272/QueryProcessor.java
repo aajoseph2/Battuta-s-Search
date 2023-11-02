@@ -37,12 +37,13 @@ public class QueryProcessor {
 	/**
 	 * Flag indicating the search mode
 	 */
-	private final boolean isExact;
+	private final boolean isExact; // TODO Could store instead the FUNCTION needed for either exact or partial search
+	// TODO private final Function<Set<String>, list of results> searchFunction;
 
 	/**
 	 * Intended to stem text
 	 */
-	private final Stemmer stemmer = new SnowballStemmer(ENGLISH);
+	private final Stemmer stemmer = new SnowballStemmer(ENGLISH); // TODO Init in the constructor
 
 	/**
 	 * Initializes the Query map with empty data structures.
@@ -57,6 +58,8 @@ public class QueryProcessor {
 	}
 
 	/**
+	 * TODO Fill in
+	 * 
 	 * @param location Where the query is being retrieved from
 	 * @throws IOException If file is unreadable
 	 */
@@ -91,7 +94,7 @@ public class QueryProcessor {
 	 *
 	 * @return Unmodifiable map of queries and their results
 	 */
-	public Map<String, List<InvertedIndex.SearchResult>> getQueryMap() {
+	public Map<String, List<InvertedIndex.SearchResult>> getQueryMap() { // TODO Remove
 		Map<String, List<InvertedIndex.SearchResult>> resultMap = new HashMap<>();
 		for (String queryLine : getQueryLines()) {
 			resultMap.put(queryLine, getQueryResults(queryLine));
@@ -151,6 +154,7 @@ public class QueryProcessor {
 	 * @throws IOException if file is not able to written
 	 */
 	public void writeQueryJson(Path path) throws IOException {
+		// TODO Call the write method that takes a path
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			writer.write(JsonFormatter.writeSearchResultsToString(this.query));
 		}
