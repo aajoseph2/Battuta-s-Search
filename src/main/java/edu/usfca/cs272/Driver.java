@@ -27,22 +27,22 @@ public class Driver {
 	public static void main(String[] args) {
 
 		ArgumentParser parser = new ArgumentParser(args);
-		InvertedIndex index = new InvertedIndex();
+		InvertedIndex index;
+		WorkQueue workers = null;
+
+		if (parser.hasFlag("-threads")) {
+			int threadNum = parser.getInteger("-threads", 5);
+			workers = new WorkQueue(threadNum);
+			index = new ThreadSafeInvertedIndex();
+		} else {
+			index = new InvertedIndex();
+		}
 
 		Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction = !parser.hasFlag("-partial")
 				? index::exactSearch
 				: index::partialSearch;
 
 		QueryProcessor queryClass = new QueryProcessor(searchFunction);
-
-		if (parser.hasFlag("-threads")) {
-			int threadNum = parser.getInteger("-threads", 5);
-
-			//ThreadSafeInvertedIndex index = new ThreadSafeInvertedIndex();
-		} else {
-			//InvertedIndex index = new InvertedIndex();
-		}
-
 
 		if (parser.hasFlag("-text")) {
 			Path contentsPath = parser.getPath("-text");

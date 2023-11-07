@@ -178,19 +178,16 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 
 	@Override
 	public List<SearchResult> search(Set<String> queryWords, boolean isExact) throws IOException {
-		// TODO Auto-generated method stub
 		return super.search(queryWords, isExact);
 	}
 
 	@Override
 	public List<SearchResult> exactSearch(Set<String> queryWords) {
-		// TODO Auto-generated method stub
 		return super.exactSearch(queryWords);
 	}
 
 	@Override
 	public List<SearchResult> partialSearch(Set<String> queries) {
-		// TODO Auto-generated method stub
 		return super.partialSearch(queries);
 	}
 
