@@ -35,6 +35,12 @@ public class Driver {
 
 		QueryProcessor queryClass = new QueryProcessor(searchFunction);
 
+		if (parser.hasFlag("-threads")) {
+			int threadNum = parser.getInteger("-threads", 5);
+
+			System.out.println("Thread count: " + threadNum);
+		}
+
 		if (parser.hasFlag("-text")) {
 			Path contentsPath = parser.getPath("-text");
 			if (contentsPath != null) {
