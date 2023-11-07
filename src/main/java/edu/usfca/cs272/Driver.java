@@ -38,8 +38,11 @@ public class Driver {
 		if (parser.hasFlag("-threads")) {
 			int threadNum = parser.getInteger("-threads", 5);
 
-			System.out.println("Thread count: " + threadNum);
+			//ThreadSafeInvertedIndex index = new ThreadSafeInvertedIndex();
+		} else {
+			//InvertedIndex index = new InvertedIndex();
 		}
+
 
 		if (parser.hasFlag("-text")) {
 			Path contentsPath = parser.getPath("-text");
