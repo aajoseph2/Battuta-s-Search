@@ -11,8 +11,8 @@ import java.util.SortedMap;
  */
 public class ThreadSafeInvertedIndex extends InvertedIndex {
 
-	/*
-	 * The lock used to protect concurrent access to the underlying set.
+	/**
+	 *  The lock used to protect concurrent access to the underlying set.
 	 */
 	private final MultiReaderLock lock;
 
@@ -34,80 +34,146 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 
 	@Override
 	public void addData(String word, String location, Integer num) {
-		// TODO Auto-generated method stub
+		lock.writeLock().lock();
+		try {
 		super.addData(word, location, num);
+		}
+		finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	@Override
 	public boolean hasCount(String location) {
-		// TODO Auto-generated method stub
-		return super.hasCount(location);
+		lock.readLock().lock();
+		try {
+			return super.hasCount(location);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
+
 	}
 
 	@Override
 	public boolean hasWord(String word) {
-		// TODO Auto-generated method stub
+		lock.readLock().lock();
+		try {
 		return super.hasWord(word);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public boolean hasLocation(String word, String location) {
-		// TODO Auto-generated method stub
+		lock.readLock().lock();
+		try {
 		return super.hasLocation(word, location);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public boolean hasPosition(String word, String location, int position) {
-		// TODO Auto-generated method stub
+		lock.readLock().lock();
+		try {
 		return super.hasPosition(word, location, position);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public SortedMap<String, Integer> getWordCounts() {
-		// TODO Auto-generated method stub
+		lock.readLock().lock();
+		try {
 		return super.getWordCounts();
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public Set<String> getWords() {
-		// TODO Auto-generated method stub
+		lock.readLock().lock();
+		try {
 		return super.getWords();
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public Integer numCountForFile(String location) {
-		// TODO Auto-generated method stub
+		lock.readLock().lock();
+		try {
 		return super.numCountForFile(location);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public int numWordFrequency(String word) {
-		// TODO Auto-generated method stub
+		lock.readLock().lock();
+		try {
 		return super.numWordFrequency(word);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public int numTotalWordsForLocation(String location) {
-		// TODO Auto-generated method stub
+		lock.readLock().lock();
+		try {
 		return super.numTotalWordsForLocation(location);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public int numWordFrequencyAtLocation(String word, String location) {
-		// TODO Auto-generated method stub
+		lock.readLock().lock();
+		try {
 		return super.numWordFrequencyAtLocation(word, location);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public Set<String> getLocations(String word) {
-		// TODO Auto-generated method stub
+		lock.readLock().lock();
+		try {
 		return super.getLocations(word);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public Set<Integer> getPositions(String word, String location) {
-		// TODO Auto-generated method stub
+		lock.readLock().lock();
+		try {
 		return super.getPositions(word, location);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
@@ -130,14 +196,24 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 
 	@Override
 	public void writeJson(Path path) throws IOException {
-		// TODO Auto-generated method stub
+		lock.readLock().lock();
+		try {
 		super.writeJson(path);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
+		lock.readLock().lock();
+		try {
 		return super.toString();
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 }
