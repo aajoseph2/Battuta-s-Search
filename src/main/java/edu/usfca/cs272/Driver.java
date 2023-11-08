@@ -32,7 +32,6 @@ public class Driver {
 
 		if (parser.hasFlag("-threads")) {
 			threadNum = parser.getInteger("-threads", 5);
-			//workers = new WorkQueue(threadNum);
 			index = new ThreadSafeInvertedIndex();
 		} else {
 			index = new InvertedIndex();
@@ -108,6 +107,5 @@ public class Driver {
 				System.out.println("Error writing results to file: " + e.getMessage());
 			}
 		}
-
 	}
 }

@@ -34,7 +34,7 @@ public class InvertedIndexProcessor {
 	 */
 	public static void processPath(Path path, InvertedIndex index, int threads) throws IOException {
 
-		WorkQueue workers = new WorkQueue(threads);
+		//WorkQueue workers = new WorkQueue(threads);
 
 		if (Files.isDirectory(path)) {
 			processDirectory(path, index);
