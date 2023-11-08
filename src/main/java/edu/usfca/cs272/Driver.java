@@ -28,11 +28,11 @@ public class Driver {
 
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index;
-		WorkQueue workers = null;
+		int threadNum = 1;
 
 		if (parser.hasFlag("-threads")) {
-			int threadNum = parser.getInteger("-threads", 5);
-			workers = new WorkQueue(threadNum);
+			threadNum = parser.getInteger("-threads", 5);
+			//workers = new WorkQueue(threadNum);
 			index = new ThreadSafeInvertedIndex();
 		} else {
 			index = new InvertedIndex();
@@ -48,7 +48,12 @@ public class Driver {
 			Path contentsPath = parser.getPath("-text");
 			if (contentsPath != null) {
 				try {
-					InvertedIndexProcessor.processPath(contentsPath, index);
+					if (threadNum != 1) {
+						//third arg is number of threads passed
+						InvertedIndexProcessor.processPath(contentsPath, index, threadNum);
+					}else {
+						InvertedIndexProcessor.processPath(contentsPath, index, 1);
+					}
 				}
 				catch (IOException e) {
 					System.out.println("Missing file path to read!\n");

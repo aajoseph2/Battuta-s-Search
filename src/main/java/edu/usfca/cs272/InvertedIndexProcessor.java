@@ -29,9 +29,13 @@ public class InvertedIndexProcessor {
 	 *
 	 * @param path Given file contents
 	 * @param index map to be used for indexing data
+	 * @param threads number of threads to be used
 	 * @throws IOException if file is unreadable
 	 */
-	public static void processPath(Path path, InvertedIndex index) throws IOException {
+	public static void processPath(Path path, InvertedIndex index, int threads) throws IOException {
+
+		WorkQueue workers = new WorkQueue(threads);
+
 		if (Files.isDirectory(path)) {
 			processDirectory(path, index);
 		}
