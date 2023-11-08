@@ -28,12 +28,13 @@ public class Driver {
 
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index;
-		int threadNum = 1;
+		WorkQueue workers = null;
 
 		if (parser.hasFlag("-threads")) {
-			threadNum = parser.getInteger("-threads", 5);
 			index = new ThreadSafeInvertedIndex();
-		} else {
+			workers = new WorkQueue(parser.getInteger("-threads", 5));
+		}
+		else {
 			index = new InvertedIndex();
 		}
 
@@ -47,12 +48,7 @@ public class Driver {
 			Path contentsPath = parser.getPath("-text");
 			if (contentsPath != null) {
 				try {
-					if (threadNum != 1) {
-						//third arg is number of threads passed
-						InvertedIndexProcessor.processPath(contentsPath, index, threadNum);
-					}else {
-						InvertedIndexProcessor.processPath(contentsPath, index, 1);
-					}
+					InvertedIndexProcessor.processPath(contentsPath, index, workers);
 				}
 				catch (IOException e) {
 					System.out.println("Missing file path to read!\n");
@@ -106,6 +102,11 @@ public class Driver {
 			catch (IOException e) {
 				System.out.println("Error writing results to file: " + e.getMessage());
 			}
+		}
+		if (workers != null) {
+			workers.finish();
+			workers.shutdown();
+			workers.join();
 		}
 	}
 }

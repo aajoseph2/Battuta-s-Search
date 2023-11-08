@@ -29,15 +29,18 @@ public class InvertedIndexProcessor {
 	 *
 	 * @param path Given file contents
 	 * @param index map to be used for indexing data
-	 * @param threads number of threads to be used
+	 * @param workers threads to do job
 	 * @throws IOException if file is unreadable
 	 */
-	public static void processPath(Path path, InvertedIndex index, int threads) throws IOException {
-
-		//WorkQueue workers = new WorkQueue(threads);
+	public static void processPath(Path path, InvertedIndex index, WorkQueue workers) throws IOException {
 
 		if (Files.isDirectory(path)) {
-			processDirectory(path, index);
+			if (workers != null) {
+				processDirectoryMultithreaded(path, index, workers);
+			}
+			else {
+				processDirectory(path, index);
+			}
 		}
 		else {
 			processText(path, index);
@@ -103,4 +106,45 @@ public class InvertedIndexProcessor {
 			}
 		}
 	}
+
+	/**
+	 * Multi threaded version of processDirectory
+	 *
+	 * @param input the directory
+	 * @param index contains the structure for the read data
+	 * @param worker workers threads to do job
+	 * @throws IOException If file is unable to be read, then throw an exception.
+	 */
+	public static void processDirectoryMultithreaded(Path input, InvertedIndex index, WorkQueue worker)
+			throws IOException {
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
+			for (Path entry : stream) {
+				if (Files.isDirectory(entry)) {
+					worker.execute(() -> {
+						try {
+							processDirectoryMultithreaded(entry, index, worker);
+						}
+						catch (IOException e) {
+							System.out.println("Error writing results to file: " + e.getMessage());
+							//need log
+						}
+					});
+				}
+				else if (isTextFile(entry)) {
+					worker.execute(() -> {
+						try {
+							synchronized (index) {
+								processText(entry, index);
+							}
+						}
+						catch (IOException e) {
+							System.out.println("Error writing results to file: " + e.getMessage());
+							//need log
+						}
+					});
+				}
+			}
+		}
+	}
+
 }
