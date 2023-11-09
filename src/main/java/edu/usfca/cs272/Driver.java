@@ -26,6 +26,10 @@ public class Driver {
 	 */
 	public static void main(String[] args) {
 
+		/*
+		 * TODO We can fix duplicate logic later
+		 */
+		
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index;
 		WorkQueue workers = null;

@@ -5,6 +5,7 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,6 +47,11 @@ public class InvertedIndexProcessor {
 			processText(path, index);
 		}
 	}
+	
+	/*
+	 * TODO Create a new class and new processPath method for multithreaded code
+	 * the new processPath needs a thread-safe inverted index
+	 */
 
 	/**
 	 * This recurses on its self until it reaches a base text file. Logic for the
@@ -115,11 +121,12 @@ public class InvertedIndexProcessor {
 	 * @param worker workers threads to do job
 	 * @throws IOException If file is unable to be read, then throw an exception.
 	 */
-	public static void processDirectoryMultithreaded(Path input, InvertedIndex index, WorkQueue worker)
+	public static void processDirectoryMultithreaded(Path input, InvertedIndex index, WorkQueue worker) // TODO thread-safe index
 			throws IOException {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 			for (Path entry : stream) {
 				if (Files.isDirectory(entry)) {
+					// TODO processDirectoryMultithreaded(entry, index, worker); (no task)
 					worker.execute(() -> {
 						try {
 							processDirectoryMultithreaded(entry, index, worker);
@@ -133,11 +140,24 @@ public class InvertedIndexProcessor {
 				else if (isTextFile(entry)) {
 					worker.execute(() -> {
 						try {
-							synchronized (index) {
+							/*
+							 * TODO 1. create local data inside of here
+							 * create a local inverted index
+							 * 
+							 * 2. add to the local data within any loop
+							 * processText(entry, local)
+							 * 
+							 * 3. combine the local and shared data
+							 * index.addAll(local); <-- create this method
+							 */
+							
+							
+							synchronized (index) { // TODO Over-synchronizing
 								processText(entry, index);
 							}
 						}
 						catch (IOException e) {
+							// TODO throw new UncheckedIOException(e);
 							System.out.println("Error writing results to file: " + e.getMessage());
 							//need log
 						}

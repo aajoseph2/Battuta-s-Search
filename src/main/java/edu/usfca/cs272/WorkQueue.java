@@ -58,6 +58,7 @@ public class WorkQueue {
 		this.tasks = new LinkedList<Runnable>();
 		this.workers = new Worker[threads];
 		this.shutdown = false;
+		// TODO this.pending = 0;
 
 		// start the threads so they are waiting in the background
 		for (int i = 0; i < threads; i++) {
@@ -75,7 +76,7 @@ public class WorkQueue {
 	public void execute(Runnable task) {
 		synchronized (tasks) {
 			tasks.addLast(task);
-			pending++;
+			pending++;  // TODO different lock here
 			tasks.notifyAll();
 		}
 	}
@@ -85,7 +86,7 @@ public class WorkQueue {
 	 * worker threads so that the work queue can continue to be used.
 	 */
 	public void finish() {
-		synchronized (tasks) {
+		synchronized (tasks) {  // TODO different lock here
 			while (pending > 0) {
 				try {
 					tasks.wait();
@@ -186,7 +187,7 @@ public class WorkQueue {
 						log.catching(Level.ERROR, e);
 					}
 					finally {
-						synchronized (tasks) {
+						synchronized (tasks) { // TODO different lock here
 							pending--;
 							if (pending <= 0) {
 								tasks.notifyAll();

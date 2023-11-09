@@ -176,6 +176,8 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		}
 	}
 
+	// TODO Decide which search methods to lock!
+	
 	@Override
 	public List<SearchResult> search(Set<String> queryWords, boolean isExact) throws IOException {
 		return super.search(queryWords, isExact);
