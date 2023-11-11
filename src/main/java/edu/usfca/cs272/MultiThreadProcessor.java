@@ -14,15 +14,9 @@ import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
 /**
- * The InvertedIndexProcessor class provides functionalities for reading,
- * processing, and converting textual data into structured formats suitable for
- * building and representing an inverted index. This class contains methods to
- * recursively navigate directories, process individual text files, and
- * transform the generated inverted index data into JSON format for storage or
- * presentation.
+ * Multithreaded class of InvertedIndexProcessor class
  */
-
-public class InvertedIndexProcessor {
+public class MultiThreadProcessor {
 
 	/**
 	 * Offers logic to determine whether a given file input should iterate throug a
@@ -30,12 +24,13 @@ public class InvertedIndexProcessor {
 	 *
 	 * @param path Given file contents
 	 * @param index map to be used for indexing data
+	 * @param workers threads to do job
 	 * @throws IOException if file is unreadable
 	 */
-	public static void processPath(Path path, InvertedIndex index) throws IOException {
+	public static void processPath(Path path, InvertedIndex index, WorkQueue workers) throws IOException {
 
 		if (Files.isDirectory(path)) {
-				processDirectory(path, index);
+			processDirectoryMultithreaded(path, index, workers);
 		}
 		else {
 			processText(path, index);

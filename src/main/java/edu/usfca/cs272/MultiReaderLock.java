@@ -245,10 +245,8 @@ public class MultiReaderLock {
 				writers--;
 				if (writers == 0) {
 					activeWriter = null;
-					// TODO lock.notifyAll();
+					lock.notifyAll();
 				}
-
-				lock.notifyAll();
 			}
 		}
 

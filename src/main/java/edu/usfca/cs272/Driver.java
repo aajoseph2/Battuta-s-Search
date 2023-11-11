@@ -26,10 +26,6 @@ public class Driver {
 	 */
 	public static void main(String[] args) {
 
-		/*
-		 * TODO We can fix duplicate logic later
-		 */
-
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index;
 		WorkQueue workers = null;
@@ -52,7 +48,11 @@ public class Driver {
 			Path contentsPath = parser.getPath("-text");
 			if (contentsPath != null) {
 				try {
-					InvertedIndexProcessor.processPath(contentsPath, index, workers);
+					if (workers != null) {
+					InvertedIndexProcessor.processPath(contentsPath, index);
+					} else {
+						MultiThreadProcessor.processPath(contentsPath, index, workers);
+					}
 				}
 				catch (IOException e) {
 					System.out.println("Missing file path to read!\n");
