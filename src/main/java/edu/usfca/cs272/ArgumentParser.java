@@ -200,7 +200,8 @@ public class ArgumentParser {
 	 */
 	public int getInteger(String flag, int backup) {
 		try {
-			if (Integer.parseInt(map.get(flag)) <= 0) return backup;
+			if (Integer.parseInt(map.get(flag)) <= 0)
+				return backup;
 			return Integer.parseInt(map.get(flag));
 		}
 		catch (NumberFormatException | NullPointerException e) {

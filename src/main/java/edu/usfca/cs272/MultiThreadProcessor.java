@@ -89,7 +89,7 @@ public class MultiThreadProcessor {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 			for (Path entry : stream) {
 				if (Files.isDirectory(entry)) {
-							processDirectoryMultithreaded(entry, index, worker);
+					processDirectoryMultithreaded(entry, index, worker);
 				}
 				else if (isTextFile(entry)) {
 					worker.execute(() -> {
@@ -98,7 +98,7 @@ public class MultiThreadProcessor {
 							processText(entry, localIndex);
 							index.addAll(localIndex);
 						}
-						catch (IOException e)  {
+						catch (IOException e) {
 							throw new UncheckedIOException(e);
 						}
 					});

@@ -50,7 +50,8 @@ public class Driver {
 				try {
 					if (workers != null) {
 						MultiThreadProcessor.processPath(contentsPath, (ThreadSafeInvertedIndex) index, workers);
-					} else {
+					}
+					else {
 						InvertedIndexProcessor.processPath(contentsPath, index);
 					}
 				}

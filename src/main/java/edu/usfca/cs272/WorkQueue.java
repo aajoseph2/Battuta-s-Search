@@ -35,10 +35,13 @@ public class WorkQueue {
 	private static final Logger log = LogManager.getLogger();
 
 	/**
+	 * lock for pedning variable
+	 */
+	private final Object pendLock = new Object();
+	/**
 	 * Num of pending tasks
 	 */
 	private int pending;
-
 
 	/**
 	 * Starts a work queue with the default number of threads.
@@ -60,7 +63,6 @@ public class WorkQueue {
 		this.shutdown = false;
 		this.pending = 0;
 
-		// start the threads so they are waiting in the background
 		for (int i = 0; i < threads; i++) {
 			workers[i] = new Worker();
 			workers[i].start();
@@ -76,7 +78,10 @@ public class WorkQueue {
 	public void execute(Runnable task) {
 		synchronized (tasks) {
 			tasks.addLast(task);
-			pending++;  // TODO different lock here
+			synchronized (pendLock) {
+				pending++;
+				pendLock.notifyAll();
+			}
 			tasks.notifyAll();
 		}
 	}
@@ -86,10 +91,10 @@ public class WorkQueue {
 	 * worker threads so that the work queue can continue to be used.
 	 */
 	public void finish() {
-		synchronized (tasks) {  // TODO different lock here
+		synchronized (pendLock) {
 			while (pending > 0) {
 				try {
-					tasks.wait();
+					pendLock.wait();
 				}
 				catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
@@ -124,7 +129,6 @@ public class WorkQueue {
 	 * finished, but threads in-progress will not be interrupted.
 	 */
 	public void shutdown() {
-		// safe to do unsynchronized due to volatile keyword
 		shutdown = true;
 
 		synchronized (tasks) {
@@ -167,17 +171,11 @@ public class WorkQueue {
 						while (tasks.isEmpty() && !shutdown) {
 							tasks.wait();
 						}
-
-						// exit while for one of two reasons:
-						// (a) queue has work, or (b) shutdown has been called
-
 						if (shutdown) {
 							break;
 						}
-
 						task = tasks.removeFirst();
 					}
-
 					try {
 						task.run();
 					}
@@ -187,17 +185,16 @@ public class WorkQueue {
 						log.catching(Level.ERROR, e);
 					}
 					finally {
-						synchronized (tasks) { // TODO different lock here
+						synchronized (pendLock) {
 							pending--;
 							if (pending <= 0) {
-								tasks.notifyAll();
+								pendLock.notifyAll();
 							}
 						}
 					}
 				}
 			}
 			catch (InterruptedException e) {
-				// causes early termination of worker threads
 				System.err.printf("Warning: %s interrupted while waiting.%n", this.getName());
 				log.catching(Level.WARN, e);
 				Thread.currentThread().interrupt();
@@ -205,4 +202,3 @@ public class WorkQueue {
 		}
 	}
 }
-

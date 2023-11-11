@@ -34,7 +34,7 @@ public class InvertedIndexProcessor {
 	public static void processPath(Path path, InvertedIndex index) throws IOException {
 
 		if (Files.isDirectory(path)) {
-				processDirectory(path, index);
+			processDirectory(path, index);
 		}
 		else {
 			processText(path, index);
