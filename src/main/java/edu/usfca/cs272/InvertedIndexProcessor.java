@@ -131,18 +131,9 @@ public class InvertedIndexProcessor {
 				else if (isTextFile(entry)) {
 					worker.execute(() -> {
 						try {
-							/*
-							 * TODO 1. create local data inside of here
-							 * create a local inverted index
-							 *
-							 * 2. add to the local data within any loop
-							 * processText(entry, local)
-							 *
-							 * 3. combine the local and shared data
-							 * index.addAll(local); <-- create this method
-							 */
-
-								processText(entry, index);
+							InvertedIndex localIndex = new InvertedIndex();
+							processText(entry, localIndex);
+							index.addAll(localIndex);
 						}
 						catch (IOException e)  {
 							throw new UncheckedIOException(e);

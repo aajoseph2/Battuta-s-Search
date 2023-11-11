@@ -54,6 +54,21 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * Adds all the data from a local inverted index to this shared inverted index.
+	 *
+	 * @param localIndex the local inverted index to add
+	 */
+	public void addAll(InvertedIndex localIndex) {
+		for (String word : localIndex.getWords()) {
+			for (String location : localIndex.getLocations(word)) {
+				for (Integer position : localIndex.getPositions(word, location)) {
+					this.addData(word, location, position);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Checks if the word count exists for the given location.
 	 *
 	 * @param location the location (file) to check

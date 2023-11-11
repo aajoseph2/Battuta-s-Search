@@ -44,6 +44,17 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
+	public void addAll(InvertedIndex localIndex) {
+		lock.writeLock().lock();
+		try {
+		super.addAll(localIndex);
+		}
+		finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	@Override
 	public boolean hasCount(String location) {
 		lock.readLock().lock();
 		try {
@@ -177,7 +188,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	// TODO Decide which search methods to lock!
-	
+
 	@Override
 	public List<SearchResult> search(Set<String> queryWords, boolean isExact) throws IOException {
 		return super.search(queryWords, isExact);
