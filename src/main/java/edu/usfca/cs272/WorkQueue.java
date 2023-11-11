@@ -148,7 +148,6 @@ public class WorkQueue {
 	/**
 	 * Waits until work (or a task) is available in the work queue. When work is
 	 * found, will remove the work from the queue and run it.
-	 *
 	 * <p>If a shutdown is detected, will exit instead of grabbing new work from the
 	 * queue. These threads will continue running in the background until a shutdown
 	 * is requested.
