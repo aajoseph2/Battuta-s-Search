@@ -47,7 +47,7 @@ public class InvertedIndexProcessor {
 			processText(path, index);
 		}
 	}
-	
+
 	/*
 	 * TODO Create a new class and new processPath method for multithreaded code
 	 * the new processPath needs a thread-safe inverted index
@@ -126,16 +126,7 @@ public class InvertedIndexProcessor {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 			for (Path entry : stream) {
 				if (Files.isDirectory(entry)) {
-					// TODO processDirectoryMultithreaded(entry, index, worker); (no task)
-					worker.execute(() -> {
-						try {
 							processDirectoryMultithreaded(entry, index, worker);
-						}
-						catch (IOException e) {
-							System.out.println("Error writing results to file: " + e.getMessage());
-							//need log
-						}
-					});
 				}
 				else if (isTextFile(entry)) {
 					worker.execute(() -> {
@@ -143,23 +134,18 @@ public class InvertedIndexProcessor {
 							/*
 							 * TODO 1. create local data inside of here
 							 * create a local inverted index
-							 * 
+							 *
 							 * 2. add to the local data within any loop
 							 * processText(entry, local)
-							 * 
+							 *
 							 * 3. combine the local and shared data
 							 * index.addAll(local); <-- create this method
 							 */
-							
-							
-							synchronized (index) { // TODO Over-synchronizing
+
 								processText(entry, index);
-							}
 						}
-						catch (IOException e) {
-							// TODO throw new UncheckedIOException(e);
-							System.out.println("Error writing results to file: " + e.getMessage());
-							//need log
+						catch (IOException e)  {
+							throw new UncheckedIOException(e);
 						}
 					});
 				}

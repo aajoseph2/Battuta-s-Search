@@ -29,7 +29,7 @@ public class Driver {
 		/*
 		 * TODO We can fix duplicate logic later
 		 */
-		
+
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index;
 		WorkQueue workers = null;
