@@ -5,6 +5,7 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -61,13 +62,22 @@ public class MultithreadedQueryProcessor {
 	 * as reading line by line
 	 *
 	 * @param location Where the query is being retrieved from
+	 * @param workers threads to do work
 	 * @throws IOException If file is unreadable
 	 */
 	public void queryProcessor(Path location, WorkQueue workers) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
 			String line;
 			while ((line = reader.readLine()) != null) {
-				queryProcessor(line);
+				String finalLine = line;
+				workers.execute(() -> {
+				try {
+					queryProcessor(finalLine);
+				}
+				catch (IOException e) {
+					throw new UncheckedIOException(e);
+				}
+				});
 			}
 		}
 	}
@@ -174,6 +184,12 @@ public class MultithreadedQueryProcessor {
 
 	@Override
 	public String toString() {
-		return String.format("QueryProcessor [queries=%s]", queryCount());
+		lock.readLock().lock();
+		try {
+			return String.format("QueryProcessor [queries=%s]", queryCount());
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 }
