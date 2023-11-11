@@ -72,7 +72,9 @@ public class MultithreadedQueryProcessor {
 				String finalLine = line;
 				workers.execute(() -> {
 				try {
-					queryProcessor(finalLine);
+					synchronized (query) {
+						queryProcessor(finalLine);
+					}
 				}
 				catch (IOException e) {
 					throw new UncheckedIOException(e);
@@ -93,8 +95,14 @@ public class MultithreadedQueryProcessor {
 		String processedQuery = String.join(" ", buffer);
 
 		if (!buffer.isEmpty() && !hasQuery(processedQuery)) {
-			List<InvertedIndex.SearchResult> currentResults = searchFunction.apply(buffer);
-			this.query.put(processedQuery, currentResults);
+			List<ThreadSafeInvertedIndex.SearchResult> currentResults = searchFunction.apply(buffer);
+			lock.writeLock().lock();
+			try {
+				this.query.put(processedQuery, currentResults);
+			}
+			finally {
+				lock.writeLock().unlock();
+			}
 		}
 	}
 

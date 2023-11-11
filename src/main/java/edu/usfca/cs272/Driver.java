@@ -28,21 +28,28 @@ public class Driver {
 
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index;
+		QueryProcessor queryClass = null;
+		MultithreadedQueryProcessor threadedQueryClass = null;
 		WorkQueue workers = null;
+		WorkQueue queryWorkers = null;
+
+		Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction;
 
 		if (parser.hasFlag("-threads")) {
 			index = new ThreadSafeInvertedIndex();
 			workers = new WorkQueue(parser.getInteger("-threads", 5));
+			queryWorkers = new WorkQueue(parser.getInteger("-threads", 5));
+			searchFunction = !parser.hasFlag("-partial") ? index::exactSearch : index::partialSearch;
+
+			threadedQueryClass = new MultithreadedQueryProcessor(searchFunction);
 		}
 		else {
 			index = new InvertedIndex();
+
+			searchFunction = !parser.hasFlag("-partial") ? index::exactSearch : index::partialSearch;
+
+			queryClass = new QueryProcessor(searchFunction);
 		}
-
-		Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction = !parser.hasFlag("-partial")
-				? index::exactSearch
-				: index::partialSearch;
-
-		QueryProcessor queryClass = new QueryProcessor(searchFunction);
 
 		if (parser.hasFlag("-text")) {
 			Path contentsPath = parser.getPath("-text");
@@ -73,7 +80,12 @@ public class Driver {
 			Path queryPath = parser.getPath("-query");
 			if (queryPath != null) {
 				try {
-					queryClass.queryProcessor(queryPath);
+					if (queryWorkers != null) {
+						threadedQueryClass.queryProcessor(queryPath, queryWorkers);
+					}
+					else {
+						queryClass.queryProcessor(queryPath);
+					}
 				}
 				catch (IOException e) {
 					System.out.println("Error writing query to file: " + e.getMessage());
@@ -81,6 +93,11 @@ public class Driver {
 			}
 			else {
 				System.out.println("Must input query path!");
+			}
+			if (queryWorkers != null) {
+				queryWorkers.finish();
+				queryWorkers.shutdown();
+				queryWorkers.join();
 			}
 		}
 
@@ -107,7 +124,11 @@ public class Driver {
 		if (parser.hasFlag("-results")) {
 			Path resPath = parser.getPath("-results", Path.of("results.json"));
 			try {
-				queryClass.writeQueryJson(resPath);
+				if (queryClass == null) {
+					threadedQueryClass.writeQueryJson(resPath);
+				} else {
+					queryClass.writeQueryJson(resPath);
+				}
 			}
 			catch (IOException e) {
 				System.out.println("Error writing results to file: " + e.getMessage());
