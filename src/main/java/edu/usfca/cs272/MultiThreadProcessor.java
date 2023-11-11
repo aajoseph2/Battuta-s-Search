@@ -27,34 +27,13 @@ public class MultiThreadProcessor {
 	 * @param workers threads to do job
 	 * @throws IOException if file is unreadable
 	 */
-	public static void processPath(Path path, InvertedIndex index, WorkQueue workers) throws IOException {
+	public static void processPath(Path path, ThreadSafeInvertedIndex index, WorkQueue workers) throws IOException {
 
 		if (Files.isDirectory(path)) {
 			processDirectoryMultithreaded(path, index, workers);
 		}
 		else {
 			processText(path, index);
-		}
-	}
-
-	/**
-	 * This recurses on its self until it reaches a base text file. Logic for the
-	 * case that the file inputted is a directory.
-	 *
-	 * @param input the directory
-	 * @param index contains the structure for the read data
-	 * @throws IOException If file is unable to be read, then throw an exception.
-	 */
-	public static void processDirectory(Path input, InvertedIndex index) throws IOException {
-		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
-			for (Path entry : stream) {
-				if (Files.isDirectory(entry)) {
-					processDirectory(entry, index);
-				}
-				else if (isTextFile(entry)) {
-					processText(entry, index);
-				}
-			}
 		}
 	}
 
@@ -81,7 +60,7 @@ public class MultiThreadProcessor {
 	 * @param mapMethods mapMethods contains the structure for the read data
 	 * @throws IOException IOException In case file cannot be read
 	 */
-	public static void processText(Path input, InvertedIndex mapMethods) throws IOException {
+	public static void processText(Path input, ThreadSafeInvertedIndex mapMethods) throws IOException {
 		int pos = 1;
 		String location = input.toString();
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
@@ -105,7 +84,7 @@ public class MultiThreadProcessor {
 	 * @param worker workers threads to do job
 	 * @throws IOException If file is unable to be read, then throw an exception.
 	 */
-	public static void processDirectoryMultithreaded(Path input, InvertedIndex index, WorkQueue worker) // TODO thread-safe index
+	public static void processDirectoryMultithreaded(Path input, ThreadSafeInvertedIndex index, WorkQueue worker)
 			throws IOException {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 			for (Path entry : stream) {
@@ -115,7 +94,7 @@ public class MultiThreadProcessor {
 				else if (isTextFile(entry)) {
 					worker.execute(() -> {
 						try {
-							InvertedIndex localIndex = new InvertedIndex();
+							ThreadSafeInvertedIndex localIndex = new ThreadSafeInvertedIndex();
 							processText(entry, localIndex);
 							index.addAll(localIndex);
 						}

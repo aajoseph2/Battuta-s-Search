@@ -5,7 +5,6 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -101,36 +100,4 @@ public class InvertedIndexProcessor {
 			}
 		}
 	}
-
-	/**
-	 * Multi threaded version of processDirectory
-	 *
-	 * @param input the directory
-	 * @param index contains the structure for the read data
-	 * @param worker workers threads to do job
-	 * @throws IOException If file is unable to be read, then throw an exception.
-	 */
-	public static void processDirectoryMultithreaded(Path input, InvertedIndex index, WorkQueue worker) // TODO thread-safe index
-			throws IOException {
-		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
-			for (Path entry : stream) {
-				if (Files.isDirectory(entry)) {
-							processDirectoryMultithreaded(entry, index, worker);
-				}
-				else if (isTextFile(entry)) {
-					worker.execute(() -> {
-						try {
-							InvertedIndex localIndex = new InvertedIndex();
-							processText(entry, localIndex);
-							index.addAll(localIndex);
-						}
-						catch (IOException e)  {
-							throw new UncheckedIOException(e);
-						}
-					});
-				}
-			}
-		}
-	}
-
 }

@@ -49,9 +49,9 @@ public class Driver {
 			if (contentsPath != null) {
 				try {
 					if (workers != null) {
-					InvertedIndexProcessor.processPath(contentsPath, index);
+						MultiThreadProcessor.processPath(contentsPath, (ThreadSafeInvertedIndex) index, workers);
 					} else {
-						MultiThreadProcessor.processPath(contentsPath, index, workers);
+						InvertedIndexProcessor.processPath(contentsPath, index);
 					}
 				}
 				catch (IOException e) {
