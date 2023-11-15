@@ -58,7 +58,7 @@ public class InvertedIndex {
 	 *
 	 * @param localIndex the local inverted index to add
 	 */
-	public void addAll(InvertedIndex localIndex) {
+	public void addAll(InvertedIndex localIndex) { // TODO addDistinctIndex
 		for (String word : localIndex.getWords()) {
 			for (String location : localIndex.getLocations(word)) {
 				for (Integer position : localIndex.getPositions(word, location)) {
@@ -66,6 +66,26 @@ public class InvertedIndex {
 				}
 			}
 		}
+		
+		/* TODO 
+		for (var localOuter : localIndex.index.entrySet()) {
+			String localWord = localOuter.getKey();
+			var localInner = localOuter.getValue();
+			var thisInner = this.index.get(localWord);
+			
+			if (thisInner == null) {
+				this.index.put(localWord, localInner);
+			}
+			else {
+				loop and check this again
+			}
+		}
+		
+		for (var localCounts = localIndex.counts.entrySet()) {
+			if no overlap, use the count from local
+			else combine the counts from this and local
+		}
+		*/
 	}
 
 	/**
