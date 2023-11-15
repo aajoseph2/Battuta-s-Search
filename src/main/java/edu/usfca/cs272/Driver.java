@@ -74,7 +74,7 @@ public class Driver {
 			if (queryPath != null) {
 				try {
 					if (workers != null) {
-						threadedQueryClass.queryProcessor(queryPath, workers);
+						threadedQueryClass.queryProcessor(queryPath);
 					}
 					else {
 						queryClass.queryProcessor(queryPath);

@@ -51,13 +51,15 @@ public class MultithreadedQueryProcessor {
 	 * Workers to do work utilizing several threads
 	 */
 	private final WorkQueue workers;
+
 	/**
 	 * Initializes the Query map with empty data structures.
 	 *
 	 * @param searchFunction indicates the search mode
 	 * @param workers Workers to do work
 	 */
-	public MultithreadedQueryProcessor(Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction, WorkQueue workers) {
+	public MultithreadedQueryProcessor(Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction,
+			WorkQueue workers) {
 		this.query = new TreeMap<>();
 		this.searchFunction = searchFunction;
 		this.stemmer = new SnowballStemmer(ENGLISH);
@@ -71,23 +73,20 @@ public class MultithreadedQueryProcessor {
 	 * as reading line by line
 	 *
 	 * @param location Where the query is being retrieved from
-	 * @param workers threads to do work
 	 * @throws IOException If file is unreadable
 	 */
-	public void queryProcessor(Path location, WorkQueue workers) throws IOException { // TODO Pass workers to the constructor and store as a member
+	public void queryProcessor(Path location) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String finalLine = line;
 				workers.execute(() -> {
-				try {
-					synchronized (query) { // TODO Choose 1 mode of synchronization
+					try {
 						queryProcessor(finalLine);
 					}
-				}
-				catch (IOException e) {
-					throw new UncheckedIOException(e);
-				}
+					catch (IOException e) {
+						throw new UncheckedIOException(e);
+					}
 				});
 			}
 		}
@@ -104,35 +103,27 @@ public class MultithreadedQueryProcessor {
 		var buffer = TextParser.uniqueStems(line);
 		String processedQuery = String.join(" ", buffer);
 
-		/* TODO
-		write lock
-		if (!buffer.isEmpty() && !hasQuery(processedQuery)) {
-			this.query.put(processedQuery, null);
+		lock.writeLock().lock();
+		try {
+			if (!buffer.isEmpty() && !hasQuery(processedQuery)) {
+				this.query.put(processedQuery, null);
+			}
+			else {
+				return;
+			}
 		}
-		else {
-			return;
+		finally {
+			lock.writeLock().unlock();
 		}
-		write lock
 
 		List<ThreadSafeInvertedIndex.SearchResult> currentResults = searchFunction.apply(buffer);
+
 		lock.writeLock().lock();
 		try {
 			this.query.put(processedQuery, currentResults);
 		}
 		finally {
 			lock.writeLock().unlock();
-		}
-		*/
-
-		if (!buffer.isEmpty() && !hasQuery(processedQuery)) {
-			List<ThreadSafeInvertedIndex.SearchResult> currentResults = searchFunction.apply(buffer);
-			lock.writeLock().lock();
-			try {
-				this.query.put(processedQuery, currentResults);
-			}
-			finally {
-				lock.writeLock().unlock();
-			}
 		}
 	}
 
