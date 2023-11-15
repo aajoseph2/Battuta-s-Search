@@ -39,7 +39,7 @@ public class Driver {
 			workers = new WorkQueue(parser.getInteger("-threads", 5));
 			searchFunction = !parser.hasFlag("-partial") ? index::exactSearch : index::partialSearch;
 
-			threadedQueryClass = new MultithreadedQueryProcessor(searchFunction);
+			threadedQueryClass = new MultithreadedQueryProcessor(searchFunction, workers);
 		}
 		else {
 			index = new InvertedIndex();

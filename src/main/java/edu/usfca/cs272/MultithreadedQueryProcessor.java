@@ -48,15 +48,22 @@ public class MultithreadedQueryProcessor {
 	private final Stemmer stemmer;
 
 	/**
+	 * Workers to do work utilizing several threads
+	 */
+	private final WorkQueue workers;
+	/**
 	 * Initializes the Query map with empty data structures.
 	 *
 	 * @param searchFunction indicates the search mode
+	 * @param workers Workers to do work
 	 */
-	public MultithreadedQueryProcessor(Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction) {
+	public MultithreadedQueryProcessor(Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction, WorkQueue workers) {
 		this.query = new TreeMap<>();
 		this.searchFunction = searchFunction;
 		this.stemmer = new SnowballStemmer(ENGLISH);
 		lock = new MultiReaderLock();
+		this.workers = workers;
+
 	}
 
 	/**
