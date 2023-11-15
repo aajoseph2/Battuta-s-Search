@@ -54,38 +54,33 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Adds all the data from a local inverted index to this shared inverted index.
+	 * Merges all the data from a local inverted index to this shared inverted index.
 	 *
 	 * @param localIndex the local inverted index to add
 	 */
-	public void addAll(InvertedIndex localIndex) { // TODO addDistinctIndex
-		for (String word : localIndex.getWords()) {
-			for (String location : localIndex.getLocations(word)) {
-				for (Integer position : localIndex.getPositions(word, location)) {
-					this.addData(word, location, position);
-				}
-			}
-		}
-		
-		/* TODO 
+	public void addAll(InvertedIndex localIndex) {
 		for (var localOuter : localIndex.index.entrySet()) {
 			String localWord = localOuter.getKey();
 			var localInner = localOuter.getValue();
-			var thisInner = this.index.get(localWord);
-			
-			if (thisInner == null) {
+
+			if (!this.index.containsKey(localWord)) {
 				this.index.put(localWord, localInner);
 			}
 			else {
-				loop and check this again
+				for (var localLocationEntry : localInner.entrySet()) {
+					String localLocation = localLocationEntry.getKey();
+					TreeSet<Integer> localPositions = localLocationEntry.getValue();
+					this.index.get(localWord).putIfAbsent(localLocation, new TreeSet<>());
+					this.index.get(localWord).get(localLocation).addAll(localPositions);
+				}
 			}
 		}
-		
-		for (var localCounts = localIndex.counts.entrySet()) {
-			if no overlap, use the count from local
-			else combine the counts from this and local
+
+		for (var localCountEntry : localIndex.counts.entrySet()) {
+			String location = localCountEntry.getKey();
+			Integer count = localCountEntry.getValue();
+			this.counts.put(location, this.counts.getOrDefault(location, 0) + count);
 		}
-		*/
 	}
 
 	/**
