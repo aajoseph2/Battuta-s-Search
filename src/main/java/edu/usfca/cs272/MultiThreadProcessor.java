@@ -1,17 +1,10 @@
 package edu.usfca.cs272;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
-
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import opennlp.tools.stemmer.Stemmer;
-import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
 /**
  * Multithreaded class of InvertedIndexProcessor class
@@ -33,49 +26,17 @@ public class MultiThreadProcessor {
 			processDirectoryMultithreaded(path, index, workers);
 		}
 		else {
-			processText(path, index); // TODO Create a task here too
+			workers.execute(() -> {
+				try {
+					InvertedIndexProcessor.processText(path, index);
+				}
+				catch (IOException e) {
+					throw new UncheckedIOException(e);
+				}
+			});
 		}
 
 		workers.finish();
-	}
-
-	/**
-	 * Checks if the given path refers to a text file based on its file extension.
-	 *
-	 * @param input the file path to check
-	 * @return true if the file is likely a text file, false otherwise
-	 */
-	public static boolean isTextFile(Path input) { // TODO Remove
-		String fileNameLower = input.getFileName().toString().toLowerCase();
-		return fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text");
-	}
-
-	/**
-	 * This is the engine of the text processing. Will take in a .txt file and input
-	 * it in a Stringbuilder. This stringBuilder is then parsed into the
-	 * processIndex method where the toString() will be inputted into the maps, used
-	 * to read counts and index. There is also logic to convert the text into the
-	 * proper stems and remove any formatting issues within the file contents, by
-	 * calling helper functions within the textParser class.
-	 *
-	 * @param input the path of which the info will be parsed
-	 * @param mapMethods mapMethods contains the structure for the read data
-	 * @throws IOException IOException In case file cannot be read
-	 */
-	public static void processText(Path input, ThreadSafeInvertedIndex mapMethods) throws IOException { // TODO Remove
-		int pos = 1;
-		String location = input.toString();
-		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
-			String line;
-			Stemmer stemmer = new SnowballStemmer(ENGLISH);
-			while ((line = reader.readLine()) != null) {
-				String[] words = TextParser.parse(line);
-				for (String word : words) {
-					mapMethods.addData(stemmer.stem(word).toString(), location, pos);
-					pos++;
-				}
-			}
-		}
 	}
 
 	/**
@@ -83,21 +44,21 @@ public class MultiThreadProcessor {
 	 *
 	 * @param input the directory
 	 * @param index contains the structure for the read data
-	 * @param worker workers threads to do job
+	 * @param workers workers threads to do job
 	 * @throws IOException If file is unable to be read, then throw an exception.
 	 */
-	public static void processDirectoryMultithreaded(Path input, ThreadSafeInvertedIndex index, WorkQueue worker)
+	public static void processDirectoryMultithreaded(Path input, ThreadSafeInvertedIndex index, WorkQueue workers)
 			throws IOException {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(input)) {
 			for (Path entry : stream) {
 				if (Files.isDirectory(entry)) {
-					processDirectoryMultithreaded(entry, index, worker);
+					processDirectoryMultithreaded(entry, index, workers);
 				}
-				else if (isTextFile(entry)) {
-					worker.execute(() -> {
+				else if (InvertedIndexProcessor.isTextFile(entry)) {
+					workers.execute(() -> {
 						try {
-							ThreadSafeInvertedIndex localIndex = new ThreadSafeInvertedIndex(); // TODO Use a normal inverted index
-							processText(entry, localIndex);
+							InvertedIndex localIndex = new InvertedIndex();
+							InvertedIndexProcessor.processText(entry, localIndex);
 							index.addAll(localIndex);
 						}
 						catch (IOException e) {
