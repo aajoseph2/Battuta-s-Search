@@ -33,8 +33,10 @@ public class MultiThreadProcessor {
 			processDirectoryMultithreaded(path, index, workers);
 		}
 		else {
-			processText(path, index);
+			processText(path, index); // TODO Create a task here too
 		}
+		
+		// TODO workers.finish();
 	}
 
 	/**
@@ -43,7 +45,7 @@ public class MultiThreadProcessor {
 	 * @param input the file path to check
 	 * @return true if the file is likely a text file, false otherwise
 	 */
-	public static boolean isTextFile(Path input) {
+	public static boolean isTextFile(Path input) { // TODO Remove
 		String fileNameLower = input.getFileName().toString().toLowerCase();
 		return fileNameLower.endsWith(".txt") || fileNameLower.endsWith(".text");
 	}
@@ -60,7 +62,7 @@ public class MultiThreadProcessor {
 	 * @param mapMethods mapMethods contains the structure for the read data
 	 * @throws IOException IOException In case file cannot be read
 	 */
-	public static void processText(Path input, ThreadSafeInvertedIndex mapMethods) throws IOException {
+	public static void processText(Path input, ThreadSafeInvertedIndex mapMethods) throws IOException { // TODO Remove
 		int pos = 1;
 		String location = input.toString();
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
@@ -94,7 +96,7 @@ public class MultiThreadProcessor {
 				else if (isTextFile(entry)) {
 					worker.execute(() -> {
 						try {
-							ThreadSafeInvertedIndex localIndex = new ThreadSafeInvertedIndex();
+							ThreadSafeInvertedIndex localIndex = new ThreadSafeInvertedIndex(); // TODO Use a normal inverted index
 							processText(entry, localIndex);
 							index.addAll(localIndex);
 						}

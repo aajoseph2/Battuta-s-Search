@@ -18,6 +18,8 @@ import java.util.function.Function;
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
+// TODO Make a shared interface between these two classes
+
 /**
  * Multithreaded version of QueryProcessor
  */
@@ -65,14 +67,14 @@ public class MultithreadedQueryProcessor {
 	 * @param workers threads to do work
 	 * @throws IOException If file is unreadable
 	 */
-	public void queryProcessor(Path location, WorkQueue workers) throws IOException {
+	public void queryProcessor(Path location, WorkQueue workers) throws IOException { // TODO Pass workers to the constructor and store as a member
 		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String finalLine = line;
 				workers.execute(() -> {
 				try {
-					synchronized (query) {
+					synchronized (query) { // TODO Choose 1 mode of synchronization
 						queryProcessor(finalLine);
 					}
 				}
@@ -82,6 +84,7 @@ public class MultithreadedQueryProcessor {
 				});
 			}
 		}
+		// TODO workers.finish();
 	}
 
 	/**
@@ -91,9 +94,29 @@ public class MultithreadedQueryProcessor {
 	 * @throws IOException If file is unreadable
 	 */
 	public void queryProcessor(String line) throws IOException {
-		var buffer = TextParser.uniqueStems(line, stemmer);
+		var buffer = TextParser.uniqueStems(line, stemmer); // TODO uniqueSTems(line); remove the stemmer
 		String processedQuery = String.join(" ", buffer);
 
+		/* TODO 
+		write lock
+		if (!buffer.isEmpty() && !hasQuery(processedQuery)) {
+			this.query.put(processedQuery, null);
+		}
+		else {
+			return;
+		}
+		write lock
+		
+		List<ThreadSafeInvertedIndex.SearchResult> currentResults = searchFunction.apply(buffer);
+		lock.writeLock().lock();
+		try {
+			this.query.put(processedQuery, currentResults);
+		}
+		finally {
+			lock.writeLock().unlock();
+		}
+		*/
+		
 		if (!buffer.isEmpty() && !hasQuery(processedQuery)) {
 			List<ThreadSafeInvertedIndex.SearchResult> currentResults = searchFunction.apply(buffer);
 			lock.writeLock().lock();

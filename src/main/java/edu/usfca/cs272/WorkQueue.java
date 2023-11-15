@@ -37,7 +37,7 @@ public class WorkQueue {
 	/**
 	 * lock for pedning variable
 	 */
-	private final Object pendLock = new Object();
+	private final Object pendLock = new Object(); // TODO Init in the constructor
 	/**
 	 * Num of pending tasks
 	 */
@@ -76,9 +76,14 @@ public class WorkQueue {
 	 * @param task work request (in the form of a {@link Runnable} object)
 	 */
 	public void execute(Runnable task) {
+		/* TODO 
+		synchronized (pendLock) {
+			pending++;
+		}
+		*/
 		synchronized (tasks) {
 			tasks.addLast(task);
-			synchronized (pendLock) {
+			synchronized (pendLock) { // TODO Remove
 				pending++;
 				pendLock.notifyAll();
 			}

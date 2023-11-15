@@ -31,7 +31,7 @@ public class Driver {
 		QueryProcessor queryClass = null;
 		MultithreadedQueryProcessor threadedQueryClass = null;
 		WorkQueue workers = null;
-		WorkQueue queryWorkers = null;
+		WorkQueue queryWorkers = null; // TODO Try to reuse the same workers
 
 		Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction;
 
@@ -100,6 +100,12 @@ public class Driver {
 				queryWorkers.join();
 			}
 		}
+
+		/* TODO 
+		if (queryWorkers != null) {
+			queryWorkers.join();
+		}
+		*/
 
 		if (parser.hasFlag("-counts")) {
 			try {
