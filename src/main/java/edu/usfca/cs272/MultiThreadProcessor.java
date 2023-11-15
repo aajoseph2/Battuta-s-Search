@@ -35,8 +35,8 @@ public class MultiThreadProcessor {
 		else {
 			processText(path, index); // TODO Create a task here too
 		}
-		
-		// TODO workers.finish();
+
+		workers.finish();
 	}
 
 	/**

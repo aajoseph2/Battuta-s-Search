@@ -84,7 +84,7 @@ public class MultithreadedQueryProcessor {
 				});
 			}
 		}
-		// TODO workers.finish();
+		workers.finish();
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class MultithreadedQueryProcessor {
 		var buffer = TextParser.uniqueStems(line, stemmer); // TODO uniqueSTems(line); remove the stemmer
 		String processedQuery = String.join(" ", buffer);
 
-		/* TODO 
+		/* TODO
 		write lock
 		if (!buffer.isEmpty() && !hasQuery(processedQuery)) {
 			this.query.put(processedQuery, null);
@@ -106,7 +106,7 @@ public class MultithreadedQueryProcessor {
 			return;
 		}
 		write lock
-		
+
 		List<ThreadSafeInvertedIndex.SearchResult> currentResults = searchFunction.apply(buffer);
 		lock.writeLock().lock();
 		try {
@@ -116,7 +116,7 @@ public class MultithreadedQueryProcessor {
 			lock.writeLock().unlock();
 		}
 		*/
-		
+
 		if (!buffer.isEmpty() && !hasQuery(processedQuery)) {
 			List<ThreadSafeInvertedIndex.SearchResult> currentResults = searchFunction.apply(buffer);
 			lock.writeLock().lock();

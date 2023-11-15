@@ -70,7 +70,6 @@ public class Driver {
 				System.out.println("Must input a text file to read!");
 			}
 			if (workers != null) {
-				workers.finish();
 				workers.shutdown();
 				workers.join();
 			}
@@ -95,13 +94,12 @@ public class Driver {
 				System.out.println("Must input query path!");
 			}
 			if (queryWorkers != null) {
-				queryWorkers.finish();
 				queryWorkers.shutdown();
 				queryWorkers.join();
 			}
 		}
 
-		/* TODO 
+		/* TODO
 		if (queryWorkers != null) {
 			queryWorkers.join();
 		}
