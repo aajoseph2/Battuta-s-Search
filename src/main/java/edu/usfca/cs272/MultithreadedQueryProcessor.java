@@ -18,12 +18,10 @@ import java.util.function.Function;
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
-// TODO Make a shared interface between these two classes
-
 /**
  * Multithreaded version of QueryProcessor
  */
-public class MultithreadedQueryProcessor {
+public class MultithreadedQueryProcessor implements QueryProcessorInterface {
 
 	/**
 	 * The lock used to protect concurrent access to the underlying set.
@@ -75,6 +73,7 @@ public class MultithreadedQueryProcessor {
 	 * @param location Where the query is being retrieved from
 	 * @throws IOException If file is unreadable
 	 */
+	@Override
 	public void queryProcessor(Path location) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
 			String line;
@@ -99,6 +98,7 @@ public class MultithreadedQueryProcessor {
 	 * @param line the specific line of words intended to query
 	 * @throws IOException If file is unreadable
 	 */
+	@Override
 	public void queryProcessor(String line) throws IOException {
 		var buffer = TextParser.uniqueStems(line);
 		String processedQuery = String.join(" ", buffer);
@@ -133,6 +133,7 @@ public class MultithreadedQueryProcessor {
 	 * @param queryLine The query to get results for.
 	 * @return Unmodifiable list of search results for the given query.
 	 */
+	@Override
 	public List<InvertedIndex.SearchResult> getQueryResults(String queryLine) {
 		lock.readLock().lock();
 		try {
@@ -150,6 +151,7 @@ public class MultithreadedQueryProcessor {
 	 *
 	 * @return Set of processed queries.
 	 */
+	@Override
 	public Set<String> getQueryLines() {
 		lock.readLock().lock();
 		try {
@@ -166,6 +168,7 @@ public class MultithreadedQueryProcessor {
 	 * @param queryLine The query to check
 	 * @return True if the query exists, false otherwise
 	 */
+	@Override
 	public boolean hasQuery(String queryLine) {
 		lock.readLock().lock();
 		try {
@@ -183,6 +186,7 @@ public class MultithreadedQueryProcessor {
 	 *
 	 * @return Number of queries in the map.
 	 */
+	@Override
 	public int queryCount() {
 		lock.readLock().lock();
 		try {
@@ -201,6 +205,7 @@ public class MultithreadedQueryProcessor {
 	 * @param path file path to be outputted
 	 * @throws IOException if file is not able to written
 	 */
+	@Override
 	public void writeQueryJson(Path path) throws IOException {
 		lock.readLock().lock();
 		try {

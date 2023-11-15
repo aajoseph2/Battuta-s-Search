@@ -21,7 +21,7 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
  * Processes queries that are used to as the worsd to be searched for from the
  * given indexed structures
  */
-public class QueryProcessor {
+public class QueryProcessor implements QueryProcessorInterface{
 
 	/**
 	 * Structure of word query as the key, and the SearchResult as the value
@@ -58,6 +58,7 @@ public class QueryProcessor {
 	 * @param location Where the query is being retrieved from
 	 * @throws IOException If file is unreadable
 	 */
+	@Override
 	public void queryProcessor(Path location) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
 			String line;
@@ -73,6 +74,7 @@ public class QueryProcessor {
 	 * @param line the specific line of words intended to query
 	 * @throws IOException If file is unreadable
 	 */
+	@Override
 	public void queryProcessor(String line) throws IOException {
 
 		var buffer = TextParser.uniqueStems(line, stemmer);
@@ -90,6 +92,7 @@ public class QueryProcessor {
 	 * @param queryLine The query to get results for.
 	 * @return Unmodifiable list of search results for the given query.
 	 */
+	@Override
 	public List<InvertedIndex.SearchResult> getQueryResults(String queryLine) {
 		var buffer = TextParser.uniqueStems(queryLine, stemmer);
 		String processedQuery = String.join(" ", buffer);
@@ -101,6 +104,7 @@ public class QueryProcessor {
 	 *
 	 * @return Set of processed queries.
 	 */
+	@Override
 	public Set<String> getQueryLines() {
 		return Collections.unmodifiableSet(query.keySet());
 	}
@@ -111,6 +115,7 @@ public class QueryProcessor {
 	 * @param queryLine The query to check
 	 * @return True if the query exists, false otherwise
 	 */
+	@Override
 	public boolean hasQuery(String queryLine) {
 		var buffer = TextParser.uniqueStems(queryLine, stemmer);
 		String processedQuery = String.join(" ", buffer);
@@ -122,6 +127,7 @@ public class QueryProcessor {
 	 *
 	 * @return Number of queries in the map.
 	 */
+	@Override
 	public int queryCount() {
 		return query.size();
 	}
@@ -134,6 +140,7 @@ public class QueryProcessor {
 	 * @param path file path to be outputted
 	 * @throws IOException if file is not able to written
 	 */
+	@Override
 	public void writeQueryJson(Path path) throws IOException {
 		JsonFormatter.writeSearchResultsToFile(this.query, path);
 	}

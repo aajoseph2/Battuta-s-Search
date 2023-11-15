@@ -28,8 +28,7 @@ public class Driver {
 
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index;
-		QueryProcessor queryClass = null;
-		MultithreadedQueryProcessor threadedQueryClass = null;
+		QueryProcessorInterface queryProcessor;
 		WorkQueue workers = null;
 
 		Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction;
@@ -38,15 +37,12 @@ public class Driver {
 			index = new ThreadSafeInvertedIndex();
 			workers = new WorkQueue(parser.getInteger("-threads", 5));
 			searchFunction = !parser.hasFlag("-partial") ? index::exactSearch : index::partialSearch;
-
-			threadedQueryClass = new MultithreadedQueryProcessor(searchFunction, workers);
+			queryProcessor = new MultithreadedQueryProcessor(searchFunction, workers);
 		}
 		else {
 			index = new InvertedIndex();
-
 			searchFunction = !parser.hasFlag("-partial") ? index::exactSearch : index::partialSearch;
-
-			queryClass = new QueryProcessor(searchFunction);
+			queryProcessor = new QueryProcessor(searchFunction);
 		}
 
 		if (parser.hasFlag("-text")) {
@@ -73,12 +69,7 @@ public class Driver {
 			Path queryPath = parser.getPath("-query");
 			if (queryPath != null) {
 				try {
-					if (workers != null) {
-						threadedQueryClass.queryProcessor(queryPath);
-					}
-					else {
-						queryClass.queryProcessor(queryPath);
-					}
+						queryProcessor.queryProcessor(queryPath);
 				}
 				catch (IOException e) {
 					System.out.println("Error writing query to file: " + e.getMessage());
@@ -117,11 +108,7 @@ public class Driver {
 		if (parser.hasFlag("-results")) {
 			Path resPath = parser.getPath("-results", Path.of("results.json"));
 			try {
-				if (queryClass == null) {
-					threadedQueryClass.writeQueryJson(resPath);
-				} else {
-					queryClass.writeQueryJson(resPath);
-				}
+					queryProcessor.writeQueryJson(resPath);
 			}
 			catch (IOException e) {
 				System.out.println("Error writing results to file: " + e.getMessage());
