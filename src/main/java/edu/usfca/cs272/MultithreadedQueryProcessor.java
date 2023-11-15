@@ -94,7 +94,7 @@ public class MultithreadedQueryProcessor {
 	 * @throws IOException If file is unreadable
 	 */
 	public void queryProcessor(String line) throws IOException {
-		var buffer = TextParser.uniqueStems(line, stemmer); // TODO uniqueSTems(line); remove the stemmer
+		var buffer = TextParser.uniqueStems(line);
 		String processedQuery = String.join(" ", buffer);
 
 		/* TODO
