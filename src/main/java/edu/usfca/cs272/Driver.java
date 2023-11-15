@@ -31,14 +31,12 @@ public class Driver {
 		QueryProcessor queryClass = null;
 		MultithreadedQueryProcessor threadedQueryClass = null;
 		WorkQueue workers = null;
-		WorkQueue queryWorkers = null; // TODO Try to reuse the same workers
 
 		Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction;
 
 		if (parser.hasFlag("-threads")) {
 			index = new ThreadSafeInvertedIndex();
 			workers = new WorkQueue(parser.getInteger("-threads", 5));
-			queryWorkers = new WorkQueue(parser.getInteger("-threads", 5));
 			searchFunction = !parser.hasFlag("-partial") ? index::exactSearch : index::partialSearch;
 
 			threadedQueryClass = new MultithreadedQueryProcessor(searchFunction);
@@ -69,18 +67,14 @@ public class Driver {
 			else {
 				System.out.println("Must input a text file to read!");
 			}
-			if (workers != null) {
-				workers.shutdown();
-				workers.join();
-			}
 		}
 
 		if (parser.hasFlag("-query")) {
 			Path queryPath = parser.getPath("-query");
 			if (queryPath != null) {
 				try {
-					if (queryWorkers != null) {
-						threadedQueryClass.queryProcessor(queryPath, queryWorkers);
+					if (workers != null) {
+						threadedQueryClass.queryProcessor(queryPath, workers);
 					}
 					else {
 						queryClass.queryProcessor(queryPath);
@@ -93,17 +87,12 @@ public class Driver {
 			else {
 				System.out.println("Must input query path!");
 			}
-			if (queryWorkers != null) {
-				queryWorkers.shutdown();
-				queryWorkers.join();
-			}
 		}
 
-		/* TODO
-		if (queryWorkers != null) {
-			queryWorkers.join();
+		if (workers != null) {
+			workers.join();
+			workers.shutdown();
 		}
-		*/
 
 		if (parser.hasFlag("-counts")) {
 			try {
