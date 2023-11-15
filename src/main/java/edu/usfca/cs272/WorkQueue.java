@@ -37,7 +37,7 @@ public class WorkQueue {
 	/**
 	 * lock for pedning variable
 	 */
-	private final Object pendLock = new Object(); // TODO Init in the constructor
+	private final Object pendLock;
 	/**
 	 * Num of pending tasks
 	 */
@@ -62,6 +62,7 @@ public class WorkQueue {
 		this.workers = new Worker[threads];
 		this.shutdown = false;
 		this.pending = 0;
+		this.pendLock = new Object();
 
 		for (int i = 0; i < threads; i++) {
 			workers[i] = new Worker();
@@ -76,17 +77,13 @@ public class WorkQueue {
 	 * @param task work request (in the form of a {@link Runnable} object)
 	 */
 	public void execute(Runnable task) {
-		/* TODO 
+
 		synchronized (pendLock) {
 			pending++;
 		}
-		*/
+
 		synchronized (tasks) {
 			tasks.addLast(task);
-			synchronized (pendLock) { // TODO Remove
-				pending++;
-				pendLock.notifyAll();
-			}
 			tasks.notifyAll();
 		}
 	}
