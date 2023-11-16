@@ -43,7 +43,7 @@ public class MultithreadedQueryProcessor implements QueryProcessorInterface {
 	/**
 	 * Intended to stem text
 	 */
-	private final Stemmer stemmer;
+	private final Stemmer stemmer; // TODO Remove, don't use a shared stemmer here
 
 	/**
 	 * Workers to do work utilizing several threads

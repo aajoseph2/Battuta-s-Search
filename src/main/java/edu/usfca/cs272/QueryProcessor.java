@@ -45,10 +45,12 @@ public class QueryProcessor implements QueryProcessorInterface{
 	 *
 	 * @param searchFunction indicates the search mode
 	 */
-	public QueryProcessor(Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction) {
+	public QueryProcessor(Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction) { // TODO boolean partial and the index
 		this.query = new TreeMap<>();
 		this.searchFunction = searchFunction;
 		this.stemmer = new SnowballStemmer(ENGLISH);
+		
+		// TODO searchFunction = partial ? index::exactSearch : index::partialSearch;
 	}
 
 	/**
@@ -59,7 +61,7 @@ public class QueryProcessor implements QueryProcessorInterface{
 	 * @throws IOException If file is unreadable
 	 */
 	@Override
-	public void queryProcessor(Path location) throws IOException {
+	public void queryProcessor(Path location) throws IOException { // TODO Remove from here make a default implementation in the interface
 		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
 			String line;
 			while ((line = reader.readLine()) != null) {

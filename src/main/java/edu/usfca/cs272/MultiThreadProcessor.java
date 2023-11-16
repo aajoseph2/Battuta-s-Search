@@ -29,6 +29,12 @@ public class MultiThreadProcessor {
 			workers.execute(() -> {
 				try {
 					InvertedIndexProcessor.processText(path, index);
+					
+					/* TODO 
+					InvertedIndex localIndex = new InvertedIndex();
+					InvertedIndexProcessor.processText(entry, localIndex);
+					index.addAll(localIndex);
+					*/
 				}
 				catch (IOException e) {
 					throw new UncheckedIOException(e);
