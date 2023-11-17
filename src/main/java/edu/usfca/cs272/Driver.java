@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-// TODO In log4j2s <Root level="OFF">
 
 /**
  * Class responsible for running this project based on the provided command-line
@@ -30,15 +29,15 @@ public class Driver {
 
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index;
-		// TODO ThreadSafeInvertedIndex safe = null;
+		ThreadSafeInvertedIndex safe = null;
 		QueryProcessorInterface queryProcessor;
 		WorkQueue workers = null;
 
 		Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction; // TODO Remove
 
 		if (parser.hasFlag("-threads")) {
-			// TODO safe = new ThreadSafeInvertedIndex();
-			index = new ThreadSafeInvertedIndex(); // TODO = safe;
+			safe = new ThreadSafeInvertedIndex();
+			index = safe;
 			workers = new WorkQueue(parser.getInteger("-threads", 5));
 			searchFunction = !parser.hasFlag("-partial") ? index::exactSearch : index::partialSearch;
 			queryProcessor = new MultithreadedQueryProcessor(searchFunction, workers); // TODO Processor(safe, hasFlag(partial), workers)
