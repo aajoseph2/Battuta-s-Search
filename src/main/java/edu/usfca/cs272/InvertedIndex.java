@@ -64,9 +64,9 @@ public class InvertedIndex {
 			String localWord = localOuter.getKey();
 			var localInner = localOuter.getValue();
 
-			// TODO var thisInner = this.index.get(localWord);
+			var thisInner = this.index.get(localWord);
 
-			if (!this.index.containsKey(localWord)) { // TODO thisInner != null;
+			if (thisInner == null) {
 				this.index.put(localWord, localInner);
 			}
 			else {
@@ -74,7 +74,6 @@ public class InvertedIndex {
 					String localLocation = localLocationEntry.getKey();
 					TreeSet<Integer> localPositions = localLocationEntry.getValue();
 
-					/* TODO
 					var thisPositions = thisInner.get(localLocation);
 
 					if (thisPositions == null) {
@@ -83,9 +82,6 @@ public class InvertedIndex {
 					else {
 						thisPositions.addAll(localPositions);
 					}
-					*/
-					this.index.get(localWord).putIfAbsent(localLocation, new TreeSet<>());
-					this.index.get(localWord).get(localLocation).addAll(localPositions);
 				}
 			}
 		}
