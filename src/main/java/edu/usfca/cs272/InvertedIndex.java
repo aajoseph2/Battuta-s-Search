@@ -58,18 +58,31 @@ public class InvertedIndex {
 	 *
 	 * @param localIndex the local inverted index to add
 	 */
-	public void addAll(InvertedIndex localIndex) {
+	public void addAll(InvertedIndex localIndex) { // TODO addDistinctIndex and update the javadoc
 		for (var localOuter : localIndex.index.entrySet()) {
 			String localWord = localOuter.getKey();
 			var localInner = localOuter.getValue();
+			
+			// TODO var thisInner = this.index.get(localWord);
 
-			if (!this.index.containsKey(localWord)) {
+			if (!this.index.containsKey(localWord)) { // TODO thisInner != null;
 				this.index.put(localWord, localInner);
 			}
 			else {
 				for (var localLocationEntry : localInner.entrySet()) {
 					String localLocation = localLocationEntry.getKey();
 					TreeSet<Integer> localPositions = localLocationEntry.getValue();
+					
+					/* TODO 
+					var thisPositions = thisInner.get(localLocation);
+					
+					if (thisPositions == null) {
+						thisInner.put(localLocation, localPositions);
+					}
+					else {
+						thisPositions.addAll(localPositions);
+					}
+					*/
 					this.index.get(localWord).putIfAbsent(localLocation, new TreeSet<>());
 					this.index.get(localWord).get(localLocation).addAll(localPositions);
 				}
