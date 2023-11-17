@@ -2,9 +2,6 @@ package edu.usfca.cs272;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
 
 
 /**
@@ -33,19 +30,16 @@ public class Driver {
 		QueryProcessorInterface queryProcessor;
 		WorkQueue workers = null;
 
-		Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction; // TODO Remove
 
 		if (parser.hasFlag("-threads")) {
 			safe = new ThreadSafeInvertedIndex();
 			index = safe;
 			workers = new WorkQueue(parser.getInteger("-threads", 5));
-			searchFunction = !parser.hasFlag("-partial") ? index::exactSearch : index::partialSearch;
-			queryProcessor = new MultithreadedQueryProcessor(searchFunction, workers); // TODO Processor(safe, hasFlag(partial), workers)
+			queryProcessor = new MultithreadedQueryProcessor(workers, !parser.hasFlag("-partial"), safe);
 		}
 		else {
 			index = new InvertedIndex();
-			searchFunction = !parser.hasFlag("-partial") ? index::exactSearch : index::partialSearch;
-			queryProcessor = new QueryProcessor(searchFunction);
+			queryProcessor = new QueryProcessor(!parser.hasFlag("-partial"), index );
 		}
 
 		if (parser.hasFlag("-text")) {
@@ -53,7 +47,7 @@ public class Driver {
 			if (contentsPath != null) {
 				try {
 					if (workers != null) {
-						MultiThreadProcessor.processPath(contentsPath, (ThreadSafeInvertedIndex) index, workers); // TODO safe
+						MultiThreadProcessor.processPath(contentsPath, safe, workers);
 					}
 					else {
 						InvertedIndexProcessor.processPath(contentsPath, index);
@@ -84,7 +78,6 @@ public class Driver {
 		}
 
 		if (workers != null) {
-			workers.join(); // TODO Remove
 			workers.shutdown();
 		}
 

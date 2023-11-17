@@ -56,10 +56,9 @@ public class MultithreadedQueryProcessor implements QueryProcessorInterface {
 	 * @param searchFunction indicates the search mode
 	 * @param workers Workers to do work
 	 */
-	public MultithreadedQueryProcessor(Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction,
-			WorkQueue workers) {
+	public MultithreadedQueryProcessor( WorkQueue workers, boolean partial, ThreadSafeInvertedIndex index) {
 		this.query = new TreeMap<>();
-		this.searchFunction = searchFunction;
+		searchFunction = partial ? index::exactSearch : index::partialSearch;
 		this.stemmer = new SnowballStemmer(ENGLISH);
 		lock = new MultiReaderLock();
 		this.workers = workers;

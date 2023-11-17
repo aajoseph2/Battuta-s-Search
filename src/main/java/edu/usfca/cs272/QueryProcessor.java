@@ -44,13 +44,13 @@ public class QueryProcessor implements QueryProcessorInterface{
 	 * Initializes the Query map with empty data structures.
 	 *
 	 * @param searchFunction indicates the search mode
+	 * @param partial
+	 * @param index
 	 */
-	public QueryProcessor(Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction) { // TODO boolean partial and the index
+	public QueryProcessor(boolean partial, InvertedIndex index) { // TODO boolean partial and the index
 		this.query = new TreeMap<>();
-		this.searchFunction = searchFunction;
 		this.stemmer = new SnowballStemmer(ENGLISH);
-		
-		// TODO searchFunction = partial ? index::exactSearch : index::partialSearch;
+		searchFunction = partial ? index::exactSearch : index::partialSearch;
 	}
 
 	/**
