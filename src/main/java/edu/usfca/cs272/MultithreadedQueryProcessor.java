@@ -1,7 +1,6 @@
 package edu.usfca.cs272;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,9 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
-
-import opennlp.tools.stemmer.Stemmer;
-import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
 /**
  * Multithreaded version of QueryProcessor
@@ -40,10 +36,6 @@ public class MultithreadedQueryProcessor implements QueryProcessorInterface {
 	 * function indicating the search mode
 	 */
 	private final Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction;
-	/**
-	 * Intended to stem text
-	 */
-	private final Stemmer stemmer; // TODO Remove, don't use a shared stemmer here
 
 	/**
 	 * Workers to do work utilizing several threads
@@ -53,13 +45,13 @@ public class MultithreadedQueryProcessor implements QueryProcessorInterface {
 	/**
 	 * Initializes the Query map with empty data structures.
 	 *
-	 * @param searchFunction indicates the search mode
 	 * @param workers Workers to do work
+	 * @param partial boolean for choosing the search method
+	 * @param index class that contains the inverted index structure
 	 */
 	public MultithreadedQueryProcessor( WorkQueue workers, boolean partial, ThreadSafeInvertedIndex index) {
 		this.query = new TreeMap<>();
 		searchFunction = partial ? index::exactSearch : index::partialSearch;
-		this.stemmer = new SnowballStemmer(ENGLISH);
 		lock = new MultiReaderLock();
 		this.workers = workers;
 
@@ -136,7 +128,7 @@ public class MultithreadedQueryProcessor implements QueryProcessorInterface {
 	public List<InvertedIndex.SearchResult> getQueryResults(String queryLine) {
 		lock.readLock().lock();
 		try {
-			var buffer = TextParser.uniqueStems(queryLine, stemmer);
+			var buffer = TextParser.uniqueStems(queryLine);
 			String processedQuery = String.join(" ", buffer);
 			return Collections.unmodifiableList(query.getOrDefault(processedQuery, Collections.emptyList()));
 		}
@@ -171,7 +163,7 @@ public class MultithreadedQueryProcessor implements QueryProcessorInterface {
 	public boolean hasQuery(String queryLine) {
 		lock.readLock().lock();
 		try {
-			var buffer = TextParser.uniqueStems(queryLine, stemmer);
+			var buffer = TextParser.uniqueStems(queryLine);
 			String processedQuery = String.join(" ", buffer);
 			return query.containsKey(processedQuery);
 		}
