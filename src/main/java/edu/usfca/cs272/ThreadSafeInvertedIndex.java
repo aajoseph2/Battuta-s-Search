@@ -44,10 +44,10 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
-	public void addAll(InvertedIndex localIndex) {
+	public void addDistinctIndex(InvertedIndex localIndex) {
 		lock.writeLock().lock();
 		try {
-			super.addAll(localIndex);
+			super.addDistinctIndex(localIndex);
 		}
 		finally {
 			lock.writeLock().unlock();

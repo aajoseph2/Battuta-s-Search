@@ -30,7 +30,7 @@ public class MultiThreadProcessor {
 				try {
 					InvertedIndex localIndex = new InvertedIndex();
 					InvertedIndexProcessor.processText(path, localIndex);
-					index.addAll(localIndex);
+					index.addDistinctIndex(localIndex);
 				}
 				catch (IOException e) {
 					throw new UncheckedIOException(e);
@@ -61,7 +61,7 @@ public class MultiThreadProcessor {
 						try {
 							InvertedIndex localIndex = new InvertedIndex();
 							InvertedIndexProcessor.processText(entry, localIndex);
-							index.addAll(localIndex);
+							index.addDistinctIndex(localIndex);
 						}
 						catch (IOException e) {
 							throw new UncheckedIOException(e);

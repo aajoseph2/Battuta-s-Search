@@ -54,15 +54,16 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Merges all the data from a local inverted index to this shared inverted index.
+	 * Merges only the distinct data from a
+	 * local inverted index to this shared inverted index.
 	 *
 	 * @param localIndex the local inverted index to add
 	 */
-	public void addAll(InvertedIndex localIndex) { // TODO addDistinctIndex and update the javadoc
+	public void addDistinctIndex(InvertedIndex localIndex) {
 		for (var localOuter : localIndex.index.entrySet()) {
 			String localWord = localOuter.getKey();
 			var localInner = localOuter.getValue();
-			
+
 			// TODO var thisInner = this.index.get(localWord);
 
 			if (!this.index.containsKey(localWord)) { // TODO thisInner != null;
@@ -72,10 +73,10 @@ public class InvertedIndex {
 				for (var localLocationEntry : localInner.entrySet()) {
 					String localLocation = localLocationEntry.getKey();
 					TreeSet<Integer> localPositions = localLocationEntry.getValue();
-					
-					/* TODO 
+
+					/* TODO
 					var thisPositions = thisInner.get(localLocation);
-					
+
 					if (thisPositions == null) {
 						thisInner.put(localLocation, localPositions);
 					}
