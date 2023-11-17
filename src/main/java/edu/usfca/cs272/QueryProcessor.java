@@ -1,11 +1,8 @@
 package edu.usfca.cs272;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
@@ -50,23 +47,6 @@ public class QueryProcessor implements QueryProcessorInterface{
 		this.query = new TreeMap<>();
 		this.stemmer = new SnowballStemmer(ENGLISH);
 		searchFunction = partial ? index::exactSearch : index::partialSearch;
-	}
-
-	/**
-	 * processes a query of words when given a file location. Processed line by line
-	 * as reading line by line
-	 *
-	 * @param location Where the query is being retrieved from
-	 * @throws IOException If file is unreadable
-	 */
-	@Override
-	public void queryProcessor(Path location) throws IOException { // TODO Remove from here make a default implementation in the interface
-		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				queryProcessor(line);
-			}
-		}
 	}
 
 	/**

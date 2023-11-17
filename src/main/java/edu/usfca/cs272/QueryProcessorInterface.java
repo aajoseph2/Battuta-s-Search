@@ -1,6 +1,10 @@
 package edu.usfca.cs272;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +20,14 @@ public interface QueryProcessorInterface {
 	 * @param location The file path from which queries are read.
 	 * @throws IOException If there is an issue reading from the file.
 	 */
-	void queryProcessor(Path location) throws IOException;
+	default void queryProcessor(Path location) throws IOException {
+		try (BufferedReader reader = Files.newBufferedReader(location, UTF_8)) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				queryProcessor(line);
+			}
+		}
+	}
 
 	/**
 	 * Processes a single line of text as a query.
