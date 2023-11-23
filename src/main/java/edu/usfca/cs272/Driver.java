@@ -110,5 +110,9 @@ public class Driver {
 				System.out.println("Error writing results to file: " + e.getMessage());
 			}
 		}
+
+		if (parser.hasFlag("-html")) {
+			System.out.println("html time ");
+		}
 	}
 }
