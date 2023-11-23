@@ -113,8 +113,8 @@ public class Driver {
 			String seed = parser.getString("-html");
 			if (seed != null && !seed.isBlank()) {
 				try {
-					//Process the seeds of seeds seed bro
-					System.out.println("Processing seed...");
+					String html = HtmlFetcher.fetch(seed, 3);
+					System.out.println(html);
 				}
 				catch (Exception e) {
 					System.out.println("Error processing HTML from seed: " + e.getMessage());
