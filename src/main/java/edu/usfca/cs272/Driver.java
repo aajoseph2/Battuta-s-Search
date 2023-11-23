@@ -1,6 +1,7 @@
 package edu.usfca.cs272;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 
 /**
@@ -60,6 +61,22 @@ public class Driver {
 			}
 		}
 
+		if (parser.hasFlag("-html")) {
+			String seed = parser.getString("-html");
+			if (seed != null && !seed.isBlank()) {
+				try {
+					WebCrawler crawler = new WebCrawler(index);
+					crawler.crawl(new URL(seed), 3);
+				}
+				catch (Exception e) {
+					System.out.println("Error processing HTML from seed: " + e.getMessage());
+				}
+			}
+			else {
+				System.out.println("A seed URL must be provided with the -html flag.");
+			}
+		}
+
 		if (parser.hasFlag("-query")) {
 			Path queryPath = parser.getPath("-query");
 			if (queryPath != null) {
@@ -106,22 +123,6 @@ public class Driver {
 			}
 			catch (IOException e) {
 				System.out.println("Error writing results to file: " + e.getMessage());
-			}
-		}
-
-		if (parser.hasFlag("-html")) {
-			String seed = parser.getString("-html");
-			if (seed != null && !seed.isBlank()) {
-				try {
-					String html = HtmlFetcher.fetch(seed, 3);
-					System.out.println(html);
-				}
-				catch (Exception e) {
-					System.out.println("Error processing HTML from seed: " + e.getMessage());
-				}
-			}
-			else {
-				System.out.println("A seed URL must be provided with the -html flag.");
 			}
 		}
 	}
