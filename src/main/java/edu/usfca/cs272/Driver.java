@@ -3,7 +3,6 @@ package edu.usfca.cs272;
 import java.io.IOException;
 import java.nio.file.Path;
 
-
 /**
  * Class responsible for running this project based on the provided command-line
  * arguments. See the README for details.
@@ -30,7 +29,6 @@ public class Driver {
 		QueryProcessorInterface queryProcessor;
 		WorkQueue workers = null;
 
-
 		if (parser.hasFlag("-threads")) {
 			safe = new ThreadSafeInvertedIndex();
 			index = safe;
@@ -39,7 +37,7 @@ public class Driver {
 		}
 		else {
 			index = new InvertedIndex();
-			queryProcessor = new QueryProcessor(!parser.hasFlag("-partial"), index );
+			queryProcessor = new QueryProcessor(!parser.hasFlag("-partial"), index);
 		}
 
 		if (parser.hasFlag("-text")) {
@@ -66,7 +64,7 @@ public class Driver {
 			Path queryPath = parser.getPath("-query");
 			if (queryPath != null) {
 				try {
-						queryProcessor.queryProcessor(queryPath);
+					queryProcessor.queryProcessor(queryPath);
 				}
 				catch (IOException e) {
 					System.out.println("Error writing query to file: " + e.getMessage());
@@ -104,7 +102,7 @@ public class Driver {
 		if (parser.hasFlag("-results")) {
 			Path resPath = parser.getPath("-results", Path.of("results.json"));
 			try {
-					queryProcessor.writeQueryJson(resPath);
+				queryProcessor.writeQueryJson(resPath);
 			}
 			catch (IOException e) {
 				System.out.println("Error writing results to file: " + e.getMessage());
@@ -112,7 +110,19 @@ public class Driver {
 		}
 
 		if (parser.hasFlag("-html")) {
-			System.out.println("html time ");
+			String seed = parser.getString("-html");
+			if (seed != null && !seed.isBlank()) {
+				try {
+					//Process the seeds of seeds seed bro
+					System.out.println("Processing seed...");
+				}
+				catch (Exception e) {
+					System.out.println("Error processing HTML from seed: " + e.getMessage());
+				}
+			}
+			else {
+				System.out.println("A seed URL must be provided with the -html flag.");
+			}
 		}
 	}
 }
