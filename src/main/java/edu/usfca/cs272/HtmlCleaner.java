@@ -34,7 +34,7 @@ public class HtmlCleaner {
 	 * @see String#replaceAll(String, String)
 	 */
 	public static String stripTags(String html) {
-		String regex = "<!DOCTYPE [^>]*>|<(?!/|=)\\w+[^>]*>|</\\w+>";
+		String regex = "<[^>]+>";
 		return html.replaceAll(regex, "");
 	}
 
