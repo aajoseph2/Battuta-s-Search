@@ -36,6 +36,7 @@ public class WebCrawler {
 	/**
 	 * @param index Inverted Index of which contains all the word data, passed
 	 *   through in constuctor
+	 * @param workers Workers to do work
 	 */
 	public WebCrawler(ThreadSafeInvertedIndex index, WorkQueue workers) {
 		this.index = index;
