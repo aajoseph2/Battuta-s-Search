@@ -10,9 +10,6 @@ import org.apache.commons.text.StringEscapeUtils;
  * For example, the {@link #stripEntities(String)} method removes HTML entities
  * but does not check that the removed entity was valid.
  *
- * <p>Look at the "See Also" section for useful classes and methods for
- * implementing this class.
- *
  * @see String#replaceAll(String, String)
  * @see Pattern#DOTALL
  * @see Pattern#CASE_INSENSITIVE
@@ -24,9 +21,7 @@ import org.apache.commons.text.StringEscapeUtils;
 public class HtmlCleaner {
 	/**
 	 * Replaces all HTML tags with an empty string. For example, the html
-	 * {@code A<b>B</b>C} will become {@code ABC}.
 	 *
-	 * <p><em>(View this comment as HTML in the "Javadoc" view in Eclipse.)</em>
 	 *
 	 * @param html text including HTML tags to remove
 	 * @return text without any HTML tags
@@ -40,14 +35,6 @@ public class HtmlCleaner {
 
 	/**
 	 * Replaces all HTML 4 entities with their Unicode character equivalent or, if
-	 * unrecognized, replaces the entity code with an empty string. For example:,
-	 * {@code 2010&ndash;2012} will become {@code 2010–2012} and {@code &gt;&dash;x}
-	 * will become {@code >x} with the unrecognized {@code &dash;} entity getting
-	 * removed. (The {@code &dash;} entity is valid HTML 5, but not valid HTML 4.)
-	 * Should also work for entities that use decimal syntax like {@code &#8211;}
-	 * for the &#8211; symbol or {@code &#x2013;} for the &#x2013; symbol.
-	 *
-	 * <p><em>(View this comment as HTML in the "Javadoc" view in Eclipse.)</em>
 	 *
 	 * @see StringEscapeUtils#unescapeHtml4(String)
 	 * @see String#replaceAll(String, String) s
@@ -64,18 +51,6 @@ public class HtmlCleaner {
 	/**
 	 * Replaces all HTML comments with an empty string. For example:
 	 *
-	 * <pre> * A&lt;!-- B --&gt;C</pre>
-	 *
-	 * ...and this HTML:
-	 *
-	 * <pre>
-	 * A&lt;!--
-	 * B --&gt;C</pre>
-	 *
-	 * ...will both become "AC" after stripping comments.
-	 *
-	 * <p><em>(View this comment as HTML in the "Javadoc" view in Eclipse.)</em>
-	 *
 	 * @param html text including HTML comments to remove
 	 * @return text without any HTML comments
 	 *
@@ -89,14 +64,7 @@ public class HtmlCleaner {
 	/**
 	 * Replaces everything between the element tags and the element tags themselves
 	 * with an empty string. For example, consider the html code:
-	 *
-	 * <pre> * &lt;style type="text/css"&gt;body { font-size: 10pt; }&lt;/style&gt;
-	 * </pre>
-	 *
-	 * If removing the "style" element, all of the above code will be removed, and
-	 * replaced with an empty string.
-	 *
-	 * <p><em>(View this comment as HTML in the "Javadoc" view in Eclipse.)</em>
+
 	 *
 	 * @param html text including HTML elements to remove
 	 * @param name name of the HTML element (like "style" or "script")
