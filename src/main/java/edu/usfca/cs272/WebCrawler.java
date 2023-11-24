@@ -11,7 +11,6 @@ import java.util.Set;
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
-
 /**
  * Class to iterate through a list of links or link. Fetches and cleans html
  * data, then processes stemmed words into the inverted index data strcuture.
@@ -20,19 +19,29 @@ public class WebCrawler {
 	/**
 	 * Inverted Index of which contains all the word data
 	 */
-	private final InvertedIndex index;
+	private final ThreadSafeInvertedIndex index;
 	/**
 	 * Set of all visited links, meant to not be visited again
 	 */
 	private final Set<URL> visited;
+	/**
+	 * The lock used to protect concurrent access to the underlying set.
+	 */
+	private final MultiReaderLock lock;
+	/**
+	 * Workers to do work utilizing several threads
+	 */
+	private final WorkQueue workers;
 
 	/**
 	 * @param index Inverted Index of which contains all the word data, passed
 	 *   through in constuctor
 	 */
-	public WebCrawler(InvertedIndex index) {
+	public WebCrawler(ThreadSafeInvertedIndex index, WorkQueue workers) {
 		this.index = index;
 		this.visited = new HashSet<>();
+		lock = new MultiReaderLock();
+		this.workers = workers;
 	}
 
 	/**
@@ -52,11 +61,11 @@ public class WebCrawler {
 			String cleanHtml = HtmlCleaner.stripHtml(html);
 			URI baseLocation = LinkFinder.cleanUri(LinkFinder.makeUri(url.toString()));
 			processText(cleanHtml, baseLocation.toString());
-		}
 
-		// also track the searched links
-		// decrement depth for 4.1 tests to find links within the HTML and recursively
-		// call crawl() on those URLs
+			if (maxDepth > 1) {
+				findAndCrawlLinks(url, html, maxDepth);
+			}
+		}
 	}
 
 	/**
@@ -71,6 +80,55 @@ public class WebCrawler {
 		for (String word : words) {
 			index.addData(stemmer.stem(word).toString(), location, pos);
 			pos++;
+		}
+	}
+
+	/**
+	 * Recursively finds and crawls all unique links found within the given HTML
+	 * content.
+	 *
+	 * @param url the base URL from which the HTML content was retrieved
+	 * @param html the HTML content containing the links to be crawled
+	 * @param maxDepth the maximum depth to crawl
+	 * @throws IOException if an I/O error occurs while crawling the links
+	 */
+	private void findAndCrawlLinks(URL url, String html, int maxDepth) throws IOException {
+		Set<URL> links = LinkFinder.uniqueUrls(url, html);
+		for (URL nextUrl : links) {
+			if (!visited.contains(nextUrl)) {
+				crawl(nextUrl, maxDepth - 1);
+			}
+		}
+	}
+
+	/**
+	 * Checks if the URL has already been visited.
+	 *
+	 * @param url The URL to check
+	 * @return true if the URL has been visited, false otherwise
+	 */
+	public boolean visitedContains(URL url) {
+		lock.readLock().lock();
+		try {
+			return visited.contains(url);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/**
+	 * Adds a new URL to the set of visited URLs if it hasn't been visited.
+	 *
+	 * @param url The URL to add
+	 */
+	public void visitedAdd(URL url) {
+		lock.writeLock().lock();
+		try {
+			visited.add(url);
+		}
+		finally {
+			lock.writeLock().unlock();
 		}
 	}
 }
