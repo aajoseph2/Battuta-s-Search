@@ -5,8 +5,7 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
@@ -23,7 +22,7 @@ public class WebCrawler {
 	/**
 	 * Set of all visited links, meant to not be visited again
 	 */
-	private final Set<URL> visited;
+	private final LinkedHashSet<URL> visited;
 	/**
 	 * The lock used to protect concurrent access to the underlying set.
 	 */
@@ -33,6 +32,8 @@ public class WebCrawler {
 	 */
 	private final WorkQueue workers;
 
+	private int queuedURLs;
+
 	/**
 	 * @param index Inverted Index of which contains all the word data, passed
 	 *   through in constuctor
@@ -40,9 +41,10 @@ public class WebCrawler {
 	 */
 	public WebCrawler(ThreadSafeInvertedIndex index, WorkQueue workers) {
 		this.index = index;
-		this.visited = new HashSet<>();
+		this.visited = new LinkedHashSet<>();
 		lock = new MultiReaderLock();
 		this.workers = workers;
+		this.queuedURLs = 0;
 	}
 
 	/**
@@ -52,11 +54,13 @@ public class WebCrawler {
 	 * @param maxDepth maxDepth Number of times to iterate through nested links
 	 * @throws IOException IOException if link is unreadable
 	 */
-	public void crawl(URL url, int maxDepth) throws IOException {
-		if (maxDepth < 0 || visited.contains(url)) {
+	public void crawl(URL url, int maxDepth ) throws IOException {
+		if (maxDepth < 0 || visited.contains(url) || queuedURLs >= 50) {
 			return;
 		}
 
+		visited.add(url);
+		queuedURLs++;
 		processPage(url, maxDepth);
 	}
 
@@ -67,8 +71,6 @@ public class WebCrawler {
 	 */
 	public void processPage(URL url, int maxDepth) throws IOException {
 
-		visited.add(url);
-
 		String html = HtmlFetcher.fetch(url, 3);
 		if (html != null) {
 			String cleanHtml = HtmlCleaner.stripHtml(html);
@@ -76,7 +78,7 @@ public class WebCrawler {
 			processText(cleanHtml, baseLocation.toString());
 
 			if (maxDepth > 1) {
-				findAndCrawlLinks(url, html, maxDepth - 1);
+				processLinks(url, html, maxDepth - 1);
 			}
 		}
 	}
@@ -90,12 +92,10 @@ public class WebCrawler {
 	 * @param maxDepth the maximum depth to crawl
 	 * @throws IOException if an I/O error occurs while crawling the links
 	 */
-	private void findAndCrawlLinks(URL url, String html, int maxDepth) throws IOException {
-		Set<URL> links = LinkFinder.uniqueUrls(url, html);
+	private void processLinks(URL url, String html, int maxDepth) throws IOException {
+		var links = LinkFinder.uniqueUrls(url, html);
 		for (URL nextUrl : links) {
-			if (!visited.contains(nextUrl)) {
-				crawl(nextUrl, maxDepth);
-			}
+			crawl(nextUrl, maxDepth);
 		}
 	}
 

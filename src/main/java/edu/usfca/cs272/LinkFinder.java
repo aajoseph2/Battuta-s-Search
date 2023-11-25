@@ -6,7 +6,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,8 +78,8 @@ public class LinkFinder {
 	 *
 	 * @see #findLinks(URL, String, Collection)
 	 */
-	public static HashSet<URL> uniqueUrls(URL base, String html) {
-		HashSet<URL> urls = new HashSet<URL>();
+	public static LinkedHashSet<URL> uniqueUrls(URL base, String html) {
+		LinkedHashSet<URL> urls = new LinkedHashSet<URL>();
 		findLinks(base, html, urls);
 		return urls;
 	}
