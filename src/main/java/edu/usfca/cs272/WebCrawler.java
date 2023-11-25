@@ -46,14 +46,26 @@ public class WebCrawler {
 	}
 
 	/**
-	 * @param url target source of where the data is being retrieved from
-	 * @param maxDepth Number of times to iterate through nested links
-	 * @throws IOException if link is unreadable
+	 * Header method to call the processing methods for pages
+	 *
+	 * @param url url target source of where the data is being retrieved from
+	 * @param maxDepth maxDepth Number of times to iterate through nested links
+	 * @throws IOException IOException if link is unreadable
 	 */
 	public void crawl(URL url, int maxDepth) throws IOException {
 		if (maxDepth < 0 || visited.contains(url)) {
 			return;
 		}
+
+		processPage(url, maxDepth);
+	}
+
+	/**
+	 * @param url target source of where the data is being retrieved from
+	 * @param maxDepth Number of times to iterate through nested links
+	 * @throws IOException if link is unreadable
+	 */
+	public void processPage(URL url, int maxDepth) throws IOException {
 
 		visited.add(url);
 
@@ -64,23 +76,8 @@ public class WebCrawler {
 			processText(cleanHtml, baseLocation.toString());
 
 			if (maxDepth > 1) {
-				findAndCrawlLinks(url, html, maxDepth);
+				findAndCrawlLinks(url, html, maxDepth - 1);
 			}
-		}
-	}
-
-	/**
-	 * @param text the cleaned html to be inputted within InvertedIndex
-	 * @param location Location or link of the text
-	 */
-	private void processText(String text, String location) {
-		int pos = 1;
-		Stemmer stemmer = new SnowballStemmer(ENGLISH);
-		String[] words = TextParser.parse(text);
-
-		for (String word : words) {
-			index.addData(stemmer.stem(word).toString(), location, pos);
-			pos++;
 		}
 	}
 
@@ -97,8 +94,23 @@ public class WebCrawler {
 		Set<URL> links = LinkFinder.uniqueUrls(url, html);
 		for (URL nextUrl : links) {
 			if (!visited.contains(nextUrl)) {
-				crawl(nextUrl, maxDepth - 1);
+				crawl(nextUrl, maxDepth);
 			}
+		}
+	}
+
+	/**
+	 * @param text the cleaned html to be inputted within InvertedIndex
+	 * @param location Location or link of the text
+	 */
+	private void processText(String text, String location) {
+		int pos = 1;
+		Stemmer stemmer = new SnowballStemmer(ENGLISH);
+		String[] words = TextParser.parse(text);
+
+		for (String word : words) {
+			index.addData(stemmer.stem(word).toString(), location, pos);
+			pos++;
 		}
 	}
 

@@ -76,6 +76,7 @@ public class Driver {
 			else {
 				System.out.println("A seed URL must be provided with the -html flag.");
 			}
+			workers.finish();
 		}
 
 		if (parser.hasFlag("-query")) {
