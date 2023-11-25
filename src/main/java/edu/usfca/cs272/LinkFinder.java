@@ -64,7 +64,8 @@ public class LinkFinder {
 	 */
 	public static ArrayList<URL> listUrls(URL base, String html) {
 		ArrayList<URL> urls = new ArrayList<URL>();
-		findLinks(base, html, urls);
+		String htmlWithoutComments = html.replaceAll("(?s)<!--.*?-->", "");
+		findLinks(base, htmlWithoutComments, urls);
 		return urls;
 	}
 

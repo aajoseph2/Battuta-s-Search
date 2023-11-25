@@ -34,17 +34,20 @@ public class WebCrawler {
 
 	private int queuedURLs;
 
+	private URL rootUrl;
+
 	/**
 	 * @param index Inverted Index of which contains all the word data, passed
 	 *   through in constuctor
 	 * @param workers Workers to do work
 	 */
-	public WebCrawler(ThreadSafeInvertedIndex index, WorkQueue workers) {
+	public WebCrawler(ThreadSafeInvertedIndex index, WorkQueue workers, URL rootUrl) {
 		this.index = index;
 		this.visited = new LinkedHashSet<>();
 		lock = new MultiReaderLock();
 		this.workers = workers;
 		this.queuedURLs = 0;
+		this.rootUrl = rootUrl;
 	}
 
 	/**
@@ -54,14 +57,15 @@ public class WebCrawler {
 	 * @param maxDepth maxDepth Number of times to iterate through nested links
 	 * @throws IOException IOException if link is unreadable
 	 */
-	public void crawl(URL url, int maxDepth ) throws IOException {
+	public void crawl(URL url, int maxDepth) throws IOException {
 		if (maxDepth < 0 || visited.contains(url) || queuedURLs >= 50) {
 			return;
 		}
 
 		visited.add(url);
 		queuedURLs++;
-		processPage(url, maxDepth);
+		int newDepth = url.equals(rootUrl) ? maxDepth : maxDepth - 1;
+		processPage(url, newDepth);
 	}
 
 	/**
@@ -74,11 +78,12 @@ public class WebCrawler {
 		String html = HtmlFetcher.fetch(url, 3);
 		if (html != null) {
 			String cleanHtml = HtmlCleaner.stripHtml(html);
+			// System.out.println(cleanHtml);
 			URI baseLocation = LinkFinder.cleanUri(LinkFinder.makeUri(url.toString()));
 			processText(cleanHtml, baseLocation.toString());
 
-			if (maxDepth > 1) {
-				processLinks(url, html, maxDepth - 1);
+			if (maxDepth >= 0) {
+				processLinks(url, html, maxDepth);
 			}
 		}
 	}
@@ -93,9 +98,11 @@ public class WebCrawler {
 	 * @throws IOException if an I/O error occurs while crawling the links
 	 */
 	private void processLinks(URL url, String html, int maxDepth) throws IOException {
-		var links = LinkFinder.uniqueUrls(url, html);
-		for (URL nextUrl : links) {
-			crawl(nextUrl, maxDepth);
+		if (url.equals(rootUrl)) {
+			var links = LinkFinder.listUrls(url, html);
+			for (URL nextUrl : links) {
+				crawl(nextUrl, maxDepth);
+			}
 		}
 	}
 

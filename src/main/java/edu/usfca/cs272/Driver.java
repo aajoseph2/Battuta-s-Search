@@ -65,8 +65,7 @@ public class Driver {
 			String seed = parser.getString("-html");
 			if (seed != null && !seed.isBlank()) {
 				try {
-
-					WebCrawler crawler = new WebCrawler(safe, workers);
+					WebCrawler crawler = new WebCrawler(safe, workers, new URL(seed));
 					crawler.crawl(new URL(seed), parser.getInteger("-crawl", 1));
 				}
 				catch (Exception e) {
