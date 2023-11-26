@@ -9,27 +9,13 @@ import java.util.LinkedHashSet;
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
-/**
- * Class to iterate through a list of links or link. Fetches and cleans html
- * data, then processes stemmed words into the inverted index data strcuture.
- */
-public class WebCrawler {
-	/**
-	 * Inverted Index of which contains all the word data
-	 */
+public class Crawler {
+
+
 	private final ThreadSafeInvertedIndex index;
-	/**
-	 * Set of all visited links, meant to not be visited again
-	 */
+
 	private final LinkedHashSet<URL> visited;
-	/**
-	 * The lock used to protect concurrent access to the underlying set.
-	 */
-	private final MultiReaderLock lock;
-	/**
-	 * Workers to do work utilizing several threads
-	 */
-	private final WorkQueue workers;
+
 
 	private int queuedURLs;
 
@@ -41,12 +27,10 @@ public class WebCrawler {
 	 *   through in constuctor
 	 * @param workers Workers to do work
 	 */
-	public WebCrawler(ThreadSafeInvertedIndex index, WorkQueue workers, URL rootUrl, int depth) {
+	public Crawler(ThreadSafeInvertedIndex index, WorkQueue workers, URL rootUrl, int depth) {
 		this.index = index;
 		this.visited = new LinkedHashSet<>();
-		lock = new MultiReaderLock();
-		this.workers = workers;
-		this.queuedURLs = 0;
+		this.queuedURLs = 1;
 		this.rootUrl = rootUrl;
 		this.depth = depth;
 	}
@@ -59,15 +43,20 @@ public class WebCrawler {
 	 * @throws IOException IOException if link is unreadable
 	 */
 	public void crawl(URL url, int maxDepth) throws IOException {
-		if (depth < 0 || visited.contains(url) || queuedURLs >= 50) {
-			System.out.println("inisde: " + depth);
-			return;
-		}
-		//System.out.println("crawl: " + maxDepth);
-
 		visited.add(url);
-		queuedURLs++;
-		processPage(url, depth);
+		String html = HtmlFetcher.fetch(url, 3);
+		if (html != null) {
+			String cleanHtml = HtmlCleaner.stripHtml(html);
+			var links = LinkFinder.listUrls(url, html);
+			for (URL nextUrl : links) {
+				visited.add(nextUrl);
+			}
+		} else {
+			System.out.println("Root link has no valid html");
+		}
+
+		System.out.println(visited);
+
 	}
 
 	/**
@@ -77,18 +66,6 @@ public class WebCrawler {
 	 */
 	public void processPage(URL url, int maxDepth) throws IOException {
 
-		String html = HtmlFetcher.fetch(url, 3);
-		if (html != null) {
-			String cleanHtml = HtmlCleaner.stripHtml(html);
-			processText(cleanHtml,  LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
-
-			if (depth > 0) {
-				processLinks(url, html, depth);
-			}
-		} else {
-			System.out.println("here");
-			depth--;
-		}
 	}
 
 	/**
@@ -130,34 +107,4 @@ public class WebCrawler {
 		}
 	}
 
-	/**
-	 * Checks if the URL has already been visited.
-	 *
-	 * @param url The URL to check
-	 * @return true if the URL has been visited, false otherwise
-	 */
-	public boolean visitedContains(URL url) {
-		lock.readLock().lock();
-		try {
-			return visited.contains(url);
-		}
-		finally {
-			lock.readLock().unlock();
-		}
-	}
-
-	/**
-	 * Adds a new URL to the set of visited URLs if it hasn't been visited.
-	 *
-	 * @param url The URL to add
-	 */
-	public void visitedAdd(URL url) {
-		lock.writeLock().lock();
-		try {
-			visited.add(url);
-		}
-		finally {
-			lock.writeLock().unlock();
-		}
-	}
 }
