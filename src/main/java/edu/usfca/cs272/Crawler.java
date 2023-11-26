@@ -28,43 +28,29 @@ public class Crawler {
 	public void startCrawl(URL seedUrl) throws IOException {
 		urlQueue.add(seedUrl);
 		while (!urlQueue.isEmpty() && crawledCount < MAX_CRAWL_LIMIT) {
-			if (crawledCount >= MAX_CRAWL_LIMIT) {
-				break;
-			}
 			URL currentUrl = urlQueue.poll();
 			if (!visitedUrls.contains(currentUrl)) {
-//          	System.out.println(crawledCount);
-//          	System.out.println(currentUrl);
 				crawl(currentUrl);
 			}
 		}
 	}
 
 	private void crawl(URL url) throws IOException {
-		if (crawledCount >= MAX_CRAWL_LIMIT) {
-			return;
-		}
 		visitedUrls.add(url);
 		crawledCount++;
 
 		String html = HtmlFetcher.fetch(url, 3);
 		if (html != null) {
-			// System.out.println(url);
 			String cleanHtml = HtmlCleaner.stripHtml(html);
 			processText(cleanHtml, LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
 			if (crawledCount < MAX_CRAWL_LIMIT) {
 				processLinks(url, html);
 			}
 		}
-		else {
-			// crawledCount--;
-		}
 	}
 
 	private void processLinks(URL url, String html) throws IOException {
 		var links = LinkFinder.listUrls(url, html);
-		// System.out.println(links.size());
-		// System.out.println(links + "\n");
 		for (URL nextUrl : links) {
 			if (!visitedUrls.contains(nextUrl)) {
 				urlQueue.add(nextUrl);
