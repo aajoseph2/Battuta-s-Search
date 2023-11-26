@@ -3,9 +3,14 @@ package edu.usfca.cs272;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
@@ -15,63 +20,75 @@ public class Crawler {
 	private final ThreadSafeInvertedIndex index;
 
 	private final ArrayList<URL> links;
-
-	private int queuedURLs;
-	private final LinkedHashSet<URL> visited;
-	private URL rootUrl;
-	private int depth;
+	private int crawledURLsCount = 0;
+	private Set<URL> visited = new HashSet<>();
+	private Queue<URLDepthPair> queue = new LinkedList<>();
+	private int queuedURLs = 0;
+	private final int MAX_CRAWL_LIMIT;
 
 	/**
 	 * @param index Inverted Index of which contains all the word data, passed
 	 *   through in constuctor
 	 * @param workers Workers to do work
 	 */
-	public Crawler(ThreadSafeInvertedIndex index, WorkQueue workers, URL rootUrl, int depth) {
+	public Crawler(ThreadSafeInvertedIndex index, WorkQueue workers, URL rootUrl, int maxCrawlLimit) {
 		this.index = index;
 		this.links = new ArrayList<URL>();
 		this.visited = new LinkedHashSet<>();
 		this.queuedURLs = 0;
-		this.rootUrl = rootUrl;
-		this.depth = depth;
+		this.MAX_CRAWL_LIMIT = Math.min(maxCrawlLimit, 49);
+		// this.rootUrl = rootUrl;
+		// this.depth = depth;
 	}
 
-	/**
-	 * Header method to call the processing methods for pages
-	 *
-	 * @param url url target source of where the data is being retrieved from
-	 * @param maxDepth maxDepth Number of times to iterate through nested links
-	 * @throws IOException IOException if link is unreadable
-	 */
-	public void crawl(URL url, int maxDepth) throws IOException {
-		links.add(url);
+	private static class URLDepthPair {
+		URL url;
+		int depth;
+
+		URLDepthPair(URL url, int depth) {
+			this.url = url;
+			this.depth = depth;
+		}
+	}
+
+	public void startCrawl(URL url, int maxDepth) throws IOException {
+		// Add the first URL to the queue and increment the count
+
+			queue.add(new URLDepthPair(url, maxDepth));
+			visited.add(url);
+			crawledURLsCount++;
+		while (!queue.isEmpty()) {
+			URLDepthPair pair = queue.poll();
+			crawl(pair.url, pair.depth);
+		}
+	}
+
+	private void crawl(URL url, int currentDepth) throws IOException {
+
+		System.out.println("crawl:" + crawledURLsCount );
 		String html = HtmlFetcher.fetch(url, 3);
-			links.addAll(LinkFinder.listUrls(url, html));
-			//System.out.println(visited.size());
 
-		//System.out.println(visited);
-		processLinks(links, maxDepth);
+		if (html != null) {
+			String cleanHtml = HtmlCleaner.stripHtml(html);
+			URI baseLocation = LinkFinder.cleanUri(LinkFinder.makeUri(url.toString()));
+			processText(cleanHtml, baseLocation.toString());
+
+			processLinks(url, html, currentDepth);
+		}
 	}
 
-	private void processLinks(ArrayList<URL> links, int maxDepth) throws IOException {
+	private void processLinks(URL url, String html, int nextDepth) throws IOException {
+		var links = LinkFinder.listUrls(url, html);
 		for (URL nextUrl : links) {
-			if (maxDepth <= 0 || queuedURLs >= 50 || visited.contains(links)) {
+			if  (visited.contains(nextUrl) ||crawledURLsCount > MAX_CRAWL_LIMIT ) {
+				//System.out.println("here");
 				continue;
 			}
-			visited.add(nextUrl);
-			String html = HtmlFetcher.fetch(nextUrl, 3);
-			if (html != null) {
-				String cleanHtml = HtmlCleaner.stripHtml(html);
-				processText(cleanHtml, LinkFinder.cleanUri(LinkFinder.makeUri(nextUrl.toString())).toString());
-				maxDepth--;
-			}
-			queuedURLs++;
-		}
 
-
-//		if (maxDepth > 0) {
-//			crawl(links.get(1), maxDepth);
-//			visited.remove(1);
-//			}
+				visited.add(nextUrl);
+				queue.add(new URLDepthPair(nextUrl, nextDepth));
+				crawledURLsCount++;
+	}
 	}
 
 	/**

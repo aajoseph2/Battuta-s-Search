@@ -67,7 +67,7 @@ public class Driver {
 				try {
 					//WebCrawler crawler = new WebCrawler(safe, workers, new URL(seed), parser.getInteger("-crawl", 1));
 					Crawler crawler = new Crawler(safe, workers, new URL(seed), parser.getInteger("-crawl", 1));
-					crawler.crawl(new URL(seed), parser.getInteger("-crawl", 1));
+					crawler.startCrawl(new URL(seed), parser.getInteger("-crawl", 1));
 				}
 				catch (Exception e) {
 					System.out.println("Error processing HTML from seed: " + e.getMessage());

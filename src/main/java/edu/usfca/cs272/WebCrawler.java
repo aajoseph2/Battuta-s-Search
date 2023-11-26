@@ -59,7 +59,7 @@ public class WebCrawler {
 	 * @throws IOException IOException if link is unreadable
 	 */
 	public void crawl(URL url, int maxDepth) throws IOException {
-		if (depth < 0 || visited.contains(url) || queuedURLs >= 50) {
+		if (maxDepth <= 0 || queuedURLs >= 50 || visited.contains(url)) {
 			System.out.println("inisde: " + depth);
 			return;
 		}
@@ -81,13 +81,13 @@ public class WebCrawler {
 		if (html != null) {
 			String cleanHtml = HtmlCleaner.stripHtml(html);
 			processText(cleanHtml,  LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
-
+			//depth--;
 			if (depth > 0) {
 				processLinks(url, html, depth);
 			}
 		} else {
 			System.out.println("here");
-			depth--;
+			//depth--;
 		}
 	}
 
@@ -101,17 +101,18 @@ public class WebCrawler {
 	 * @throws IOException if an I/O error occurs while crawling the links
 	 */
 	private void processLinks(URL url, String html, int maxDepth) throws IOException {
-		if (url.equals(rootUrl)) {
+		//if (url.equals(rootUrl)) {
 			var links = LinkFinder.listUrls(url, html);
 			for (URL nextUrl : links) {
 				//depth--;
-				depth--;
-				System.out.println("depth: " + depth);
-				crawl(nextUrl, depth);
+				//depth--;
+				//System.out.println("depth: " + depth);
+				crawl(nextUrl, depth-1);
 				//maxDepth--;
 				//System.out.println("crawl: " + maxDepth);
-			}
+//			}
 		}
+			depth--;
 	}
 
 
