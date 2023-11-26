@@ -4,6 +4,7 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
 import opennlp.tools.stemmer.Stemmer;
@@ -11,14 +12,12 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
 public class Crawler {
 
-
 	private final ThreadSafeInvertedIndex index;
 
-	private final LinkedHashSet<URL> visited;
-
+	private final ArrayList<URL> links;
 
 	private int queuedURLs;
-
+	private final LinkedHashSet<URL> visited;
 	private URL rootUrl;
 	private int depth;
 
@@ -29,8 +28,9 @@ public class Crawler {
 	 */
 	public Crawler(ThreadSafeInvertedIndex index, WorkQueue workers, URL rootUrl, int depth) {
 		this.index = index;
+		this.links = new ArrayList<URL>();
 		this.visited = new LinkedHashSet<>();
-		this.queuedURLs = 1;
+		this.queuedURLs = 0;
 		this.rootUrl = rootUrl;
 		this.depth = depth;
 	}
@@ -43,54 +43,36 @@ public class Crawler {
 	 * @throws IOException IOException if link is unreadable
 	 */
 	public void crawl(URL url, int maxDepth) throws IOException {
-		visited.add(url);
+		links.add(url);
 		String html = HtmlFetcher.fetch(url, 3);
-		if (html != null) {
-			String cleanHtml = HtmlCleaner.stripHtml(html);
-			var links = LinkFinder.listUrls(url, html);
-			for (URL nextUrl : links) {
-				visited.add(nextUrl);
+			links.addAll(LinkFinder.listUrls(url, html));
+			//System.out.println(visited.size());
+
+		//System.out.println(visited);
+		processLinks(links, maxDepth);
+	}
+
+	private void processLinks(ArrayList<URL> links, int maxDepth) throws IOException {
+		for (URL nextUrl : links) {
+			if (maxDepth <= 0 || queuedURLs >= 50 || visited.contains(links)) {
+				continue;
 			}
-		} else {
-			System.out.println("Root link has no valid html");
+			visited.add(nextUrl);
+			String html = HtmlFetcher.fetch(nextUrl, 3);
+			if (html != null) {
+				String cleanHtml = HtmlCleaner.stripHtml(html);
+				processText(cleanHtml, LinkFinder.cleanUri(LinkFinder.makeUri(nextUrl.toString())).toString());
+				maxDepth--;
+			}
+			queuedURLs++;
 		}
 
-		System.out.println(visited);
 
+//		if (maxDepth > 0) {
+//			crawl(links.get(1), maxDepth);
+//			visited.remove(1);
+//			}
 	}
-
-	/**
-	 * @param url target source of where the data is being retrieved from
-	 * @param maxDepth Number of times to iterate through nested links
-	 * @throws IOException if link is unreadable
-	 */
-	public void processPage(URL url, int maxDepth) throws IOException {
-
-	}
-
-	/**
-	 * Recursively finds and crawls all unique links found within the given HTML
-	 * content.
-	 *
-	 * @param url the base URL from which the HTML content was retrieved
-	 * @param html the HTML content containing the links to be crawled
-	 * @param maxDepth the maximum depth to crawl
-	 * @throws IOException if an I/O error occurs while crawling the links
-	 */
-	private void processLinks(URL url, String html, int maxDepth) throws IOException {
-		if (url.equals(rootUrl)) {
-			var links = LinkFinder.listUrls(url, html);
-			for (URL nextUrl : links) {
-				//depth--;
-				depth--;
-				System.out.println("depth: " + depth);
-				crawl(nextUrl, depth);
-				//maxDepth--;
-				//System.out.println("crawl: " + maxDepth);
-			}
-		}
-	}
-
 
 	/**
 	 * @param text the cleaned html to be inputted within InvertedIndex
