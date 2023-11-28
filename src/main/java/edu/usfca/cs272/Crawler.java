@@ -20,12 +20,14 @@ public class Crawler {
 	private final Queue<URL> urlQueue = new LinkedList<>();
 	private int crawledCount = 0;
 	private final WorkQueue workers;
+	private final MultiReaderLock lock;
 
 
 	public Crawler(ThreadSafeInvertedIndex index, int maxCrawlLimit, WorkQueue workers) {
 		this.index = index;
 		this.MAX_CRAWL_LIMIT = maxCrawlLimit;
 		this.workers = workers;
+		this.lock = new MultiReaderLock();
 	}
 
 	public void startCrawl(URL seedUrl) throws IOException {
