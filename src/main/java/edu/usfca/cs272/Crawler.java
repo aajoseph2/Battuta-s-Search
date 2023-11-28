@@ -31,9 +31,11 @@ public class Crawler {
 	}
 
 	public void startCrawl(URL seedUrl) throws IOException {
-		urlQueue.add(seedUrl);
-		while (!urlQueue.isEmpty() && crawledCount < MAX_CRAWL_LIMIT) {
-			URL currentUrl = urlQueue.poll();
+		//urlQueue.add(seedUrl);
+		urlQueueAdd(seedUrl);
+		while (!urlQueueIsEmpty(seedUrl) && crawledCount < MAX_CRAWL_LIMIT) {
+			//URL currentUrl = urlQueue.poll();
+			URL currentUrl = urlQueuePoll();
 			if (!visitedUrls.contains(currentUrl)) {
 				crawl(currentUrl);
 			}
@@ -58,7 +60,8 @@ public class Crawler {
 		var links = LinkFinder.listUrls(url, html);
 		for (URL nextUrl : links) {
 			if (!visitedUrls.contains(nextUrl)) {
-				urlQueue.add(nextUrl);
+				//urlQueue.add(nextUrl);
+				urlQueueAdd(nextUrl);
 			}
 		}
 	}
@@ -73,4 +76,35 @@ public class Crawler {
 			pos++;
 		}
 	}
+
+	public void urlQueueAdd(URL link) {
+		lock.writeLock().lock();
+		try {
+			urlQueue.add(link);
+		}
+		finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	public URL urlQueuePoll() {
+		lock.readLock().lock();
+		try {
+			return urlQueue.poll();
+		}
+		finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	public boolean urlQueueIsEmpty(URL link) {
+		lock.readLock().lock();
+		try {
+			return urlQueue.isEmpty();
+		}
+		finally {
+			lock.readLock().unlock();
+		}
+	}
+
 }
