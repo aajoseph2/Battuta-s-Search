@@ -32,7 +32,6 @@ public class Crawler {
 
 	public void startCrawl(URL seedUrl) throws IOException {
 		urlQueueAdd(seedUrl);
-		//System.out.println(workers.size());
 		while (!urlQueueIsEmpty() && crawledCount < MAX_CRAWL_LIMIT) {
 			URL currentUrl = urlQueuePoll();
 			if (!visitedContains(currentUrl)) {
@@ -49,8 +48,11 @@ public class Crawler {
 		String html = HtmlFetcher.fetch(url, 3);
 		if (html != null) {
 			String cleanHtml = HtmlCleaner.stripHtml(html);
-			processText(cleanHtml, LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
+			workers.execute(() -> {
+	processText(cleanHtml, LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
+			});
 			if (getCrawledCount() < MAX_CRAWL_LIMIT) {
+
 				processLinks(url, html);
 			}
 		}
