@@ -31,19 +31,17 @@ public class Crawler {
 	}
 
 	public void startCrawl(URL seedUrl) throws IOException {
-		//urlQueue.add(seedUrl);
 		urlQueueAdd(seedUrl);
 		while (!urlQueueIsEmpty(seedUrl) && crawledCount < MAX_CRAWL_LIMIT) {
-			//URL currentUrl = urlQueue.poll();
 			URL currentUrl = urlQueuePoll();
-			if (!visitedUrls.contains(currentUrl)) {
+			if (!visitedContains(currentUrl)) {
 				crawl(currentUrl);
 			}
 		}
 	}
 
 	private void crawl(URL url) throws IOException {
-		visitedUrls.add(url);
+		visitedAdd(url);
 		crawledCount++;
 
 		String html = HtmlFetcher.fetch(url, 3);
@@ -59,8 +57,7 @@ public class Crawler {
 	private void processLinks(URL url, String html) throws IOException {
 		var links = LinkFinder.listUrls(url, html);
 		for (URL nextUrl : links) {
-			if (!visitedUrls.contains(nextUrl)) {
-				//urlQueue.add(nextUrl);
+			if (!visitedContains(nextUrl)) {
 				urlQueueAdd(nextUrl);
 			}
 		}
@@ -106,5 +103,28 @@ public class Crawler {
 			lock.readLock().unlock();
 		}
 	}
+
+	public void visitedAdd(URL url) {
+		lock.writeLock().lock();
+		try {
+			visitedUrls.add(url);
+		}
+		finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	public boolean visitedContains(URL url) {
+		lock.readLock().lock();
+		try {
+			return visitedUrls.contains(url);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	public
+
 
 }
