@@ -19,10 +19,13 @@ public class Crawler {
 	private final Set<URL> visitedUrls = new HashSet<>();
 	private final Queue<URL> urlQueue = new LinkedList<>();
 	private int crawledCount = 0;
+	private final WorkQueue workers;
 
-	public Crawler(ThreadSafeInvertedIndex index, int maxCrawlLimit) {
+
+	public Crawler(ThreadSafeInvertedIndex index, int maxCrawlLimit, WorkQueue workers) {
 		this.index = index;
 		this.MAX_CRAWL_LIMIT = maxCrawlLimit;
+		this.workers = workers;
 	}
 
 	public void startCrawl(URL seedUrl) throws IOException {
