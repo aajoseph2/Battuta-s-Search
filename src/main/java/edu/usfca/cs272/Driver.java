@@ -30,7 +30,7 @@ public class Driver {
 		QueryProcessorInterface queryProcessor;
 		WorkQueue workers = null;
 
-		if (parser.hasFlag("-threads") || parser.hasFlag("-html")) {
+		if (parser.hasFlag("-threads")) {
 			safe = new ThreadSafeInvertedIndex();
 			index = safe;
 			workers = new WorkQueue(parser.getInteger("-threads", 5));
@@ -65,7 +65,10 @@ public class Driver {
 			String seed = parser.getString("-html");
 			if (seed != null && !seed.isBlank()) {
 				try {
-					Crawler crawler = new Crawler(safe,  parser.getInteger("-crawl", 1), workers);
+					if (workers == null) {
+						workers = new WorkQueue(0);
+					}
+					Crawler crawler = new Crawler((ThreadSafeInvertedIndex) index,  parser.getInteger("-crawl", 1), workers);
 					crawler.startCrawl(new URL(seed));
 				}
 				catch (Exception e) {
@@ -75,7 +78,6 @@ public class Driver {
 			else {
 				System.out.println("A seed URL must be provided with the -html flag.");
 			}
-			workers.finish();
 		}
 
 		if (parser.hasFlag("-query")) {

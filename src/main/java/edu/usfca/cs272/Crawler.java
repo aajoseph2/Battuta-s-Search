@@ -32,23 +32,25 @@ public class Crawler {
 
 	public void startCrawl(URL seedUrl) throws IOException {
 		urlQueueAdd(seedUrl);
-		while (!urlQueueIsEmpty(seedUrl) && crawledCount < MAX_CRAWL_LIMIT) {
+		//System.out.println(workers.size());
+		while (!urlQueueIsEmpty() && crawledCount < MAX_CRAWL_LIMIT) {
 			URL currentUrl = urlQueuePoll();
 			if (!visitedContains(currentUrl)) {
 				crawl(currentUrl);
 			}
 		}
+		workers.finish();
 	}
 
 	private void crawl(URL url) throws IOException {
 		visitedAdd(url);
-		crawledCount++;
+		crawledCountIncrement();
 
 		String html = HtmlFetcher.fetch(url, 3);
 		if (html != null) {
 			String cleanHtml = HtmlCleaner.stripHtml(html);
 			processText(cleanHtml, LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
-			if (crawledCount < MAX_CRAWL_LIMIT) {
+			if (getCrawledCount() < MAX_CRAWL_LIMIT) {
 				processLinks(url, html);
 			}
 		}
@@ -94,7 +96,7 @@ public class Crawler {
 		}
 	}
 
-	public boolean urlQueueIsEmpty(URL link) {
+	public boolean urlQueueIsEmpty() {
 		lock.readLock().lock();
 		try {
 			return urlQueue.isEmpty();
@@ -124,7 +126,25 @@ public class Crawler {
 		}
 	}
 
-	public
+	public void crawledCountIncrement() {
+		lock.writeLock().lock();
+		try {
+			crawledCount++;
+		}
+		finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	public int getCrawledCount() {
+		lock.readLock().lock();
+		try {
+			return crawledCount;
+		}
+		finally {
+			lock.readLock().unlock();
+		}
+	}
 
 
 }
