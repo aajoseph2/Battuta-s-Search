@@ -46,10 +46,6 @@ public class Crawler {
 				crawledCount++;
 			}
 
-//			private void start(Path path) {
-//				Thread worker = new Worker(path);
-//				worker.start();
-//			}
 			workers.execute(new Worker(url));
 		}
 
@@ -70,19 +66,17 @@ public class Crawler {
 					crawl(url);
 				}
 				catch (IOException e) {
-
+					System.out.println("Error encountered while running " + e.getMessage());
 				}
 			}
 		}
 	}
 
 	private void crawl(URL url) throws IOException {
-
 		String html = HtmlFetcher.fetch(url, 3);
 		if (html != null) {
 			String cleanHtml = HtmlCleaner.stripHtml(html);
 			processText(cleanHtml, LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
-
 			var links = LinkFinder.listUrls(url, html);
 			for (URL nextUrl : links) {
 				TaskManager newManager = new TaskManager();
@@ -95,40 +89,9 @@ public class Crawler {
 		int pos = 1;
 		Stemmer stemmer = new SnowballStemmer(ENGLISH);
 		String[] words = TextParser.parse(text);
-
 		for (String word : words) {
 			index.addData(stemmer.stem(word).toString(), location, pos);
 			pos++;
-		}
-	}
-
-	public void urlQueueAdd(URL link) {
-		lock.writeLock().lock();
-		try {
-			urlQueue.add(link);
-		}
-		finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	public URL urlQueuePoll() {
-		lock.readLock().lock();
-		try {
-			return urlQueue.poll();
-		}
-		finally {
-			lock.readLock().unlock();
-		}
-	}
-
-	public boolean urlQueueIsEmpty() {
-		lock.readLock().lock();
-		try {
-			return urlQueue.isEmpty();
-		}
-		finally {
-			lock.readLock().unlock();
 		}
 	}
 
@@ -151,25 +114,4 @@ public class Crawler {
 			lock.readLock().unlock();
 		}
 	}
-
-	public void crawledCountIncrement() {
-		lock.writeLock().lock();
-		try {
-			crawledCount++;
-		}
-		finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	public int getCrawledCount() {
-		lock.readLock().lock();
-		try {
-			return crawledCount;
-		}
-		finally {
-			lock.readLock().unlock();
-		}
-	}
-
 }

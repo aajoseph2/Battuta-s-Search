@@ -30,7 +30,7 @@ public class Driver {
 		QueryProcessorInterface queryProcessor;
 		WorkQueue workers = null;
 
-		if (parser.hasFlag("-threads")) {
+		if (parser.hasFlag("-threads") || parser.hasFlag("-html")) {
 			safe = new ThreadSafeInvertedIndex();
 			index = safe;
 			workers = new WorkQueue(parser.getInteger("-threads", 5));
@@ -68,7 +68,7 @@ public class Driver {
 					if (workers == null) {
 						workers = new WorkQueue(5);
 					}
-					Crawler crawler = new Crawler((ThreadSafeInvertedIndex) index,  parser.getInteger("-crawl", 1), workers);
+					Crawler crawler = new Crawler(safe,  parser.getInteger("-crawl", 1), workers);
 					crawler.startCrawl(new URL(seed));
 				}
 				catch (Exception e) {
