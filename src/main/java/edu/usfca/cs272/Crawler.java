@@ -5,8 +5,6 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Set;
 
 import opennlp.tools.stemmer.Stemmer;
@@ -28,8 +26,15 @@ public class Crawler {
 	 * through Urls
 	 */
 	private final int MAX_CRAWL_LIMIT;
+	/**
+	 * A set of URLs that have already been visited to avoid redundant crawling.
+	 */
 	private final Set<URL> visitedUrls = new HashSet<>();
-	private final Queue<URL> urlQueue = new LinkedList<>();
+	/**
+	 * The count of URLs that have been crawled so far. This is used to ensure
+	 * that the crawler does not exceed the maximum number of URLs it is supposed
+	 * to crawl.
+	 */
 	private int crawledCount = 0;
 	/**
 	 * Workers useded in task manager, where one worker will hadle one url.
@@ -40,6 +45,14 @@ public class Crawler {
 	 */
 	private final MultiReaderLock lock;
 
+	/**
+	 * Constructor for Crawler class. Initalizes instance of thread safe index,
+	 * crawl limit, and the workers used for multithreading
+	 *
+	 * @param index thread safe inverted index
+	 * @param maxCrawlLimit max crawl limit to be processed through
+	 * @param workers Utilized for each url being processed
+	 */
 	public Crawler(ThreadSafeInvertedIndex index, int maxCrawlLimit, WorkQueue workers) {
 		this.index = index;
 		this.MAX_CRAWL_LIMIT = maxCrawlLimit;
@@ -47,6 +60,11 @@ public class Crawler {
 		this.lock = new MultiReaderLock();
 	}
 
+	/**
+	 * Starts crawling from the specified seed URL.
+	 *
+	 * @param seedUrl The starting URL for the crawl.
+	 */
 	public void startCrawl(URL seedUrl) {
 		if (seedUrl != null) {
 			submitTask(seedUrl);
@@ -54,6 +72,12 @@ public class Crawler {
 		workers.finish();
 	}
 
+	/**
+	 * Submits a new task to crawl the specified URL if it hasn't been visited and
+	 * the total number of crawled URLs is below the maximum limit.
+	 *
+	 * @param url The URL to be crawled.
+	 */
 	private void submitTask(URL url) {
 		synchronized (lock) {
 			if (visitedContains(url) || crawledCount >= MAX_CRAWL_LIMIT) {
@@ -65,9 +89,21 @@ public class Crawler {
 		workers.execute(new Worker(url));
 	}
 
+	/**
+	 * Represents a worker task for crawling a single URL. Implements Runnable for
+	 * execution in a thread.
+	 */
 	private class Worker implements Runnable {
+		/**
+		 * The URL to be crawled by this worker.
+		 */
 		private final URL url;
 
+		/**
+		 * Constructs a Worker task for crawling the specified URL.
+		 *
+		 * @param url The URL that this worker will crawl.
+		 */
 		public Worker(URL url) {
 			this.url = url;
 		}
@@ -83,6 +119,13 @@ public class Crawler {
 		}
 	}
 
+	/**
+	 * Crawls the specified URL, processing its content and following any links
+	 * found within it.
+	 *
+	 * @param url The URL to crawl.
+	 * @throws IOException If an I/O error occurs during the crawling process.
+	 */
 	private void crawl(URL url) throws IOException {
 		String html = HtmlFetcher.fetch(url, 3);
 		if (html != null) {
@@ -95,6 +138,13 @@ public class Crawler {
 		}
 	}
 
+	/**
+	 * Processes the text extracted from a URL, adding the stemmed words to the
+	 * index along with their location and position.
+	 *
+	 * @param text The text to process.
+	 * @param location The URL from which the text was extracted.
+	 */
 	private void processText(String text, String location) {
 		int pos = 1;
 		Stemmer stemmer = new SnowballStemmer(ENGLISH);
@@ -105,6 +155,11 @@ public class Crawler {
 		}
 	}
 
+	/**
+	 * Adds a URL to the set of visited URLs. This method is thread-safe.
+	 *
+	 * @param url The URL to add to the set of visited URLs.
+	 */
 	public void visitedAdd(URL url) {
 		lock.writeLock().lock();
 		try {
@@ -115,6 +170,12 @@ public class Crawler {
 		}
 	}
 
+	/**
+	 * Checks if a URL has been visited. This method is thread-safe.
+	 *
+	 * @param url The URL to check.
+	 * @return true if the URL has been visited, false otherwise.
+	 */
 	public boolean visitedContains(URL url) {
 		lock.readLock().lock();
 		try {

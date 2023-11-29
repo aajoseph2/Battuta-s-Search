@@ -38,16 +38,16 @@ public class MultithreadedQueryProcessor implements QueryProcessorInterface {
 	private final Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction;
 
 	/**
-	 * Workers to do work utilizing several threads
+	 * Workers being assigned to the search operations of query processor
 	 */
 	private final WorkQueue workers;
 
 	/**
 	 * Initializes the Query map with empty data structures.
 	 *
-	 * @param workers Workers to do work
+	 * @param workers meant to be utilized to complete query process
 	 * @param partial boolean for choosing the search method
-	 * @param index class that contains the inverted index structure
+	 * @param index thread safe class that contains the inverted index structure
 	 */
 	public MultithreadedQueryProcessor( WorkQueue workers, boolean partial, ThreadSafeInvertedIndex index) {
 		this.query = new TreeMap<>();
