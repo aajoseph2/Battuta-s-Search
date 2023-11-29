@@ -46,19 +46,11 @@ public class Crawler {
 		String html = HtmlFetcher.fetch(url, 3);
 		if (html != null) {
 			String cleanHtml = HtmlCleaner.stripHtml(html);
-
 			processText(cleanHtml, LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
-			if (getCrawledCount() < MAX_CRAWL_LIMIT) {
-				processLinks(url, html);
-			}
-		}
-	}
 
-	private void processLinks(URL url, String html) throws IOException {
-		var links = LinkFinder.listUrls(url, html);
-		for (URL nextUrl : links) {
-			if (!visitedContains(nextUrl)) {
-				urlQueueAdd(nextUrl);
+			var links = LinkFinder.listUrls(url, html);
+			for (URL nextUrl : links) {
+				crawl(nextUrl);
 			}
 		}
 	}

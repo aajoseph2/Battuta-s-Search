@@ -66,7 +66,7 @@ public class Driver {
 			if (seed != null && !seed.isBlank()) {
 				try {
 					if (workers == null) {
-						workers = new WorkQueue(0);
+						workers = new WorkQueue(5);
 					}
 					Crawler crawler = new Crawler((ThreadSafeInvertedIndex) index,  parser.getInteger("-crawl", 1), workers);
 					crawler.startCrawl(new URL(seed));
