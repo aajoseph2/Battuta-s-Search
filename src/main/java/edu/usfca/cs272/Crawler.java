@@ -29,14 +29,33 @@ public class Crawler {
 		this.lock = new MultiReaderLock();
 	}
 
-	private class TaskManager {
-
+	public void startCrawl(URL seedUrl) {
+		TaskManager manager = new TaskManager();
+		manager.start(seedUrl);
+		//need ot finish
 	}
 
-	public void startCrawl(URL seedUrl) throws IOException {
+	private class TaskManager {
+		private void start(URL url) {
+			synchronized (lock) {
+				if (visitedContains(url) || crawledCount >= MAX_CRAWL_LIMIT) {
+					return;
+				}
 
-		crawl(seedUrl);
-		workers.finish();
+				visitedAdd(url);
+				crawledCount++;
+			}
+
+//			private void start(Path path) {
+//				Thread worker = new Worker(path);
+//				worker.start();
+//			}
+			workers.execute(new Worker(url));
+		}
+
+		private void finish() {
+			workers.finish();
+		}
 	}
 
 	private void crawl(URL url) throws IOException {
