@@ -32,7 +32,7 @@ public class Crawler {
 	public void startCrawl(URL seedUrl) {
 		TaskManager manager = new TaskManager();
 		manager.start(seedUrl);
-		//need ot finish
+		manager.finish();
 	}
 
 	private class TaskManager {
