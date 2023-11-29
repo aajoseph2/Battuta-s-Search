@@ -29,6 +29,10 @@ public class Crawler {
 		this.lock = new MultiReaderLock();
 	}
 
+	private class TaskManager {
+
+	}
+
 	public void startCrawl(URL seedUrl) throws IOException {
 
 		crawl(seedUrl);
