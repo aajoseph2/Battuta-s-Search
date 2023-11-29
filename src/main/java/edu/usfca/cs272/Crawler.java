@@ -79,13 +79,12 @@ public class Crawler {
 	 * @param url The URL to be crawled.
 	 */
 	private void submitTask(URL url) {
-		synchronized (lock) {
 			if (visitedContains(url) || crawledCount >= MAX_CRAWL_LIMIT) {
 				return;
 			}
 			visitedAdd(url);
 			crawledCount++;
-		}
+
 		workers.execute(new Worker(url));
 	}
 

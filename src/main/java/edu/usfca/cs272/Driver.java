@@ -33,7 +33,7 @@ public class Driver {
 		if (parser.hasFlag("-threads") || parser.hasFlag("-html")) {
 			safe = new ThreadSafeInvertedIndex();
 			index = safe;
-			workers = new WorkQueue(parser.getInteger("-threads", 1));
+			workers = new WorkQueue(parser.getInteger("-threads", 5));
 			queryProcessor = new MultithreadedQueryProcessor(workers, !parser.hasFlag("-partial"), safe);
 		}
 		else {
