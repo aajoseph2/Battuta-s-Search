@@ -56,15 +56,27 @@ public class Crawler {
 		private void finish() {
 			workers.finish();
 		}
+
+		private class Worker implements Runnable {
+			private final URL url;
+
+			public Worker(URL url) {
+				this.url = url;
+			}
+
+			@Override
+			public void run() {
+				try {
+					crawl(url);
+				}
+				catch (IOException e) {
+
+				}
+			}
+		}
 	}
 
 	private void crawl(URL url) throws IOException {
-		if (visitedContains(url) || getCrawledCount() >= MAX_CRAWL_LIMIT) {
-			return;
-		}
-
-		visitedAdd(url);
-		crawledCountIncrement();
 
 		String html = HtmlFetcher.fetch(url, 3);
 		if (html != null) {
@@ -73,7 +85,8 @@ public class Crawler {
 
 			var links = LinkFinder.listUrls(url, html);
 			for (URL nextUrl : links) {
-				crawl(nextUrl);
+				TaskManager newManager = new TaskManager();
+				newManager.start(nextUrl);
 			}
 		}
 	}
