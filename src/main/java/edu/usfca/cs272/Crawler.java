@@ -22,7 +22,6 @@ public class Crawler {
 	private final WorkQueue workers;
 	private final MultiReaderLock lock;
 
-
 	public Crawler(ThreadSafeInvertedIndex index, int maxCrawlLimit, WorkQueue workers) {
 		this.index = index;
 		this.MAX_CRAWL_LIMIT = maxCrawlLimit;
@@ -31,28 +30,25 @@ public class Crawler {
 	}
 
 	public void startCrawl(URL seedUrl) throws IOException {
-		urlQueueAdd(seedUrl);
-		while (!urlQueueIsEmpty() && crawledCount < MAX_CRAWL_LIMIT) {
-			URL currentUrl = urlQueuePoll();
-			if (!visitedContains(currentUrl)) {
-				crawl(currentUrl);
-			}
-		}
+
+		crawl(seedUrl);
 		workers.finish();
 	}
 
 	private void crawl(URL url) throws IOException {
+		if (visitedContains(url) || getCrawledCount() >= MAX_CRAWL_LIMIT) {
+			return;
+		}
+
 		visitedAdd(url);
 		crawledCountIncrement();
 
 		String html = HtmlFetcher.fetch(url, 3);
 		if (html != null) {
 			String cleanHtml = HtmlCleaner.stripHtml(html);
-			workers.execute(() -> {
-	processText(cleanHtml, LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
-			});
-			if (getCrawledCount() < MAX_CRAWL_LIMIT) {
 
+			processText(cleanHtml, LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
+			if (getCrawledCount() < MAX_CRAWL_LIMIT) {
 				processLinks(url, html);
 			}
 		}
@@ -147,6 +143,5 @@ public class Crawler {
 			lock.readLock().unlock();
 		}
 	}
-
 
 }
