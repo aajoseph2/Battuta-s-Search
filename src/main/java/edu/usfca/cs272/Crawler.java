@@ -12,14 +12,32 @@ import java.util.Set;
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
+/**
+ * A web crawler that crawls web pages starting from a seed URL up to a
+ * specified crawl limit.It uses a thread-safe inverted index for storing and
+ * searching text data.
+ */
 public class Crawler {
 
+	/**
+	 * Thread safe version of the inverted index data structure.
+	 */
 	private final ThreadSafeInvertedIndex index;
+	/**
+	 * Represents the maximum number of times the webcrawler is going to crawl
+	 * through Urls
+	 */
 	private final int MAX_CRAWL_LIMIT;
 	private final Set<URL> visitedUrls = new HashSet<>();
 	private final Queue<URL> urlQueue = new LinkedList<>();
 	private int crawledCount = 0;
+	/**
+	 * Workers useded in task manager, where one worker will hadle one url.
+	 */
 	private final WorkQueue workers;
+	/**
+	 * The lock used to protect concurrent access to the underlying set.
+	 */
 	private final MultiReaderLock lock;
 
 	public Crawler(ThreadSafeInvertedIndex index, int maxCrawlLimit, WorkQueue workers) {
@@ -30,44 +48,37 @@ public class Crawler {
 	}
 
 	public void startCrawl(URL seedUrl) {
-		TaskManager manager = new TaskManager();
-		manager.start(seedUrl);
-		manager.finish();
+		if (seedUrl != null) {
+			submitTask(seedUrl);
+		}
+		workers.finish();
 	}
 
-	private class TaskManager {
-		private void start(URL url) {
-			synchronized (lock) {
-				if (visitedContains(url) || crawledCount >= MAX_CRAWL_LIMIT) {
-					return;
-				}
-
-				visitedAdd(url);
-				crawledCount++;
+	private void submitTask(URL url) {
+		synchronized (lock) {
+			if (visitedContains(url) || crawledCount >= MAX_CRAWL_LIMIT) {
+				return;
 			}
+			visitedAdd(url);
+			crawledCount++;
+		}
+		workers.execute(new Worker(url));
+	}
 
-			workers.execute(new Worker(url));
+	private class Worker implements Runnable {
+		private final URL url;
+
+		public Worker(URL url) {
+			this.url = url;
 		}
 
-		private void finish() {
-			workers.finish();
-		}
-
-		private class Worker implements Runnable {
-			private final URL url;
-
-			public Worker(URL url) {
-				this.url = url;
+		@Override
+		public void run() {
+			try {
+				crawl(url);
 			}
-
-			@Override
-			public void run() {
-				try {
-					crawl(url);
-				}
-				catch (IOException e) {
-					System.out.println("Error encountered while running " + e.getMessage());
-				}
+			catch (IOException e) {
+				System.out.println("Error encountered while running " + e.getMessage());
 			}
 		}
 	}
@@ -79,8 +90,7 @@ public class Crawler {
 			processText(cleanHtml, LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
 			var links = LinkFinder.listUrls(url, html);
 			for (URL nextUrl : links) {
-				TaskManager newManager = new TaskManager();
-				newManager.start(nextUrl);
+				submitTask(nextUrl);
 			}
 		}
 	}
