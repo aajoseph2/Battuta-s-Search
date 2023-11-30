@@ -25,15 +25,15 @@ public class Crawler {
 	 * Represents the maximum number of times the webcrawler is going to crawl
 	 * through Urls
 	 */
-	private final int MAX_CRAWL_LIMIT;
+	private final int maxCrawlLimit;
 	/**
 	 * A set of URLs that have already been visited to avoid redundant crawling.
 	 */
 	private final Set<URL> visitedUrls = new HashSet<>();
 	/**
-	 * The count of URLs that have been crawled so far. This is used to ensure
-	 * that the crawler does not exceed the maximum number of URLs it is supposed
-	 * to crawl.
+	 * The count of URLs that have been crawled so far. This is used to ensure that
+	 * the crawler does not exceed the maximum number of URLs it is supposed to
+	 * crawl.
 	 */
 	private int crawledCount = 0;
 	/**
@@ -55,7 +55,7 @@ public class Crawler {
 	 */
 	public Crawler(ThreadSafeInvertedIndex index, int maxCrawlLimit, WorkQueue workers) {
 		this.index = index;
-		this.MAX_CRAWL_LIMIT = maxCrawlLimit;
+		this.maxCrawlLimit = maxCrawlLimit;
 		this.workers = workers;
 		this.lock = new MultiReaderLock();
 	}
@@ -79,11 +79,11 @@ public class Crawler {
 	 * @param url The URL to be crawled.
 	 */
 	private void submitTask(URL url) {
-			if (visitedContains(url) || crawledCount >= MAX_CRAWL_LIMIT) {
-				return;
-			}
-			visitedAdd(url);
-			crawledCount++;
+		if (visitedContains(url) || crawledCount >= maxCrawlLimit) {
+			return;
+		}
+		visitedAdd(url);
+		crawledCount++;
 
 		workers.execute(new Worker(url));
 	}
@@ -113,7 +113,7 @@ public class Crawler {
 				crawl(url);
 			}
 			catch (IOException e) {
-				System.out.println("Error encountered while running " + e.getMessage());
+				 System.err.println("Error encountered while crawling " + url + ": " + e.getMessage());
 			}
 		}
 	}
