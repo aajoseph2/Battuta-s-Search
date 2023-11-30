@@ -69,6 +69,7 @@ public class Crawler {
 		if (seedUrl != null) {
 			submitTask(seedUrl);
 		}
+
 		workers.finish();
 	}
 
@@ -82,6 +83,7 @@ public class Crawler {
 		if (visitedContains(url) || crawledCount >= maxCrawlLimit) {
 			return;
 		}
+
 		visitedAdd(url);
 		crawledCount++;
 
@@ -127,11 +129,11 @@ public class Crawler {
 	 */
 	private void crawl(URL url) throws IOException {
 		String html = HtmlFetcher.fetch(url, 3);
+
 		if (html != null) {
-			String cleanHtml = HtmlCleaner.stripHtml(html);
-			processText(cleanHtml, LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
-			var links = LinkFinder.listUrls(url, html);
-			for (URL nextUrl : links) {
+			//String cleanHtml = HtmlCleaner.stripHtml(html);
+			processText( HtmlCleaner.stripHtml(html), LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
+			for (URL nextUrl : LinkFinder.listUrls(url, html)) {
 				submitTask(nextUrl);
 			}
 		}
