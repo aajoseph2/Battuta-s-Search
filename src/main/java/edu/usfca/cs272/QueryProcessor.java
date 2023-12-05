@@ -18,7 +18,7 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
  * Processes queries that are used to as the worsd to be searched for from the
  * given indexed structures
  */
-public class QueryProcessor implements QueryProcessorInterface{
+public class QueryProcessor implements QueryProcessorInterface {
 
 	/**
 	 * Structure of word query as the key, and the SearchResult as the value

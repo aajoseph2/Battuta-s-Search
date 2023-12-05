@@ -66,7 +66,7 @@ public class Driver {
 			if (seed != null && !seed.isBlank()) {
 				try {
 					Crawler crawler = new Crawler(safe, parser.getInteger("-crawl", 1), workers);
-					crawler.startCrawl(new URL(seed));
+					crawler.startCrawl(LinkFinder.convertUrl(new URL(seed), seed));
 				}
 				catch (Exception e) {
 					System.out.println("Error processing HTML from seed: " + e.getMessage());

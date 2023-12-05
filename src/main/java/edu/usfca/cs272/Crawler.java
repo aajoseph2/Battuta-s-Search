@@ -115,7 +115,7 @@ public class Crawler {
 				crawl(url);
 			}
 			catch (IOException e) {
-				 System.err.println("Error encountered while crawling " + url + ": " + e.getMessage());
+				System.err.println("Error encountered while crawling " + url + ": " + e.getMessage());
 			}
 		}
 	}
@@ -131,8 +131,7 @@ public class Crawler {
 		String html = HtmlFetcher.fetch(url, 3);
 
 		if (html != null) {
-			//String cleanHtml = HtmlCleaner.stripHtml(html);
-			processText( HtmlCleaner.stripHtml(html), LinkFinder.cleanUri(LinkFinder.makeUri(url.toString())).toString());
+			processText(HtmlCleaner.stripHtml(html), url.toString());
 			for (URL nextUrl : LinkFinder.listUrls(url, html)) {
 				submitTask(nextUrl);
 			}

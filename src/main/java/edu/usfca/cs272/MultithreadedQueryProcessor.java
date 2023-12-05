@@ -49,7 +49,7 @@ public class MultithreadedQueryProcessor implements QueryProcessorInterface {
 	 * @param partial boolean for choosing the search method
 	 * @param index thread safe class that contains the inverted index structure
 	 */
-	public MultithreadedQueryProcessor( WorkQueue workers, boolean partial, ThreadSafeInvertedIndex index) {
+	public MultithreadedQueryProcessor(WorkQueue workers, boolean partial, ThreadSafeInvertedIndex index) {
 		this.query = new TreeMap<>();
 		searchFunction = partial ? index::exactSearch : index::partialSearch;
 		lock = new MultiReaderLock();

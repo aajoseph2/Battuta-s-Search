@@ -54,8 +54,8 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Merges only the distinct data from a
-	 * local inverted index to this shared inverted index.
+	 * Merges only the distinct data from a local inverted index to this shared
+	 * inverted index.
 	 *
 	 * @param localIndex the local inverted index to add
 	 */
