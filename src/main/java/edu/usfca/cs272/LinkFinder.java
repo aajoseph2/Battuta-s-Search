@@ -40,7 +40,7 @@ public class LinkFinder {
 	public static void findLinks(URL base, String html, Collection<URL> links) {
 		String regex = "(?i)<a\\s+(?:[^>]*?\\s+)?href\\s*=\\s*([\"'])(.*?)\\1";
 		Pattern pattern = Pattern.compile(regex);
-		Matcher matcher = pattern.matcher(html);
+		Matcher matcher = pattern.matcher(HtmlCleaner.stripBlockElements(html));
 
 		while (matcher.find()) {
 			String foundUrl = matcher.group(2);
@@ -64,11 +64,7 @@ public class LinkFinder {
 	 */
 	public static ArrayList<URL> listUrls(URL base, String html) {
 		ArrayList<URL> urls = new ArrayList<URL>();
-
-		String htmlWithoutCSSComments = html.replaceAll("(?s)/\\*.*?\\*/", "");
-		String htmlWithoutComments = htmlWithoutCSSComments.replaceAll("(?s)<!--.*?-->", "");
-
-		findLinks(base, htmlWithoutComments, urls);
+		findLinks(base, html, urls);
 		return urls;
 	}
 
@@ -84,8 +80,7 @@ public class LinkFinder {
 	 */
 	public static HashSet<URL> uniqueUrls(URL base, String html) {
 		HashSet<URL> urls = new HashSet<URL>();
-		String htmlWithoutComments = html.replaceAll("(?s)<!--.*?-->", "");
-		findLinks(base, htmlWithoutComments, urls);
+		findLinks(base, html, urls);
 		return urls;
 	}
 
