@@ -30,7 +30,7 @@ public class Driver {
 		QueryProcessorInterface queryProcessor;
 		WorkQueue workers = null;
 
-		if (parser.hasFlag("-threads") || parser.hasFlag("-html")) {
+		if (parser.hasFlag("-threads") || parser.hasFlag("-html") || parser.hasFlag("server")) {
 			safe = new ThreadSafeInvertedIndex();
 			index = safe;
 			workers = new WorkQueue(parser.getInteger("-threads", 5));
@@ -124,6 +124,11 @@ public class Driver {
 			catch (IOException e) {
 				System.out.println("Error writing results to file: " + e.getMessage());
 			}
+		}
+
+		if (parser.hasFlag("server")) {
+			 int port = parser.getInteger("-server", 8080);
+
 		}
 	}
 }
