@@ -9,17 +9,16 @@ import org.eclipse.jetty.servlet.ServletHolder;
  * as well as how to initialize servlets when you need to call its constructor.
  */
 public class SearchEngine {
-	/** The hard-coded port to run this server. */
-	public static final int PORT = 8080;
 
 	/**
 	 * Sets up a Jetty server with different servlet instances.
 	 *
-	 * @param args unused
+	 * @param port specified port number to run server, defaults in 8080 if no
+	 *   arguement is provided.
 	 * @throws Exception if unable to start and run server
 	 */
-	public static void main(String[] args) throws Exception {
-		Server server = new Server(PORT);
+	public static void runServer(int port) throws Exception {
+		Server server = new Server(port);
 
 		ServletHandler handler = new ServletHandler();
 

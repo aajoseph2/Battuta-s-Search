@@ -125,10 +125,14 @@ public class Driver {
 				System.out.println("Error writing results to file: " + e.getMessage());
 			}
 		}
-
+//TODO may have to change the catching of exception
 		if (parser.hasFlag("server")) {
-			 int port = parser.getInteger("-server", 8080);
-
+			 try {
+				SearchEngine.runServer(parser.getInteger("-server", 8080));
+			}
+			catch (Exception e) {
+				System.out.println("Unexpected error encountered while starting the server: " + e.getMessage());
+			}
 		}
 	}
 }
