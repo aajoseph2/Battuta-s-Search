@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,13 +35,10 @@ public class BulmaMessageServlet extends HttpServlet {
 	private static final long serialVersionUID = 202308;
 
 	/** The title to use for this webpage. */
-	private static final String title = "Fancy Messages";
+	private static final String title = "Search Engine";
 
 	/** The logger to use for this servlet. */
 	private static final Logger log = LogManager.getLogger();
-
-	/** Base path with HTML templates. */
-	private static final Path base = MessageServlet.base;
 
 	/** The data structure to use for storing messages. */
 	private final LinkedList<MessageServlet.Message> messages;

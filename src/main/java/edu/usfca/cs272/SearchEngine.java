@@ -22,7 +22,7 @@ public class SearchEngine {
 
 		ServletHandler handler = new ServletHandler();
 
-		handler.addServletWithMapping(new ServletHolder(new BulmaMessageServlet()), "/bulma");
+		handler.addServletWithMapping(new ServletHolder(new BulmaMessageServlet()), "/home");
 
 		server.setHandler(handler);
 		server.start();
