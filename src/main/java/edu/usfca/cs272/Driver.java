@@ -30,7 +30,7 @@ public class Driver {
 		QueryProcessorInterface queryProcessor;
 		WorkQueue workers = null;
 
-		if (parser.hasFlag("-threads") || parser.hasFlag("-html") || parser.hasFlag("server")) {
+		if (parser.hasFlag("-threads") || parser.hasFlag("-html") || parser.hasFlag("-server")) {
 			safe = new ThreadSafeInvertedIndex();
 			index = safe;
 			workers = new WorkQueue(parser.getInteger("-threads", 5));
@@ -125,10 +125,11 @@ public class Driver {
 				System.out.println("Error writing results to file: " + e.getMessage());
 			}
 		}
-//TODO may have to change the catching of exception
-		if (parser.hasFlag("server")) {
+		//TODO may have to change the catching of exception
+		if (parser.hasFlag("-server")) {
 			 try {
 				SearchEngine.runServer(parser.getInteger("-server", 8080));
+				System.out.println("Server running on port: " + parser.getInteger("-server", 8080));
 			}
 			catch (Exception e) {
 				System.out.println("Unexpected error encountered while starting the server: " + e.getMessage());

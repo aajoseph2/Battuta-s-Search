@@ -1,10 +1,10 @@
 package edu.usfca.cs272;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
-import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -57,8 +57,8 @@ public class BulmaMessageServlet extends HttpServlet {
 	private final String textTemplate;
 
 	/**
-	 * Initializes this message board. Each message board has its own collection
-	 * of messages.
+	 * Initializes this message board. Each message board has its own collection of
+	 * messages.
 	 *
 	 * @throws IOException if unable to read templates
 	 */
@@ -67,14 +67,29 @@ public class BulmaMessageServlet extends HttpServlet {
 		messages = new LinkedList<>();
 
 		// load templates
-		headTemplate = Files.readString(base.resolve("bulma-head.html"), UTF_8);
-		footTemplate = Files.readString(base.resolve("bulma-foot.html"), UTF_8);
-		textTemplate = Files.readString(base.resolve("bulma-text.html"), UTF_8);
+		headTemplate = readResourceFile("bulma-head.html");
+		footTemplate = readResourceFile("bulma-foot.html");
+		textTemplate = readResourceFile("bulma-text.html");
+	}
+
+	/**
+	 * Reads a file from the classpath and returns its content as a String.
+	 *
+	 * @param fileName The name of the file to be read, relative to the classpath.
+	 * @return The content of the file as a String.
+	 * @throws IOException If an error occurs during file reading.
+	 */
+	private String readResourceFile(String fileName) throws IOException {
+		String resourcePath = "html/" + fileName;
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
+		if (inputStream == null) {
+			throw new FileNotFoundException("Resource file not found: " + resourcePath);
+		}
+		return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		log.info("{} handling: {}", this.hashCode(), request);
 
 		// used to substitute values in our templates
@@ -119,8 +134,7 @@ public class BulmaMessageServlet extends HttpServlet {
 
 	// same logic as message servlet
 	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		log.info("{} handling: {}", this.hashCode(), request);
 
 		String name = request.getParameter("name");
