@@ -111,19 +111,6 @@ public class BulmaMessageServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		out.println(head);
 
-		// could be accessed by multiple threads
-		synchronized (messages) {
-			if (messages.isEmpty()) {
-				out.printf("    <p>Place holderfor now</p>%n");
-			}
-			else {
-				for (MessageServlet.Message message : messages) {
-					String html = StringSubstitutor.replace(textTemplate, message.map());
-					out.println(html);
-				}
-			}
-		}
-
 		out.println(foot);
 		out.flush();
 	}
