@@ -114,7 +114,7 @@ public class BulmaMessageServlet extends HttpServlet {
 		// could be accessed by multiple threads
 		synchronized (messages) {
 			if (messages.isEmpty()) {
-				out.printf("    <p>No messages.</p>%n");
+				out.printf("    <p>Place holderfor now</p>%n");
 			}
 			else {
 				for (MessageServlet.Message message : messages) {

@@ -1,36 +1,20 @@
-    </div>
+ </div>
   </section> <!-- end messages -->
 
-  <!-- show form -->
   <section class="section">
     <div class="container">
-      <h2 class="title">Add Message</h2>
-
-      <form method="${method}" action="${action}">
-        <div class="field">
-          <label class="label" for="name">Name</label>
-          <div class="control has-icons-left">
-            <input class="input" type="text" name="name" id="name" placeholder="Enter your name here.">
-            <span class="icon is-small is-left">
-              <i class="fas fa-user"></i>
-            </span>
-          </div>
+      <div class="field has-addons has-addons-centered">
+        <div class="control is-expanded">
+          <input class="input is-medium" type="text" name="query" placeholder="Enter Query">
         </div>
-
-        <div class="field">
-          <label class="label" for="message">Message</label>
-          <div class="control">
-            <textarea class="textarea" name="message" id="message" placeholder="Enter your message here."></textarea>
-          </div>
-        </div>
-
         <div class="control">
-          <button class="button is-primary" type="submit">
-            <i class="fas fa-comment"></i>
-            &nbsp;Post Message
-          </button>
+          <button class="button is-info is-medium" type="submit">Search</button>
         </div>
-      </form>
+      </div>
+      <div class="buttons is-centered">
+        <button class="button is-primary">Show Inverted Index</button>
+        <button class="button is-link">Lucky Search</button>
+      </div>
     </div>
   </section>
 
