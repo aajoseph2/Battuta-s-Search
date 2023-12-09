@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.commons.text.StringSubstitutor;
@@ -25,14 +24,7 @@ public class HomeServlet extends HttpServlet {
 	/** The title to use for this webpage. */
 	private static final String title = "Search Engine";
 
-	/** The data structure to use for storing messages. */
-	private final LinkedList<MessageServlet.Message> messages;
-
-	/** Template for starting HTML (including <head> tag). **/
-	private final String headTemplate;
-
-	/** Template for ending HTML (including <foot> tag). **/
-	private final String footTemplate;
+	private final String homeTemplate;
 
 	/**
 	 * Initializes this message board. Each message board has its own collection of
@@ -42,10 +34,7 @@ public class HomeServlet extends HttpServlet {
 	 */
 	public HomeServlet() throws IOException {
 		super();
-		messages = new LinkedList<>();
-
-		headTemplate = readResourceFile("Home-head.html");
-		footTemplate = readResourceFile("Home-foot.html");
+		homeTemplate = readResourceFile("Home.html");
 	}
 
 	/**
@@ -76,16 +65,14 @@ public class HomeServlet extends HttpServlet {
 			values.put("action", request.getServletPath());
 
 			StringSubstitutor replacer = new StringSubstitutor(values);
-			String head = replacer.replace(headTemplate);
-			String foot = replacer.replace(footTemplate);
+			String home = replacer.replace(homeTemplate);
 
 			response.setContentType("text/html");
 			response.setStatus(HttpServletResponse.SC_OK);
 
 			PrintWriter out = response.getWriter();
-			out.println(head);
+			out.println(home);
 
-			out.println(foot);
 			out.flush();
 	}
 }

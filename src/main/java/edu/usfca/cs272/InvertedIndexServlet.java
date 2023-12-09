@@ -19,7 +19,7 @@ public class InvertedIndexServlet extends HttpServlet {
 
 	public InvertedIndexServlet() throws IOException  {
 
-		indexTemplate = readResourceFile("index.html");
+		indexTemplate = readResourceFile("Index.html");
 
 	}
 	//TODO need to make tmeplate prettier and make links clickable

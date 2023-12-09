@@ -157,7 +157,7 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * getter method
+	 * getter method for the count per file
 	 *
 	 * @param location : path key to get the word count in fileCountsInfo
 	 * @return the word count of specific file.
