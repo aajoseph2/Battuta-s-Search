@@ -22,7 +22,8 @@ public class SearchEngine {
 
 		ServletHandler handler = new ServletHandler();
 
-		handler.addServletWithMapping(new ServletHolder(new BulmaMessageServlet()), "/home");
+		handler.addServletWithMapping(new ServletHolder(new BulmaSearchServlet()), "/home");
+    handler.addServletWithMapping(new ServletHolder(new BulmaSearchServlet()), "/index");
 
 		server.setHandler(handler);
 		server.start();

@@ -10,12 +10,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import edu.usfca.cs272.MessageServlet.Message;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +28,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author CS 272 Software Development (University of San Francisco)
  * @version Fall 2023
  */
-public class BulmaMessageServlet extends HttpServlet {
+public class BulmaSearchServlet extends HttpServlet {
 	/** Class version for serialization, in [YEAR][TERM] format (unused). */
 	private static final long serialVersionUID = 202308;
 
@@ -58,7 +56,7 @@ public class BulmaMessageServlet extends HttpServlet {
 	 *
 	 * @throws IOException if unable to read templates
 	 */
-	public BulmaMessageServlet() throws IOException {
+	public BulmaSearchServlet() throws IOException {
 		super();
 		messages = new LinkedList<>();
 
@@ -84,63 +82,79 @@ public class BulmaMessageServlet extends HttpServlet {
 		return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 	}
 
+	private void displayInvertedIndex(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		String index = "hello world";
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
+		out.println("<html><body>");
+		out.println("<h2>Inverted Index</h2>");
+		out.println("<pre>" + index + "</pre>");
+		out.println("</body></html>");
+	}
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		log.info("{} handling: {}", this.hashCode(), request);
 
-		// used to substitute values in our templates
-		Map<String, String> values = new HashMap<>();
-		values.put("title", title);
-		values.put("thread", Thread.currentThread().getName());
-		values.put("updated", MessageServlet.dateFormatter.format(LocalDateTime.now()));
-
-		// setup form
-		values.put("method", "POST");
-		values.put("action", request.getServletPath());
-
-		// generate html from template
-		StringSubstitutor replacer = new StringSubstitutor(values);
-		String head = replacer.replace(headTemplate);
-		String foot = replacer.replace(footTemplate);
-
-		// prepare response
-		response.setContentType("text/html");
-		response.setStatus(HttpServletResponse.SC_OK);
-
-		// output generated html
-		PrintWriter out = response.getWriter();
-		out.println(head);
-
-		out.println(foot);
-		out.flush();
-	}
-
-	// same logic as message servlet
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.info("{} handling: {}", this.hashCode(), request);
-
-		String name = request.getParameter("name");
-		String body = request.getParameter("message");
-
-		name = name == null || name.isBlank() ? "anonymous" : name;
-		body = body == null ? "" : body;
-
-		name = StringEscapeUtils.escapeHtml4(name);
-		body = StringEscapeUtils.escapeHtml4(body);
-
-		Message current = new Message(body, name, LocalDateTime.now());
-		log.info("Created message: {}", current);
-
-		synchronized (messages) {
-			messages.add(current);
-
-			while (messages.size() > 5) {
-				Message first = messages.poll();
-				log.info("Removing message: {}", first);
-			}
+		if (request.getServletPath().equals("/index")) {
+			displayInvertedIndex(request, response);
 		}
+		else {
 
-		response.sendRedirect(request.getServletPath());
+			Map<String, String> values = new HashMap<>();
+			values.put("title", title);
+			values.put("thread", Thread.currentThread().getName());
+			values.put("updated", MessageServlet.dateFormatter.format(LocalDateTime.now()));
+
+			// setup form
+			values.put("method", "POST");
+			values.put("action", request.getServletPath());
+
+			// generate html from template
+			StringSubstitutor replacer = new StringSubstitutor(values);
+			String head = replacer.replace(headTemplate);
+			String foot = replacer.replace(footTemplate);
+
+			// prepare response
+			response.setContentType("text/html");
+			response.setStatus(HttpServletResponse.SC_OK);
+
+			// output generated html
+			PrintWriter out = response.getWriter();
+			out.println(head);
+
+			out.println(foot);
+			out.flush();
+		}
 	}
+
+//	// same logic as message servlet
+//	@Override
+//	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//		log.info("{} handling: {}", this.hashCode(), request);
+//
+//		String name = request.getParameter("name");
+//		String body = request.getParameter("message");
+//
+//		name = name == null || name.isBlank() ? "anonymous" : name;
+//		body = body == null ? "" : body;
+//
+//		name = StringEscapeUtils.escapeHtml4(name);
+//		body = StringEscapeUtils.escapeHtml4(body);
+//
+//		Message current = new Message(body, name, LocalDateTime.now());
+//		log.info("Created message: {}", current);
+//
+//		synchronized (messages) {
+//			messages.add(current);
+//
+//			while (messages.size() > 5) {
+//				Message first = messages.poll();
+//				log.info("Removing message: {}", first);
+//			}
+//		}
+//
+//		response.sendRedirect(request.getServletPath());
+//	}
 }
