@@ -29,5 +29,4 @@ public class InvertedIndexServlet extends HttpServlet {
 		out.print(jsonIndex);
 		out.flush();
 	}
-
 }
