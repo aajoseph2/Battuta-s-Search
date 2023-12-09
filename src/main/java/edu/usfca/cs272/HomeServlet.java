@@ -48,9 +48,9 @@ public class HomeServlet extends HttpServlet {
 		messages = new LinkedList<>();
 
 		// load templates
-		headTemplate = readResourceFile("bulma-head.html");
-		footTemplate = readResourceFile("bulma-foot.html");
-		textTemplate = readResourceFile("bulma-text.html");
+		headTemplate = readResourceFile("Home-head.html");
+		footTemplate = readResourceFile("Home-foot.html");
+		textTemplate = readResourceFile("Home-text.html");
 	}
 
 	/**
