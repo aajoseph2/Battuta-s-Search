@@ -11,32 +11,19 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.commons.text.StringSubstitutor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * An alternative implemention of the {@MessageServlet} class but using the
- * Bulma CSS framework.
- *
- * @see MessageServlet
- *
- * @author CS 272 Software Development (University of San Francisco)
- * @version Fall 2023
- */
-public class BulmaSearchServlet extends HttpServlet {
+
+public class HomeServlet extends HttpServlet {
 	/** Class version for serialization, in [YEAR][TERM] format (unused). */
 	private static final long serialVersionUID = 202308;
 
 	/** The title to use for this webpage. */
 	private static final String title = "Search Engine";
-
-	/** The logger to use for this servlet. */
-	private static final Logger log = LogManager.getLogger();
 
 	/** The data structure to use for storing messages. */
 	private final LinkedList<MessageServlet.Message> messages;
@@ -56,7 +43,7 @@ public class BulmaSearchServlet extends HttpServlet {
 	 *
 	 * @throws IOException if unable to read templates
 	 */
-	public BulmaSearchServlet() throws IOException {
+	public HomeServlet() throws IOException {
 		super();
 		messages = new LinkedList<>();
 
@@ -82,51 +69,29 @@ public class BulmaSearchServlet extends HttpServlet {
 		return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 	}
 
-	private void displayInvertedIndex(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-		String index = "hello world";
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-		out.println("<html><body>");
-		out.println("<h2>Inverted Index</h2>");
-		out.println("<pre>" + index + "</pre>");
-		out.println("</body></html>");
-	}
-
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.info("{} handling: {}", this.hashCode(), request);
-
-		if (request.getServletPath().equals("/index")) {
-			displayInvertedIndex(request, response);
-		}
-		else {
 
 			Map<String, String> values = new HashMap<>();
 			values.put("title", title);
 			values.put("thread", Thread.currentThread().getName());
 			values.put("updated", MessageServlet.dateFormatter.format(LocalDateTime.now()));
 
-			// setup form
 			values.put("method", "POST");
 			values.put("action", request.getServletPath());
 
-			// generate html from template
 			StringSubstitutor replacer = new StringSubstitutor(values);
 			String head = replacer.replace(headTemplate);
 			String foot = replacer.replace(footTemplate);
 
-			// prepare response
 			response.setContentType("text/html");
 			response.setStatus(HttpServletResponse.SC_OK);
 
-			// output generated html
 			PrintWriter out = response.getWriter();
 			out.println(head);
 
 			out.println(foot);
 			out.flush();
-		}
 	}
 
 //	// same logic as message servlet
