@@ -34,9 +34,6 @@ public class HomeServlet extends HttpServlet {
 	/** Template for ending HTML (including <foot> tag). **/
 	private final String footTemplate;
 
-	/** Template for individual message HTML. **/
-	private final String textTemplate;
-
 	/**
 	 * Initializes this message board. Each message board has its own collection of
 	 * messages.
@@ -47,10 +44,8 @@ public class HomeServlet extends HttpServlet {
 		super();
 		messages = new LinkedList<>();
 
-		// load templates
 		headTemplate = readResourceFile("Home-head.html");
 		footTemplate = readResourceFile("Home-foot.html");
-		textTemplate = readResourceFile("Home-text.html");
 	}
 
 	/**
@@ -60,7 +55,7 @@ public class HomeServlet extends HttpServlet {
 	 * @return The content of the file as a String.
 	 * @throws IOException If an error occurs during file reading.
 	 */
-	private String readResourceFile(String fileName) throws IOException {
+	public String readResourceFile(String fileName) throws IOException {
 		String resourcePath = "html/" + fileName;
 		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
 		if (inputStream == null) {
@@ -93,33 +88,4 @@ public class HomeServlet extends HttpServlet {
 			out.println(foot);
 			out.flush();
 	}
-
-//	// same logic as message servlet
-//	@Override
-//	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		log.info("{} handling: {}", this.hashCode(), request);
-//
-//		String name = request.getParameter("name");
-//		String body = request.getParameter("message");
-//
-//		name = name == null || name.isBlank() ? "anonymous" : name;
-//		body = body == null ? "" : body;
-//
-//		name = StringEscapeUtils.escapeHtml4(name);
-//		body = StringEscapeUtils.escapeHtml4(body);
-//
-//		Message current = new Message(body, name, LocalDateTime.now());
-//		log.info("Created message: {}", current);
-//
-//		synchronized (messages) {
-//			messages.add(current);
-//
-//			while (messages.size() > 5) {
-//				Message first = messages.poll();
-//				log.info("Removing message: {}", first);
-//			}
-//		}
-//
-//		response.sendRedirect(request.getServletPath());
-//	}
 }
