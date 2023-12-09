@@ -1,16 +1,17 @@
  </div>
-  </section> <!-- end messages -->
-
+  </section>
   <section class="section">
     <div class="container">
-      <div class="field has-addons has-addons-centered">
-        <div class="control is-expanded">
-          <input class="input is-medium" type="text" name="query" placeholder="Enter Query">
-        </div>
-        <div class="control">
-          <button class="button is-info is-medium" type="submit">Search</button>
-        </div>
-      </div>
+       <form action="/results" method="get">
+            <div class="field has-addons has-addons-centered">
+                <div class="control is-expanded">
+                    <input class="input is-medium" type="text" name="query" placeholder="Enter Query">
+                </div>
+                <div class="control">
+                    <button class="button is-info is-medium" type="submit">Search</button>
+                </div>
+            </div>
+        </form>
       <div class="buttons is-centered">
         <form action="/index" method="get">
                 <button class="button is-primary" type="submit">Show Inverted Index</button>
@@ -19,7 +20,6 @@
       </div>
     </div>
   </section>
-
   <footer class="footer">
     <div class="content has-text-centered">
       <p>This request was handled by thread ${thread}.</p>

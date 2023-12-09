@@ -22,7 +22,7 @@ public class InvertedIndexServlet extends HttpServlet {
 		indexTemplate = readResourceFile("index.html");
 
 	}
-
+	//TODO need to make tmeplate prettier and make links clickable
 
 	//TODO duplicate code below
 	/**
@@ -43,10 +43,6 @@ public class InvertedIndexServlet extends HttpServlet {
 
 	private String readIndexJson(Path indexPath) throws IOException {
 		return new String(Files.readAllBytes(indexPath), StandardCharsets.UTF_8);
-	}
-
-	private String loadHtmlTemplate(Path templatePath) throws IOException {
-		return new String(Files.readAllBytes(templatePath), StandardCharsets.UTF_8);
 	}
 
 	@Override

@@ -24,6 +24,7 @@ public class SearchEngine {
 
 		handler.addServletWithMapping(new ServletHolder(new HomeServlet()), "/home");
 		handler.addServletWithMapping(new ServletHolder(new InvertedIndexServlet()), "/index");
+		handler.addServletWithMapping(new ServletHolder(new SearchResultsServlet()), "/results");
 
 		server.setHandler(handler);
 		server.start();
