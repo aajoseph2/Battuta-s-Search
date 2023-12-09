@@ -128,9 +128,9 @@ public class Driver {
 		//TODO may have to change the catching of exception
 		if (parser.hasFlag("-server")) {
 			 try {
-				 index.writeJson(Path.of("index.json"));
+				SearchEngine engine = new SearchEngine(safe, queryProcessor);
 				System.out.println("Server running on port: " + parser.getInteger("-server", 8080));
-				SearchEngine.runServer(parser.getInteger("-server", 8080));
+				engine.runServer(parser.getInteger("-server", 8080));
 			}
 			catch (Exception e) {
 				System.out.println("Unexpected error encountered while starting the server: " + e.getMessage());

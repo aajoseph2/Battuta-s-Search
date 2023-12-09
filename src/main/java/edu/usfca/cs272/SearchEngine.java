@@ -1,7 +1,7 @@
 package edu.usfca.cs272;
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
@@ -10,6 +10,14 @@ import org.eclipse.jetty.servlet.ServletHolder;
  */
 public class SearchEngine {
 
+	private InvertedIndex index;
+	private QueryProcessorInterface queryProcessor;
+
+	public SearchEngine(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor) {
+		this.index = index;
+		this.queryProcessor = queryProcessor;
+	}
+
 	/**
 	 * Sets up a Jetty server with different servlet instances.
 	 *
@@ -17,16 +25,20 @@ public class SearchEngine {
 	 *   arguement is provided.
 	 * @throws Exception if unable to start and run server
 	 */
-	public static void runServer(int port) throws Exception {
+	public void runServer(int port) throws Exception {
 		Server server = new Server(port);
 
-		ServletHandler handler = new ServletHandler();
+		// Use ServletContextHandler to allow passing objects to servlets
+		ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		contextHandler.setContextPath("/");
+		server.setHandler(contextHandler);
 
-		handler.addServletWithMapping(new ServletHolder(new HomeServlet()), "/home");
-		handler.addServletWithMapping(new ServletHolder(new InvertedIndexServlet()), "/index");
-		handler.addServletWithMapping(new ServletHolder(new SearchResultsServlet()), "/results");
+		// Passing the shared index and queryProcessor instances to the
+		// SearchResultsServlet
+		contextHandler.addServlet(new ServletHolder(new HomeServlet()), "/home");
+		contextHandler.addServlet(new ServletHolder(new InvertedIndexServlet()), "/index");
+		contextHandler.addServlet(new ServletHolder(new SearchResultsServlet(index, queryProcessor)), "/results");
 
-		server.setHandler(handler);
 		server.start();
 		server.join();
 	}
