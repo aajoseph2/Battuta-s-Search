@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import edu.usfca.cs272.InvertedIndex.SearchResult;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -65,8 +64,16 @@ public class SearchResultsServlet extends HttpServlet {
 		out.flush();
 	}
 
-	private String buildHtmlResponse(String searchQuery, Map<String, List<SearchResult>> resultsMap) {
-		System.out.println("Build html response from the results map.");
+	private String buildHtmlResponse(String searchQuery, Map<String, List<InvertedIndex.SearchResult>> resultsMap) {
+		//StringBuilder resultsBuilder = new StringBuilder();
+
+		if (resultsMap.containsKey(searchQuery)) {
+			List<InvertedIndex.SearchResult> resultList = resultsMap.get(searchQuery);
+			for (InvertedIndex.SearchResult result : resultList) {
+				System.out.println(result);
+			}
+		}
+
 		return null;
 	}
 
