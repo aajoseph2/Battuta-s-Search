@@ -65,16 +65,25 @@ public class SearchResultsServlet extends HttpServlet {
 	}
 
 	private String buildHtmlResponse(String searchQuery, Map<String, List<InvertedIndex.SearchResult>> resultsMap) {
-		//StringBuilder resultsBuilder = new StringBuilder();
+		StringBuilder resultsBuilder = new StringBuilder();
 
 		if (resultsMap.containsKey(searchQuery)) {
-			List<InvertedIndex.SearchResult> resultList = resultsMap.get(searchQuery);
-			for (InvertedIndex.SearchResult result : resultList) {
-				System.out.println(result);
+			int resultNumber = 1;
+			for (InvertedIndex.SearchResult result : resultsMap.get(searchQuery)) {
+				resultsBuilder.append("<li>")
+						.append("<a href=\"")
+						.append(result.getWhere())
+						.append("\">")
+						.append(result.getWhere())
+						.append("</a>")
+						.append("</li>");
+				resultNumber++;
 			}
 		}
 
-		return null;
+		String updatedTemplate = resultsTemplate.replace("${searchQuery}", searchQuery)
+				.replace("${results}", resultsBuilder.toString());
+		return updatedTemplate;
 	}
 
 	private Set<String> convertQueryToWords(String searchQuery) {
