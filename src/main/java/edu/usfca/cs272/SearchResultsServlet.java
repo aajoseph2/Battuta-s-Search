@@ -21,7 +21,7 @@ public class SearchResultsServlet extends HttpServlet {
 	private QueryProcessorInterface queryProcessor;
 	private final String resultsTemplate;
 
-	public SearchResultsServlet(InvertedIndex index, QueryProcessorInterface queryProcessor) throws IOException {
+	public SearchResultsServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor) throws IOException {
 
 		this.index = index;
 		this.queryProcessor = queryProcessor;

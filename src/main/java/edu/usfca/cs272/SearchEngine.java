@@ -10,7 +10,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
  */
 public class SearchEngine {
 
-	private InvertedIndex index;
+	private ThreadSafeInvertedIndex index;
 	private QueryProcessorInterface queryProcessor;
 
 	public SearchEngine(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor) {
