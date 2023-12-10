@@ -22,7 +22,7 @@ public class HomeServlet extends HttpServlet {
 	private static final long serialVersionUID = 202308;
 
 	/** The title to use for this webpage. */
-	private static final String title = "Search Engine";
+	private static final String title = "Battuta's";
 
 	private final String homeTemplate;
 

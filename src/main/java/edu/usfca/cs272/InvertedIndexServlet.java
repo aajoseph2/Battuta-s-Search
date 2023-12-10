@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,10 +12,14 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class InvertedIndexServlet extends HttpServlet {
 
+	private InvertedIndex index;
+	private QueryProcessorInterface queryProcessor;
 	private final String indexTemplate;
 
-	public InvertedIndexServlet() throws IOException  {
+	public InvertedIndexServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor) throws IOException  {
 
+		this.index = index;
+		this.queryProcessor = queryProcessor;
 		indexTemplate = readResourceFile("Index.html");
 
 	}
@@ -41,22 +42,16 @@ public class InvertedIndexServlet extends HttpServlet {
 		return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 	}
 
-	private String readIndexJson(Path indexPath) throws IOException {
-		return new String(Files.readAllBytes(indexPath), StandardCharsets.UTF_8);
-	}
-
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		Path indexPath = Paths.get("index.json");
-		String jsonIndex = readIndexJson(indexPath);
 
-		String htmlContent = indexTemplate.replace("JSON_CONTENT", jsonIndex);
+		System.out.println(index.toString());
 
 		response.setContentType("text/html");
 		response.setCharacterEncoding("UTF-8");
 
 		PrintWriter out = response.getWriter();
-		out.print(htmlContent);
+		out.print("");
 		out.flush();
 	}
 }

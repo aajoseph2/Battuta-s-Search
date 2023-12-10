@@ -36,7 +36,7 @@ public class SearchEngine {
 		// Passing the shared index and queryProcessor instances to the
 		// SearchResultsServlet
 		contextHandler.addServlet(new ServletHolder(new HomeServlet()), "/home");
-		contextHandler.addServlet(new ServletHolder(new InvertedIndexServlet()), "/index");
+		contextHandler.addServlet(new ServletHolder(new InvertedIndexServlet(index, queryProcessor)), "/index");
 		contextHandler.addServlet(new ServletHolder(new SearchResultsServlet(index, queryProcessor)), "/results");
 
 		server.start();
