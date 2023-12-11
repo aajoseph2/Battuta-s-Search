@@ -54,7 +54,7 @@ public class SearchResultsServlet extends HttpServlet {
 		Map<String, List<InvertedIndex.SearchResult>> resultsMap = new HashMap<>();
 		resultsMap.put(searchQuery, results);
 
-		String htmlResults = buildHtmlResponse(searchQuery, resultsMap);
+		String htmlResults = buildResultsHtmlResponse(searchQuery, resultsMap);
 
 		response.setContentType("text/html");
 		response.setCharacterEncoding("UTF-8");
@@ -64,7 +64,7 @@ public class SearchResultsServlet extends HttpServlet {
 		out.flush();
 	}
 
-	private String buildHtmlResponse(String searchQuery, Map<String, List<InvertedIndex.SearchResult>> resultsMap) {
+	private String buildResultsHtmlResponse(String searchQuery, Map<String, List<InvertedIndex.SearchResult>> resultsMap) {
 		StringBuilder resultsBuilder = new StringBuilder();
 
 		if (resultsMap.containsKey(searchQuery)) {
