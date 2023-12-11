@@ -51,7 +51,6 @@ public class InvertedIndexServlet extends HttpServlet {
 			builder.append("</ul></li>");
 		}
 
-		return indexTemplate.replace("${title}", "Battuta's Search")
-				.replace("${results}", builder.toString());
+		return indexTemplate.replace("${title}", "Battuta's Search").replace("${results}", builder.toString());
 	}
 }

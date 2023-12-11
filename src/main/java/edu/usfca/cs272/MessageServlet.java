@@ -70,6 +70,7 @@ public class MessageServlet extends HttpServlet {
 
 		/**
 		 * Returns values as HTML.
+		 * 
 		 * @return values as html
 		 */
 		public String html() {
@@ -79,6 +80,7 @@ public class MessageServlet extends HttpServlet {
 
 		/**
 		 * Returns values in a handy map.
+		 * 
 		 * @return values in a map
 		 */
 		public Map<String, String> map() {
@@ -87,8 +89,8 @@ public class MessageServlet extends HttpServlet {
 	}
 
 	/**
-	 * Initializes this message board. Each message board has its own collection
-	 * of messages.
+	 * Initializes this message board. Each message board has its own collection of
+	 * messages.
 	 *
 	 * @throws IOException if unable to read template
 	 */
@@ -99,8 +101,7 @@ public class MessageServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		log.info("{} handling: {}", this.hashCode(), request);
 
 		// used to substitute values in our templates
@@ -139,8 +140,7 @@ public class MessageServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		log.info("{} handling: {}", this.hashCode(), request);
 
 		String name = request.getParameter("name");

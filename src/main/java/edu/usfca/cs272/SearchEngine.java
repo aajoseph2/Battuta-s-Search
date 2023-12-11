@@ -54,13 +54,11 @@ public class SearchEngine {
 		contextHandler.setContextPath("/");
 		server.setHandler(contextHandler);
 
-
 		contextHandler.addServlet(new ServletHolder(new HomeServlet()), "/home");
 		contextHandler.addServlet(new ServletHolder(new InvertedIndexServlet(index, queryProcessor)), "/index");
 		contextHandler.addServlet(new ServletHolder(new SearchResultsServlet(index, queryProcessor)), "/results");
 		contextHandler.addServlet(new ServletHolder(new LocationServlet(index, queryProcessor)), "/locations");
 		contextHandler.addServlet(new ServletHolder(new DownloadIndexServlet(index)), "/download");
-
 
 		server.start();
 		server.join();

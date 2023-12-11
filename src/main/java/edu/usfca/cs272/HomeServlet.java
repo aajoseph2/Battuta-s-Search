@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
 public class HomeServlet extends HttpServlet {
 	/** Class version for serialization, in [YEAR][TERM] format (unused). */
 	private static final long serialVersionUID = 202308;
@@ -36,23 +35,23 @@ public class HomeServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-			Map<String, String> values = new HashMap<>();
-			values.put("title", title);
-			values.put("thread", Thread.currentThread().getName());
-			values.put("updated", MessageServlet.dateFormatter.format(LocalDateTime.now()));
+		Map<String, String> values = new HashMap<>();
+		values.put("title", title);
+		values.put("thread", Thread.currentThread().getName());
+		values.put("updated", MessageServlet.dateFormatter.format(LocalDateTime.now()));
 
-			values.put("method", "POST");
-			values.put("action", request.getServletPath());
+		values.put("method", "POST");
+		values.put("action", request.getServletPath());
 
-			StringSubstitutor replacer = new StringSubstitutor(values);
-			String home = replacer.replace(homeTemplate);
+		StringSubstitutor replacer = new StringSubstitutor(values);
+		String home = replacer.replace(homeTemplate);
 
-			response.setContentType("text/html");
-			response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("text/html");
+		response.setStatus(HttpServletResponse.SC_OK);
 
-			PrintWriter out = response.getWriter();
-			out.println(home);
+		PrintWriter out = response.getWriter();
+		out.println(home);
 
-			out.flush();
+		out.flush();
 	}
 }

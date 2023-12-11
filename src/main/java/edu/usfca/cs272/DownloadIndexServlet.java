@@ -28,7 +28,7 @@ public class DownloadIndexServlet extends HttpServlet {
 		response.setContentType("application/json");
 		response.setHeader("Content-Disposition", "attachment; filename=\"index.json\"");
 
-		// chance that i am unneccarily writing into index.json twice
+		// TODO chance that i am unneccarily writing into index.json twice
 		Path indexPath = Paths.get("index.json");
 		index.writeJson(indexPath);
 		String jsonIndex = readIndexJson(indexPath);

@@ -125,9 +125,9 @@ public class Driver {
 				System.out.println("Error writing results to file: " + e.getMessage());
 			}
 		}
-		// may have to change the catching of exception
+		// TODO may have to change the catching of exception
 		if (parser.hasFlag("-server")) {
-			 try {
+			try {
 				SearchEngine engine = new SearchEngine(safe, queryProcessor);
 				System.out.println("Server running on port: " + parser.getInteger("-server", 8080));
 				engine.runServer(parser.getInteger("-server", 8080));

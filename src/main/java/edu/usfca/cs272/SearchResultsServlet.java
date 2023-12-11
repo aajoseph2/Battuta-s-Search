@@ -18,7 +18,8 @@ public class SearchResultsServlet extends HttpServlet {
 	private QueryProcessorInterface queryProcessor;
 	private final String resultsTemplate;
 
-	public SearchResultsServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor) throws IOException {
+	public SearchResultsServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor)
+			throws IOException {
 		this.index = index;
 		this.queryProcessor = queryProcessor;
 		resultsTemplate = SearchEngine.readResourceFile("Results.html");
@@ -59,7 +60,8 @@ public class SearchResultsServlet extends HttpServlet {
 		return words;
 	}
 
-	private String buildResultsHtmlResponse(String searchQuery, Map<String, List<InvertedIndex.SearchResult>> resultsMap) {
+	private String buildResultsHtmlResponse(String searchQuery,
+			Map<String, List<InvertedIndex.SearchResult>> resultsMap) {
 		StringBuilder resultsBuilder = new StringBuilder();
 
 		if (resultsMap.containsKey(searchQuery)) {
@@ -76,7 +78,6 @@ public class SearchResultsServlet extends HttpServlet {
 			}
 		}
 
-		return resultsTemplate.replace("${searchQuery}", searchQuery)
-				.replace("${results}", resultsBuilder.toString());
+		return resultsTemplate.replace("${searchQuery}", searchQuery).replace("${results}", resultsBuilder.toString());
 	}
 }
