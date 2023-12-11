@@ -2,6 +2,8 @@ package edu.usfca.cs272;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
+import java.util.SortedMap;
 
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,8 +15,7 @@ public class LocationServlet extends HttpServlet {
 	private QueryProcessorInterface queryProcessor;
 	private final String locationTemplate;
 
-	public LocationServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor)
-			throws IOException {
+	public LocationServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor) throws IOException {
 		this.index = index;
 		this.queryProcessor = queryProcessor;
 		locationTemplate = SearchEngine.readResourceFile("Locations.html");
@@ -32,10 +33,27 @@ public class LocationServlet extends HttpServlet {
 
 	private String buildHtmlLocations() {
 		StringBuilder builder = new StringBuilder();
+		SortedMap<String, Integer> wordCounts = index.getWordCounts();
 
-		System.out.println("logic to get locations from couts");
+		builder.append("<ol>");
 
-		return locationTemplate.replace("${title}", "Battuta's Search")
+		for (Map.Entry<String, Integer> entry : wordCounts.entrySet()) {
+			String location = entry.getKey();
+			Integer count = entry.getValue();
+
+			builder.append("<li><a href=\"")
+					.append(location)
+					.append("\">")
+					.append(location)
+					.append("</a> - Word Count: ")
+					.append(count)
+					.append("</li>");
+		}
+
+		builder.append("</ol>");
+
+		return locationTemplate.replace("${title}", "Battuta's Search - Locations")
 				.replace("${results}", builder.toString());
 	}
+
 }
