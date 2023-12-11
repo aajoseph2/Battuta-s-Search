@@ -63,7 +63,6 @@ public class InvertedIndex {
 		for (var localOuter : localIndex.index.entrySet()) {
 			String localWord = localOuter.getKey();
 			var localInner = localOuter.getValue();
-
 			var thisInner = this.index.get(localWord);
 
 			if (thisInner == null) {
@@ -73,7 +72,6 @@ public class InvertedIndex {
 				for (var localLocationEntry : localInner.entrySet()) {
 					String localLocation = localLocationEntry.getKey();
 					TreeSet<Integer> localPositions = localLocationEntry.getValue();
-
 					var thisPositions = thisInner.get(localLocation);
 
 					if (thisPositions == null) {
