@@ -33,7 +33,6 @@ public class HomeServlet extends HttpServlet {
 	 * @throws IOException if unable to read templates
 	 */
 	public HomeServlet() throws IOException {
-		super();
 		homeTemplate = readResourceFile("Home.html");
 	}
 
@@ -47,6 +46,7 @@ public class HomeServlet extends HttpServlet {
 	public String readResourceFile(String fileName) throws IOException {
 		String resourcePath = "html/" + fileName;
 		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
+
 		if (inputStream == null) {
 			throw new FileNotFoundException("Resource file not found: " + resourcePath);
 		}

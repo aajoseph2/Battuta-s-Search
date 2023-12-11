@@ -19,13 +19,10 @@ public class InvertedIndexServlet extends HttpServlet {
 
 	public InvertedIndexServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor)
 			throws IOException {
-
 		this.index = index;
 		this.queryProcessor = queryProcessor;
 		indexTemplate = readResourceFile("Index.html");
-
 	}
-	// TODO need to make tmeplate prettier and make links clickable
 
 	// TODO duplicate code below
 	/**
@@ -38,6 +35,7 @@ public class InvertedIndexServlet extends HttpServlet {
 	public String readResourceFile(String fileName) throws IOException {
 		String resourcePath = "html/" + fileName;
 		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
+
 		if (inputStream == null) {
 			throw new FileNotFoundException("Resource file not found: " + resourcePath);
 		}
@@ -58,16 +56,23 @@ public class InvertedIndexServlet extends HttpServlet {
 		StringBuilder builder = new StringBuilder();
 
 		for (String word : new TreeSet<>(index.getWords())) {
-			//builder.append("<li>").append(word).append("<ul style='margin-left: 25px;'>");
-
+			builder.append("<li>").append(word).append(":<ul style='margin-left: 25px;'>");
 			for (String location : index.getLocations(word)) {
-				System.out.println(location);
+				int frequency = index.numWordFrequencyAtLocation(word, location);
+				builder.append("<li>")
+						.append("<a href=\"")
+						.append(location)
+						.append("\">")
+						.append(location)
+						.append("</a> - Count: ")
+						.append(frequency)
+						.append("</li>");
 			}
 
+			builder.append("</ul></li>");
 		}
 
 		String updatedTemplate = indexTemplate.replace("${title}", "Battuta's Search")
-				.replace("${searchQuery}", "")
 				.replace("${results}", builder.toString());
 		return updatedTemplate;
 	}

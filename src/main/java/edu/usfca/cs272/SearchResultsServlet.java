@@ -22,11 +22,9 @@ public class SearchResultsServlet extends HttpServlet {
 	private final String resultsTemplate;
 
 	public SearchResultsServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor) throws IOException {
-
 		this.index = index;
 		this.queryProcessor = queryProcessor;
 		resultsTemplate = readResourceFile("Results.html");
-
 	}
 
 	/**
@@ -39,6 +37,7 @@ public class SearchResultsServlet extends HttpServlet {
 	public String readResourceFile(String fileName) throws IOException {
 		String resourcePath = "html/" + fileName;
 		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
+
 		if (inputStream == null) {
 			throw new FileNotFoundException("Resource file not found: " + resourcePath);
 		}
