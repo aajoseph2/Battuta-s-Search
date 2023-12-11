@@ -1,10 +1,7 @@
 package edu.usfca.cs272;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,24 +30,7 @@ public class HomeServlet extends HttpServlet {
 	 * @throws IOException if unable to read templates
 	 */
 	public HomeServlet() throws IOException {
-		homeTemplate = readResourceFile("Home.html");
-	}
-
-	/**
-	 * Reads a file from the classpath and returns its content as a String.
-	 *
-	 * @param fileName The name of the file to be read, relative to the classpath.
-	 * @return The content of the file as a String.
-	 * @throws IOException If an error occurs during file reading.
-	 */
-	public String readResourceFile(String fileName) throws IOException {
-		String resourcePath = "html/" + fileName;
-		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
-
-		if (inputStream == null) {
-			throw new FileNotFoundException("Resource file not found: " + resourcePath);
-		}
-		return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+		homeTemplate = SearchEngine.readResourceFile("Home.html");
 	}
 
 	@Override

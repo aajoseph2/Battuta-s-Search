@@ -63,6 +63,22 @@ public class SearchResultsServlet extends HttpServlet {
 		out.flush();
 	}
 
+	private Set<String> convertQueryToWords(String searchQuery) {
+		Set<String> words = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+
+		if (searchQuery == null || searchQuery.isBlank()) {
+			return words;
+		}
+
+		String[] splitQuery = searchQuery.trim().split("\\s+");
+		for (String word : splitQuery) {
+			word = word.toLowerCase();
+			words.add(word);
+		}
+
+		return words;
+	}
+
 	private String buildResultsHtmlResponse(String searchQuery, Map<String, List<InvertedIndex.SearchResult>> resultsMap) {
 		StringBuilder resultsBuilder = new StringBuilder();
 
@@ -80,28 +96,7 @@ public class SearchResultsServlet extends HttpServlet {
 			}
 		}
 
-		String updatedTemplate = resultsTemplate.replace("${searchQuery}", searchQuery)
+		return resultsTemplate.replace("${searchQuery}", searchQuery)
 				.replace("${results}", resultsBuilder.toString());
-		return updatedTemplate;
-	}
-
-	private Set<String> convertQueryToWords(String searchQuery) {
-		Set<String> words = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-
-		if (searchQuery == null || searchQuery.isBlank()) {
-			return words;
-		}
-
-		String[] splitQuery = searchQuery.trim().split("\\s+");
-		for (String word : splitQuery) {
-			word = word.toLowerCase();
-			words.add(word);
-		}
-
-		return words;
 	}
 }
-
-//// Convert JSON string to formatted HTML
-//// This method should transform the JSON into a human-readable HTML format
-//String formattedHtml = JsonToHtmlFormatter.format(jsonResults);
