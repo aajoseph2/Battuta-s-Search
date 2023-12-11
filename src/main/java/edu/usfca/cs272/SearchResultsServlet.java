@@ -28,20 +28,24 @@ public class SearchResultsServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String searchQuery = request.getParameter("query");
-		Set<String> queryWords = convertQueryToWords(searchQuery);
+		String action = request.getParameter("action");
 
+		Set<String> queryWords = convertQueryToWords(searchQuery);
 		List<InvertedIndex.SearchResult> results = index.partialSearch(queryWords);
 		Map<String, List<InvertedIndex.SearchResult>> resultsMap = new HashMap<>();
 		resultsMap.put(searchQuery, results);
 
-		String htmlResults = buildResultsHtmlResponse(searchQuery, resultsMap);
-
-		response.setContentType("text/html");
-		response.setCharacterEncoding("UTF-8");
-
-		PrintWriter out = response.getWriter();
-		out.print(htmlResults);
-		out.flush();
+		if ("lucky".equals(action) && !results.isEmpty()) {
+			response.sendRedirect(results.get(0).getWhere());
+		}
+		else {
+			String htmlResults = buildResultsHtmlResponse(searchQuery, resultsMap);
+			response.setContentType("text/html");
+			response.setCharacterEncoding("UTF-8");
+			PrintWriter out = response.getWriter();
+			out.print(htmlResults);
+			out.flush();
+		}
 	}
 
 	private Set<String> convertQueryToWords(String searchQuery) {

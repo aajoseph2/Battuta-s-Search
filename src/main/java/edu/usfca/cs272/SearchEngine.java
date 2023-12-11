@@ -59,7 +59,6 @@ public class SearchEngine {
 		contextHandler.addServlet(new ServletHolder(new SearchResultsServlet(index, queryProcessor)), "/results");
 		contextHandler.addServlet(new ServletHolder(new LocationServlet(index, queryProcessor)), "/locations");
 		contextHandler.addServlet(new ServletHolder(new DownloadIndexServlet(index)), "/download");
-		contextHandler.addServlet(new ServletHolder(new LuckySearchServlet(index, queryProcessor)), "/quicksearch");
 
 
 		server.start();
