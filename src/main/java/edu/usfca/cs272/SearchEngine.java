@@ -69,7 +69,6 @@ public class SearchEngine {
 		handlers.setHandlers(new Handler[] { resourceHandler, contextHandler });
 
 		System.out.println("Starting server on port " + port);
-		System.out.println("Static resource: " + resourceHandler.getResourceBase());
 
 		server.setHandler(handlers);
 
