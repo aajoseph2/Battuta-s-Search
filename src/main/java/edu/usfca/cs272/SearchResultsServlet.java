@@ -29,7 +29,6 @@ public class SearchResultsServlet extends HttpServlet {
 		String action = request.getParameter("action");
 
 		Set<String> queryWords = convertQueryToWords(searchQuery);
-		System.out.println(queryWords);
 		List<InvertedIndex.SearchResult> results = index.partialSearch(queryWords);
 
 		if ("lucky".equals(action) && !results.isEmpty()) {
@@ -78,7 +77,7 @@ public class SearchResultsServlet extends HttpServlet {
 			resultsBuilder.append("</ol>");
 		}
 		else {
-			resultsBuilder.append("<strong><p>No results found for query: ").append(searchQuery).append("</p></strong>");
+			resultsBuilder.append("<strong><p>No results generated</p></strong>");
 		}
 
 		return resultsTemplate.replace("${searchQuery}", searchQuery).replace("${results}", resultsBuilder.toString());

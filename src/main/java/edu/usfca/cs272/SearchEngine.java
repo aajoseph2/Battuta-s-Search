@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
@@ -23,8 +26,7 @@ public class SearchEngine {
 		this.queryProcessor = queryProcessor;
 	}
 
-	//TODO fix logo issues
-	//TODO Partial/Exact Search Toggle
+	// TODO Partial/Exact Search Toggle
 
 	/**
 	 * Reads a file from the classpath and returns its content as a String.
@@ -55,7 +57,6 @@ public class SearchEngine {
 
 		ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		contextHandler.setContextPath("/");
-		server.setHandler(contextHandler);
 
 		contextHandler.addServlet(new ServletHolder(new HomeServlet()), "/home");
 		contextHandler.addServlet(new ServletHolder(new InvertedIndexServlet(index, queryProcessor)), "/index");
@@ -63,8 +64,19 @@ public class SearchEngine {
 		contextHandler.addServlet(new ServletHolder(new LocationServlet(index, queryProcessor)), "/locations");
 		contextHandler.addServlet(new ServletHolder(new DownloadIndexServlet(index)), "/download");
 
+		ResourceHandler resourceHandler = new ResourceHandler();
+		resourceHandler.setResourceBase("/Users/aminjoseph/git/project-aajoseph2/src/main/resources/static");
+
+		HandlerList handlers = new HandlerList();
+		handlers.setHandlers(new Handler[] { resourceHandler, contextHandler });
+
+		System.out.println("Starting server on port " + port);
+		System.out.println("Static resource: " + resourceHandler.getResourceBase());
+
+		server.setHandler(handlers);
 
 		server.start();
 		server.join();
 	}
+
 }

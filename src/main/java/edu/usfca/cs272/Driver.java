@@ -129,7 +129,6 @@ public class Driver {
 		if (parser.hasFlag("-server")) {
 			try {
 				SearchEngine engine = new SearchEngine(safe, queryProcessor);
-				System.out.println("Server running on port: " + parser.getInteger("-server", 8080));
 				engine.runServer(parser.getInteger("-server", 8080));
 			}
 			catch (Exception e) {
