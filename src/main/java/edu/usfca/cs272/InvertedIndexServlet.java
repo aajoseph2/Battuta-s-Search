@@ -33,13 +33,18 @@ public class InvertedIndexServlet extends HttpServlet {
 
 	private String buildHtmlIndex() {
 		StringBuilder builder = new StringBuilder();
+		builder.append("<style>")
+				.append(".index-link:hover {")
+				.append("color: white;")
+				.append("}")
+				.append("</style>");
 
 		for (String word : new TreeSet<>(index.getWords())) {
 			builder.append("<li>").append(word).append(":<ul style='margin-left: 25px;'>");
 			for (String location : index.getLocations(word)) {
 				int frequency = index.numWordFrequencyAtLocation(word, location);
 				builder.append("<li>")
-						.append("<a href=\"")
+						.append("<a class='index-link' href=\"")
 						.append(location)
 						.append("\">")
 						.append(location)
@@ -53,4 +58,5 @@ public class InvertedIndexServlet extends HttpServlet {
 
 		return indexTemplate.replace("${title}", "Battuta's Search").replace("${results}", builder.toString());
 	}
+
 }
