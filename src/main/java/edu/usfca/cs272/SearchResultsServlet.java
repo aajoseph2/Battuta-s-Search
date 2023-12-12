@@ -2,9 +2,7 @@ package edu.usfca.cs272;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -25,7 +23,8 @@ public class SearchResultsServlet extends HttpServlet {
 		resultsTemplate = SearchEngine.readResourceFile("Results.html");
 	}
 
-	//TODO output warning if there are no search results for both search and lucky search
+	// TODO output warning if there are no search results for both search and lucky
+	// search
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -34,14 +33,12 @@ public class SearchResultsServlet extends HttpServlet {
 
 		Set<String> queryWords = convertQueryToWords(searchQuery);
 		List<InvertedIndex.SearchResult> results = index.partialSearch(queryWords);
-		Map<String, List<InvertedIndex.SearchResult>> resultsMap = new HashMap<>();
-		resultsMap.put(searchQuery, results);
 
 		if ("lucky".equals(action) && !results.isEmpty()) {
 			response.sendRedirect(results.get(0).getWhere());
 		}
 		else {
-			String htmlResults = buildResultsHtmlResponse(searchQuery, resultsMap);
+			String htmlResults = buildResultsHtmlResponse(searchQuery, results);
 			response.setContentType("text/html");
 			response.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
@@ -66,13 +63,12 @@ public class SearchResultsServlet extends HttpServlet {
 		return words;
 	}
 
-	private String buildResultsHtmlResponse(String searchQuery,
-			Map<String, List<InvertedIndex.SearchResult>> resultsMap) {
+	private String buildResultsHtmlResponse(String searchQuery, List<InvertedIndex.SearchResult> results) {
 		StringBuilder resultsBuilder = new StringBuilder();
 
-		if (resultsMap.containsKey(searchQuery)) {
-			int resultNumber = 1;
-			for (InvertedIndex.SearchResult result : resultsMap.get(searchQuery)) {
+		if (!results.isEmpty()) {
+			resultsBuilder.append("<ol>");
+			for (InvertedIndex.SearchResult result : results) {
 				resultsBuilder.append("<li>")
 						.append("<a href=\"")
 						.append(result.getWhere())
@@ -80,8 +76,11 @@ public class SearchResultsServlet extends HttpServlet {
 						.append(result.getWhere())
 						.append("</a>")
 						.append("</li>");
-				resultNumber++;
 			}
+			resultsBuilder.append("</ol>");
+		}
+		else {
+			resultsBuilder.append("<strong><p>No results found for query: ").append(searchQuery).append("</p></strong>");
 		}
 
 		return resultsTemplate.replace("${searchQuery}", searchQuery).replace("${results}", resultsBuilder.toString());

@@ -23,6 +23,9 @@ public class SearchEngine {
 		this.queryProcessor = queryProcessor;
 	}
 
+	//TODO fix logo issues
+	//TODO Partial/Exact Search Toggle
+
 	/**
 	 * Reads a file from the classpath and returns its content as a String.
 	 *
