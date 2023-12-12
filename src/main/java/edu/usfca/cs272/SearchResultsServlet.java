@@ -68,7 +68,7 @@ public class SearchResultsServlet extends HttpServlet {
 			resultsBuilder.append("<ol>");
 			for (InvertedIndex.SearchResult result : results) {
 				resultsBuilder.append("<li>")
-						.append("<a href=\"")
+						.append("<a class='index-link' href=\"")
 						.append(result.getWhere())
 						.append("\">")
 						.append(result.getWhere())
@@ -78,7 +78,7 @@ public class SearchResultsServlet extends HttpServlet {
 			resultsBuilder.append("</ol>");
 		}
 		else {
-			resultsBuilder.append("<strong><p>No results generated</p></strong>");
+			resultsBuilder.append("<strong><p class='has-text-warning-light retro-title'>No results generated</p></strong>");
 		}
 
 		return resultsTemplate.replace("${searchQuery}", searchQuery).replace("${results}", resultsBuilder.toString());

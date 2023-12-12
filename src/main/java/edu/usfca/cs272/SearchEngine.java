@@ -78,7 +78,6 @@ public class SearchEngine {
 }
 
 //TODO search history
-//TODO logo
 //TODO reverse sort order
 //TODO java doc
 
