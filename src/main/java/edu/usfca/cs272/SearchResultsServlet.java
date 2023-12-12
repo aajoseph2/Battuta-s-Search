@@ -23,15 +23,13 @@ public class SearchResultsServlet extends HttpServlet {
 		resultsTemplate = SearchEngine.readResourceFile("Results.html");
 	}
 
-	// TODO output warning if there are no search results for both search and lucky
-	// search
-
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String searchQuery = request.getParameter("query");
+		String searchQuery = HtmlCleaner.stripHtml(request.getParameter("query"));
 		String action = request.getParameter("action");
 
 		Set<String> queryWords = convertQueryToWords(searchQuery);
+		System.out.println(queryWords);
 		List<InvertedIndex.SearchResult> results = index.partialSearch(queryWords);
 
 		if ("lucky".equals(action) && !results.isEmpty()) {
