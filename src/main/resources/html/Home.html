@@ -11,7 +11,7 @@
       <script src="/javaScripts/CheckQuery.js"></script>
    </head>
    <body>
-      <section class="hero is-primary is-bold">
+      <section class="hero is-warning is-bold">
          <div class="hero-body">
             <div class="container has-text-centered">
                <h1 class="title retro-title">Battuta's Search</h1>
@@ -22,14 +22,14 @@
             </div>
          </div>
       </section>
-      <section class="section">
+      <section class="section has-background-dark">
          <div class="container">
             <div class="has-text-centered">
                <img src="/images/logo.png" alt="Search Engine Logo" style="max-width: 40%; height: auto;">
             </div>
          </div>
       </section>
-      <section class="section">
+      <section class="section has-background-dark">
          <div class="container">
             <form action="/results" method="get" onsubmit="return checkQuery()">
                <div class="field has-addons has-addons-centered mb-5">
@@ -37,7 +37,7 @@
                      <input class="input is-medium" type="text" name="query" id="query" placeholder="Enter Query">
                   </div>
                   <div class="control">
-                     <button class="button is-primary is-medium mr-2" name="action" value="search" type="submit">Search</button>
+                     <button class="button is-warning is-medium mr-2" name="action" value="search" type="submit">Search</button>
                   </div>
                   <div class="control">
                      <button class="button is-link is-medium" name="action" value="lucky" type="submit">Lucky Search</button>
@@ -58,7 +58,7 @@
             </div>
          </div>
       </section>
-      <footer class="footer">
+      <footer class="footer has-background-dark  hero is-fullheight">
          <div class="content has-text-centered">
             <p>This request was handled by thread ${thread}.</p>
          </div>
