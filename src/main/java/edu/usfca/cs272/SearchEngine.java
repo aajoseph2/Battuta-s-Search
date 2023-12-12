@@ -26,8 +26,6 @@ public class SearchEngine {
 		this.queryProcessor = queryProcessor;
 	}
 
-	// TODO Partial/Exact Search Toggle
-
 	/**
 	 * Reads a file from the classpath and returns its content as a String.
 	 *
@@ -78,5 +76,10 @@ public class SearchEngine {
 		server.start();
 		server.join();
 	}
-
 }
+
+//TODO search history
+//TODO logo
+//TODO reverse sort order
+//TODO java doc
+

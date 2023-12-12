@@ -28,12 +28,9 @@ public class SearchResultsServlet extends HttpServlet {
 		String searchQuery = HtmlCleaner.stripHtml(request.getParameter("query"));
 		String action = request.getParameter("action");
 		boolean exactSearch = "on".equals(request.getParameter("exact"));
-		System.out.println(exactSearch);
 
 		Set<String> queryWords = convertQueryToWords(searchQuery);
 		List<InvertedIndex.SearchResult> results = index.search(queryWords, exactSearch);
-
-		System.out.println(results);
 
 		if ("lucky".equals(action) && !results.isEmpty()) {
 			response.sendRedirect(results.get(0).getWhere());
