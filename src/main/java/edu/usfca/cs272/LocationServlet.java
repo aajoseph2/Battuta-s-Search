@@ -41,7 +41,7 @@ public class LocationServlet extends HttpServlet {
 			String location = entry.getKey();
 			Integer count = entry.getValue();
 
-			builder.append("<li><a href=\"")
+			builder.append("<li><a class='index-link' href=\"")
 					.append(location)
 					.append("\">")
 					.append(location)

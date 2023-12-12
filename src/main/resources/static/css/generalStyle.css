@@ -5,3 +5,7 @@
 .retro-title {
 	font-family: "Audiowide", sans-serif;
 }
+
+.index-link:hover {
+	color: white;
+}
