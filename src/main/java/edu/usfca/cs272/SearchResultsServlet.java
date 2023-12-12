@@ -15,6 +15,7 @@ public class SearchResultsServlet extends HttpServlet {
 	private InvertedIndex index;
 	private QueryProcessorInterface queryProcessor;
 	private final String resultsTemplate;
+	public List<String> searchHistory;
 
 	public SearchResultsServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor)
 			throws IOException {
@@ -28,6 +29,7 @@ public class SearchResultsServlet extends HttpServlet {
 		String searchQuery = HtmlCleaner.stripHtml(request.getParameter("query"));
 		String action = request.getParameter("action");
 		boolean exactSearch = "on".equals(request.getParameter("exact"));
+		searchHistory.add(searchQuery);
 
 		Set<String> queryWords = convertQueryToWords(searchQuery);
 		List<InvertedIndex.SearchResult> results = index.search(queryWords, exactSearch);
