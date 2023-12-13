@@ -13,9 +13,7 @@ public class HistoryServlet extends HttpServlet {
 	private String historyTemplate;
 
 	public HistoryServlet() throws IOException {
-
 		historyTemplate = SearchEngine.readResourceFile("History.html");
-
 	}
 
 	@Override

@@ -20,10 +20,12 @@ public class SearchEngine {
 
 	private ThreadSafeInvertedIndex index;
 	private QueryProcessorInterface queryProcessor;
+	private SearchHistory searchHistory;
 
-	public SearchEngine(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor) {
+	public SearchEngine(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor, SearchHistory searchHistory) {
 		this.index = index;
 		this.queryProcessor = queryProcessor;
+		this.searchHistory = searchHistory;
 	}
 
 	/**
@@ -58,11 +60,11 @@ public class SearchEngine {
 
 		contextHandler.addServlet(new ServletHolder(new HomeServlet()), "/home");
 		contextHandler.addServlet(new ServletHolder(new InvertedIndexServlet(index, queryProcessor)), "/index");
-		contextHandler.addServlet(new ServletHolder(new SearchResultsServlet(index, queryProcessor)), "/results");
+		contextHandler.addServlet(new ServletHolder(new SearchResultsServlet(index, queryProcessor, searchHistory)), "/results");
 		contextHandler.addServlet(new ServletHolder(new LocationServlet(index, queryProcessor)), "/locations");
 		contextHandler.addServlet(new ServletHolder(new DownloadIndexServlet(index)), "/download");
-		contextHandler.addServlet(new ServletHolder(new HistoryServlet()), "/history");
-		contextHandler.addServlet(new ServletHolder(new ClearHistoryServlet()), "/clearHistory");
+		contextHandler.addServlet(new ServletHolder(new HistoryServlet(searchHistory)), "/history");
+		contextHandler.addServlet(new ServletHolder(new ClearHistoryServlet(searchHistory)), "/clearHistory");
 
 
 		ResourceHandler resourceHandler = new ResourceHandler();
