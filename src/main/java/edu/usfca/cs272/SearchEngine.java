@@ -96,5 +96,3 @@ public class SearchEngine {
 	}
 }
 
-//TODO reverse sort order
-//TODO java doc

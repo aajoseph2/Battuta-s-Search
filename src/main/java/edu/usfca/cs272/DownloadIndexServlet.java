@@ -47,7 +47,7 @@ public class DownloadIndexServlet extends HttpServlet {
 	 * @throws IOException If an I/O error occurs reading from the file or a
 	 *   malformed or unmappable byte sequence is read.
 	 */
-	private String readIndexJson(Path indexPath) throws IOException {
+	private static String readIndexJson(Path indexPath) throws IOException {
 		return new String(Files.readAllBytes(indexPath), StandardCharsets.UTF_8);
 	}
 
