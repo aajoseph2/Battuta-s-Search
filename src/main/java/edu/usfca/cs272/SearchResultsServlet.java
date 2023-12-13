@@ -16,6 +16,7 @@ public class SearchResultsServlet extends HttpServlet {
 	private InvertedIndex index;
 	private QueryProcessorInterface queryProcessor;
 	private final String resultsTemplate;
+	//TODO this breaks encapsulation
 	public static List<String> searchHistory;
 	private final MultiReaderLock lock;
 
@@ -90,6 +91,7 @@ public class SearchResultsServlet extends HttpServlet {
 		else {
 			resultsBuilder.append("<strong><p class='has-text-warning-light retro-title'>No results generated</p></strong>");
 		}
+		//TODO remove strong, it may be messing up style edit
 
 		return resultsTemplate.replace("${searchQuery}", searchQuery).replace("${results}", resultsBuilder.toString());
 	}
