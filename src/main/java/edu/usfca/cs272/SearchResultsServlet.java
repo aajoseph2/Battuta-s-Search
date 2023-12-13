@@ -41,8 +41,7 @@ public class SearchResultsServlet extends HttpServlet {
 			System.out.println("Query Count: " + result.getCount());
 			System.out.println();
 		}
-		//System.out.println("Query line: " + queryProcessor.getQueryLines());
-		//System.out.println("Query Results: " + searchHistory.toString());
+
 
 		Set<String> queryWords = convertQueryToWords(searchQuery);
 		List<InvertedIndex.SearchResult> results = index.search(queryWords, exactSearch);
