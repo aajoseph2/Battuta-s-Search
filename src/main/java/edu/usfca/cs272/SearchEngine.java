@@ -81,7 +81,6 @@ public class SearchEngine {
 	}
 }
 
-//TODO search history
 //TODO reverse sort order
 //TODO java doc
 

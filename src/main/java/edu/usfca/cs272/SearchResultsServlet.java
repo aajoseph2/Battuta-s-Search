@@ -82,9 +82,8 @@ public class SearchResultsServlet extends HttpServlet {
 			resultsBuilder.append("</ol>");
 		}
 		else {
-			resultsBuilder.append("<strong><p class='has-text-warning-light retro-title'>No results generated</p></strong>");
+			resultsBuilder.append("<p>No results generated</p>");
 		}
-		//TODO remove strong, it may be messing up style edit
 
 		return resultsTemplate.replace("${searchQuery}", searchQuery).replace("${results}", resultsBuilder.toString());
 	}
