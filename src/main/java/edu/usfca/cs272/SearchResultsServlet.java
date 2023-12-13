@@ -2,6 +2,7 @@ package edu.usfca.cs272;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,10 +62,9 @@ public class SearchResultsServlet extends HttpServlet {
 		QueryProcessorInterface queryProcessor = new QueryProcessor("on".equals(request.getParameter("exact")), index);
 
 		queryProcessor.queryProcessor(searchQuery);
-		var results = queryProcessor.getQueryResults(searchQuery);
+		var results = new ArrayList<>(queryProcessor.getQueryResults(searchQuery));
 
-		if("on".equals(request.getParameter("reverse"))) {
-			System.out.println("here");
+		if ("on".equals(request.getParameter("reverse"))) {
 			Collections.reverse(results);
 		}
 
