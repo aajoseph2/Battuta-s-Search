@@ -95,5 +95,3 @@ public class SearchEngine {
 		server.join();
 	}
 }
-
-//TODO reverse sort order
