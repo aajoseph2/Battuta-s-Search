@@ -17,8 +17,8 @@ public class SearchResultsServlet extends HttpServlet {
 	private final String resultsTemplate;
 	private SearchHistory searchHistory;
 
-	public SearchResultsServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor, SearchHistory searchHistory)
-			throws IOException {
+	public SearchResultsServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor,
+			SearchHistory searchHistory) throws IOException {
 		this.index = index;
 		this.queryProcessor = queryProcessor;
 		resultsTemplate = SearchEngine.readResourceFile("Results.html");
@@ -48,7 +48,7 @@ public class SearchResultsServlet extends HttpServlet {
 			out.flush();
 		}
 	}
-//TODO see if i already did something like this
+
 	private Set<String> convertQueryToWords(String searchQuery) {
 		Set<String> words = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 

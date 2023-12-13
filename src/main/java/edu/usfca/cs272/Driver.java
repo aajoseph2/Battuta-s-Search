@@ -16,9 +16,10 @@ public class Driver {
 
 	/***
 	 * Main method to process command-line arguments and manage the inverted index.
-	 * Read and process text files or directories provided using the "-text" flag.
-	 * Write term counts to a file using the "-counts" flag. Write the entire index
-	 * to a file using the "-index" flag.
+	 * Read and process text files or directories provided using a series of
+	 * different flags that enable multithreading, crawl through a website, query
+	 * results, crawl through a local directory, and output results into specified
+	 * json files.
 	 *
 	 * @param args Command Line Args to be read
 	 */
