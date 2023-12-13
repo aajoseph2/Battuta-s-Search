@@ -14,7 +14,7 @@ public class LocationServlet extends HttpServlet {
 	private InvertedIndex index;
 	private final String locationTemplate;
 
-	public LocationServlet(ThreadSafeInvertedIndex index,) throws IOException {
+	public LocationServlet(ThreadSafeInvertedIndex index) throws IOException {
 		this.index = index;
 		locationTemplate = SearchEngine.readResourceFile("Locations.html");
 	}

@@ -130,7 +130,7 @@ public class Driver {
 		if (parser.hasFlag("-server")) {
 			try {
 				SearchHistory searchHistory = new SearchHistory();
-				SearchEngine engine = new SearchEngine(safe, queryProcessor, searchHistory);
+				SearchEngine engine = new SearchEngine(safe, searchHistory);
 				engine.runServer(parser.getInteger("-server", 8080));
 			}
 			catch (Exception e) {

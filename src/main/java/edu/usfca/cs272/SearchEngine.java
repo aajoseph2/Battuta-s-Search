@@ -18,7 +18,18 @@ import org.eclipse.jetty.servlet.ServletHolder;
  */
 public class SearchEngine {
 
+	/**
+	 * A thread-safe version of the inverted index data structure. Stores words and
+	 * their associated positions. Final structure to contain the index information.
+	 */
 	private ThreadSafeInvertedIndex index;
+
+	/**
+	 * An instance that tracks and stores the history of search queries. Provides
+	 * functionality to add, retrieve, and clear the history of searches made by
+	 * users. Ensures that the search history is maintained accurately across
+	 * different servlet requests.
+	 */
 	private SearchHistory searchHistory;
 
 	/**
