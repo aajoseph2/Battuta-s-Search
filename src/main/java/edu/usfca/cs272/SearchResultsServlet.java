@@ -64,6 +64,7 @@ public class SearchResultsServlet extends HttpServlet {
 		var results = queryProcessor.getQueryResults(searchQuery);
 
 		if("on".equals(request.getParameter("reverse"))) {
+			System.out.println("here");
 			Collections.reverse(results);
 		}
 
