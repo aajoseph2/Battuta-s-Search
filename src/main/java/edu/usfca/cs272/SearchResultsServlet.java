@@ -2,6 +2,7 @@ package edu.usfca.cs272;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServlet;
@@ -61,6 +62,10 @@ public class SearchResultsServlet extends HttpServlet {
 
 		queryProcessor.queryProcessor(searchQuery);
 		var results = queryProcessor.getQueryResults(searchQuery);
+
+		if("on".equals(request.getParameter("reverse"))) {
+			Collections.reverse(results);
+		}
 
 		if ("lucky".equals(request.getParameter("action")) && !results.isEmpty()) {
 			response.sendRedirect(results.get(0).getWhere());
