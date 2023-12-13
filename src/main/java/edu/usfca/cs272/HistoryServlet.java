@@ -11,15 +11,17 @@ import jakarta.servlet.http.HttpServletResponse;
 public class HistoryServlet extends HttpServlet {
 
 	private String historyTemplate;
+	private SearchHistory searchHistory;
 
-	public HistoryServlet() throws IOException {
+	public HistoryServlet(SearchHistory searchHistory) throws IOException {
 		historyTemplate = SearchEngine.readResourceFile("History.html");
+		this.searchHistory = searchHistory;
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-		String htmlResults = buildHistoryHtmlResponse(SearchResultsServlet.searchHistory);
+		String htmlResults = buildHistoryHtmlResponse(searchHistory.getSearchedList());
 		response.setContentType("text/html");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();

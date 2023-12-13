@@ -128,7 +128,8 @@ public class Driver {
 		// TODO may have to change the catching of exception
 		if (parser.hasFlag("-server")) {
 			try {
-				SearchEngine engine = new SearchEngine(safe, queryProcessor);
+				SearchHistory searchHistory = new SearchHistory();
+				SearchEngine engine = new SearchEngine(safe, queryProcessor, searchHistory);
 				engine.runServer(parser.getInteger("-server", 8080));
 			}
 			catch (Exception e) {

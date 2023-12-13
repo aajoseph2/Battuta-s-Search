@@ -76,7 +76,6 @@ public class SearchEngine {
 		System.out.println("Starting server on port " + port);
 
 		server.setHandler(handlers);
-
 		server.start();
 		server.join();
 	}

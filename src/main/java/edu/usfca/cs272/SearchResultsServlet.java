@@ -2,7 +2,6 @@ package edu.usfca.cs272;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -16,17 +15,14 @@ public class SearchResultsServlet extends HttpServlet {
 	private InvertedIndex index;
 	private QueryProcessorInterface queryProcessor;
 	private final String resultsTemplate;
-	//TODO this breaks encapsulation
-	public static List<String> searchHistory;
-	private final MultiReaderLock lock;
+	private SearchHistory searchHistory;
 
-	public SearchResultsServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor)
+	public SearchResultsServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor, SearchHistory searchHistory)
 			throws IOException {
 		this.index = index;
 		this.queryProcessor = queryProcessor;
 		resultsTemplate = SearchEngine.readResourceFile("Results.html");
-		lock = new MultiReaderLock();
-		searchHistory = new ArrayList<>();
+		this.searchHistory = searchHistory;
 	}
 
 	@Override
@@ -35,10 +31,7 @@ public class SearchResultsServlet extends HttpServlet {
 		String action = request.getParameter("action");
 		boolean exactSearch = "on".equals(request.getParameter("exact"));
 
-		//TODO maybe add write lock
-		searchHistory.add(searchQuery);
-
-
+		searchHistory.addSearchedQuery(searchQuery);
 
 		Set<String> queryWords = convertQueryToWords(searchQuery);
 		List<InvertedIndex.SearchResult> results = index.search(queryWords, exactSearch);

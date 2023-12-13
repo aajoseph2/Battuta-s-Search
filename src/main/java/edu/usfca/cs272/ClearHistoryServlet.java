@@ -8,9 +8,15 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class ClearHistoryServlet extends HttpServlet {
 
+	private SearchHistory searchHistory;
+
+	public ClearHistoryServlet(SearchHistory searchHistory) throws IOException {
+		this.searchHistory = searchHistory;
+	}
+
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		SearchResultsServlet.searchHistory.clear();
+		searchHistory.clearSearchHistory();
 		response.sendRedirect("/history");
 	}
 }
