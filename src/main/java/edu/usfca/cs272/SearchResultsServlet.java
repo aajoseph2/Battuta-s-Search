@@ -3,8 +3,6 @@ package edu.usfca.cs272;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,18 +31,19 @@ public class SearchResultsServlet extends HttpServlet {
 
 		searchHistory.addSearchedQuery(searchQuery);
 
-		queryProcessor.queryProcessor(searchQuery);
+		QueryProcessorInterface queryProcessor;
+		QueryProcessorInterface queryProcessorTwo = new QueryProcessor(exactSearch, index);
 
-		for (var result : queryProcessor.getQueryResults(searchQuery)) {
+		queryProcessorTwo.queryProcessor(searchQuery);
+
+		for (var result : queryProcessorTwo.getQueryResults(searchQuery)) {
 			System.out.println("Query Result: " + result.getWhere());
 			System.out.println("Query Score: " + result.getScore());
 			System.out.println("Query Count: " + result.getCount());
 			System.out.println();
 		}
 
-
-		Set<String> queryWords = convertQueryToWords(searchQuery);
-		List<InvertedIndex.SearchResult> results = index.search(queryWords, exactSearch);
+		var results = queryProcessorTwo.getQueryResults(searchQuery);
 
 		if ("lucky".equals(action) && !results.isEmpty()) {
 			response.sendRedirect(results.get(0).getWhere());
@@ -57,22 +56,6 @@ public class SearchResultsServlet extends HttpServlet {
 			out.print(htmlResults);
 			out.flush();
 		}
-	}
-
-	private Set<String> convertQueryToWords(String searchQuery) {
-		Set<String> words = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-
-		if (searchQuery == null || searchQuery.isBlank()) {
-			return words;
-		}
-
-		String[] splitQuery = searchQuery.trim().split("\\s+");
-		for (String word : splitQuery) {
-			word = word.toLowerCase();
-			words.add(word);
-		}
-
-		return words;
 	}
 
 	private String buildResultsHtmlResponse(String searchQuery, List<InvertedIndex.SearchResult> results) {
