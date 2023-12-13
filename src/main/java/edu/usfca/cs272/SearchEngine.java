@@ -62,6 +62,8 @@ public class SearchEngine {
 		contextHandler.addServlet(new ServletHolder(new LocationServlet(index, queryProcessor)), "/locations");
 		contextHandler.addServlet(new ServletHolder(new DownloadIndexServlet(index)), "/download");
 		contextHandler.addServlet(new ServletHolder(new HistoryServlet()), "/history");
+		contextHandler.addServlet(new ServletHolder(new ClearHistoryServlet()), "/clearHistory");
+
 
 		ResourceHandler resourceHandler = new ResourceHandler();
 		resourceHandler.setResourceBase("/Users/aminjoseph/git/project-aajoseph2/src/main/resources/static");

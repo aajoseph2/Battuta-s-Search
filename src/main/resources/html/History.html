@@ -12,7 +12,7 @@
    <body>
       <section class="hero is-warning is-bold">
          <div class="hero-body">
-           <div class="has-left-aligned">
+           <div class="hc">
                <img src="/images/logo.jpg" alt="Search Engine Logo" style="max-width: 15%; height: auto;">
             </div>
             <div class="container has-text-centered">
@@ -31,6 +31,9 @@
             <ol class="has-text-warning-light retro-title is-size-3">
                ${results}
             </ol>
+         <form class="my-5" action="/clearHistory" method="post">
+            <button class="button is-danger is-medium retro-title" type="submit">Clear History</button>
+         </form>
          </div>
       </section>
    </body>
