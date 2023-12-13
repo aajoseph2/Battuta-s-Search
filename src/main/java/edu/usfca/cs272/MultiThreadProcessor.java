@@ -33,6 +33,7 @@ public class MultiThreadProcessor {
 					index.addDistinctIndex(localIndex);
 				}
 				catch (IOException e) {
+					System.out.println("Unable to read file path!");
 					throw new UncheckedIOException(e);
 				}
 			});
@@ -64,6 +65,7 @@ public class MultiThreadProcessor {
 							index.addDistinctIndex(localIndex);
 						}
 						catch (IOException e) {
+							System.out.println("Unable to read file path!");
 							throw new UncheckedIOException(e);
 						}
 					});

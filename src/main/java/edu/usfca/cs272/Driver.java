@@ -54,7 +54,7 @@ public class Driver {
 					}
 				}
 				catch (IOException e) {
-					System.out.println("Missing file path to read!\n");
+					System.out.println("File path either missing or incorrect path!\n");
 				}
 			}
 			else {

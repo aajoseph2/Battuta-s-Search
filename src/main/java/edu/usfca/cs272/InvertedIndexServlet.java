@@ -11,13 +11,11 @@ import jakarta.servlet.http.HttpServletResponse;
 public class InvertedIndexServlet extends HttpServlet {
 
 	private InvertedIndex index;
-	private QueryProcessorInterface queryProcessor;
 	private final String indexTemplate;
 
-	public InvertedIndexServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor)
+	public InvertedIndexServlet(ThreadSafeInvertedIndex index)
 			throws IOException {
 		this.index = index;
-		this.queryProcessor = queryProcessor;
 		indexTemplate = SearchEngine.readResourceFile("Index.html");
 	}
 

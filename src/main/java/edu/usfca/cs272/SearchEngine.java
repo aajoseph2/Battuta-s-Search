@@ -19,7 +19,6 @@ import org.eclipse.jetty.servlet.ServletHolder;
 public class SearchEngine {
 
 	private ThreadSafeInvertedIndex index;
-	private QueryProcessorInterface queryProcessor;
 	private SearchHistory searchHistory;
 
 	/**
@@ -27,13 +26,10 @@ public class SearchEngine {
 	 * search history.
 	 *
 	 * @param index instance used for search operations.
-	 * @param queryProcessor instance for query processing.
 	 * @param searchHistory instance to track and manage search history.
 	 */
-	public SearchEngine(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor,
-			SearchHistory searchHistory) {
+	public SearchEngine(ThreadSafeInvertedIndex index, SearchHistory searchHistory) {
 		this.index = index;
-		this.queryProcessor = queryProcessor;
 		this.searchHistory = searchHistory;
 	}
 
@@ -68,9 +64,9 @@ public class SearchEngine {
 		contextHandler.setContextPath("/");
 
 		contextHandler.addServlet(new ServletHolder(new HomeServlet()), "/home");
-		contextHandler.addServlet(new ServletHolder(new InvertedIndexServlet(index, queryProcessor)), "/index");
-		contextHandler.addServlet(new ServletHolder(new SearchResultsServlet(index, queryProcessor, searchHistory)), "/results");
-		contextHandler.addServlet(new ServletHolder(new LocationServlet(index, queryProcessor)), "/locations");
+		contextHandler.addServlet(new ServletHolder(new InvertedIndexServlet(index)), "/index");
+		contextHandler.addServlet(new ServletHolder(new SearchResultsServlet(index, searchHistory)), "/results");
+		contextHandler.addServlet(new ServletHolder(new LocationServlet(index)), "/locations");
 		contextHandler.addServlet(new ServletHolder(new DownloadIndexServlet(index)), "/download");
 		contextHandler.addServlet(new ServletHolder(new HistoryServlet(searchHistory)), "/history");
 		contextHandler.addServlet(new ServletHolder(new ClearHistoryServlet(searchHistory)), "/clearHistory");

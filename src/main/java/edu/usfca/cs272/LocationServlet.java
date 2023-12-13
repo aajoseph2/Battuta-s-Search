@@ -12,12 +12,10 @@ import jakarta.servlet.http.HttpServletResponse;
 public class LocationServlet extends HttpServlet {
 
 	private InvertedIndex index;
-	private QueryProcessorInterface queryProcessor;
 	private final String locationTemplate;
 
-	public LocationServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor) throws IOException {
+	public LocationServlet(ThreadSafeInvertedIndex index,) throws IOException {
 		this.index = index;
-		this.queryProcessor = queryProcessor;
 		locationTemplate = SearchEngine.readResourceFile("Locations.html");
 	}
 

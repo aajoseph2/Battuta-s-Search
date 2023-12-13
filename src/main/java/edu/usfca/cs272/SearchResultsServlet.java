@@ -11,14 +11,11 @@ import jakarta.servlet.http.HttpServletResponse;
 public class SearchResultsServlet extends HttpServlet {
 
 	private InvertedIndex index;
-	private QueryProcessorInterface queryProcessor;
 	private final String resultsTemplate;
 	private SearchHistory searchHistory;
 
-	public SearchResultsServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor,
-			SearchHistory searchHistory) throws IOException {
+	public SearchResultsServlet(ThreadSafeInvertedIndex index, SearchHistory searchHistory) throws IOException {
 		this.index = index;
-		this.queryProcessor = queryProcessor;
 		resultsTemplate = SearchEngine.readResourceFile("Results.html");
 		this.searchHistory = searchHistory;
 	}
@@ -26,26 +23,14 @@ public class SearchResultsServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String searchQuery = HtmlCleaner.stripHtml(request.getParameter("query"));
-		String action = request.getParameter("action");
-		boolean exactSearch = "on".equals(request.getParameter("exact"));
 
 		searchHistory.addSearchedQuery(searchQuery);
+		QueryProcessorInterface queryProcessor = new QueryProcessor("on".equals(request.getParameter("exact")), index);
 
-		QueryProcessorInterface queryProcessor;
-		QueryProcessorInterface queryProcessorTwo = new QueryProcessor(exactSearch, index);
+		queryProcessor.queryProcessor(searchQuery);
+		var results = queryProcessor.getQueryResults(searchQuery);
 
-		queryProcessorTwo.queryProcessor(searchQuery);
-
-		for (var result : queryProcessorTwo.getQueryResults(searchQuery)) {
-			System.out.println("Query Result: " + result.getWhere());
-			System.out.println("Query Score: " + result.getScore());
-			System.out.println("Query Count: " + result.getCount());
-			System.out.println();
-		}
-
-		var results = queryProcessorTwo.getQueryResults(searchQuery);
-
-		if ("lucky".equals(action) && !results.isEmpty()) {
+		if ("lucky".equals(request.getParameter("action")) && !results.isEmpty()) {
 			response.sendRedirect(results.get(0).getWhere());
 		}
 		else {
@@ -64,7 +49,6 @@ public class SearchResultsServlet extends HttpServlet {
 		if (!results.isEmpty()) {
 			resultsBuilder.append("<ol>");
 			for (InvertedIndex.SearchResult result : results) {
-				System.out.println("result Count: " + result.getCount());
 				resultsBuilder.append("<li>")
 						.append("<a class='index-link' href=\"")
 						.append(result.getWhere())
