@@ -3,6 +3,7 @@ package edu.usfca.cs272;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +27,12 @@ public class HomeServlet extends HttpServlet {
 	/** The title to use for this webpage. */
 	private static final String title = "Battuta's";
 
+	/** Format used for all date output. */
+	public static final String longDateFormat = "hh:mm a 'on' EEEE, MMMM dd yyyy";
+
+	/** Used to format dates (already thread-safe). */
+	public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(longDateFormat);
+
 	/**
 	 * Template that the home page utilizes. Based and dedicated to the great
 	 * explorer Abu Abdullah Muhammad ibn Battutah.
@@ -47,7 +54,7 @@ public class HomeServlet extends HttpServlet {
 		Map<String, String> values = new HashMap<>();
 		values.put("title", title);
 		values.put("thread", Thread.currentThread().getName());
-		values.put("updated", MessageServlet.dateFormatter.format(LocalDateTime.now()));
+		values.put("updated", dateFormatter.format(LocalDateTime.now()));
 
 		values.put("method", "POST");
 		values.put("action", request.getServletPath());

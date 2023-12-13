@@ -126,6 +126,7 @@ public class Driver {
 				System.out.println("Error writing results to file: " + e.getMessage());
 			}
 		}
+		// TODO may have to change the catching of exception
 		if (parser.hasFlag("-server")) {
 			try {
 				SearchHistory searchHistory = new SearchHistory();
