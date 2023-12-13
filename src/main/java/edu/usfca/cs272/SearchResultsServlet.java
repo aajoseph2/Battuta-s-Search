@@ -2,6 +2,7 @@ package edu.usfca.cs272;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -15,13 +16,16 @@ public class SearchResultsServlet extends HttpServlet {
 	private InvertedIndex index;
 	private QueryProcessorInterface queryProcessor;
 	private final String resultsTemplate;
-	public List<String> searchHistory;
+	public static List<String> searchHistory;
+	private final MultiReaderLock lock;
 
 	public SearchResultsServlet(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor)
 			throws IOException {
 		this.index = index;
 		this.queryProcessor = queryProcessor;
 		resultsTemplate = SearchEngine.readResourceFile("Results.html");
+		lock = new MultiReaderLock();
+		searchHistory = new ArrayList<>();
 	}
 
 	@Override
@@ -29,7 +33,11 @@ public class SearchResultsServlet extends HttpServlet {
 		String searchQuery = HtmlCleaner.stripHtml(request.getParameter("query"));
 		String action = request.getParameter("action");
 		boolean exactSearch = "on".equals(request.getParameter("exact"));
+
+		//TODO maybe add write lock
 		searchHistory.add(searchQuery);
+
+
 
 		Set<String> queryWords = convertQueryToWords(searchQuery);
 		List<InvertedIndex.SearchResult> results = index.search(queryWords, exactSearch);
@@ -46,7 +54,7 @@ public class SearchResultsServlet extends HttpServlet {
 			out.flush();
 		}
 	}
-
+//TODO see if i already did something like this
 	private Set<String> convertQueryToWords(String searchQuery) {
 		Set<String> words = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
