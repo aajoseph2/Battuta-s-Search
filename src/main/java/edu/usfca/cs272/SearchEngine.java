@@ -22,6 +22,14 @@ public class SearchEngine {
 	private QueryProcessorInterface queryProcessor;
 	private SearchHistory searchHistory;
 
+	/**
+	 * Constructs a SearchEngine instance with the given index, query processor, and
+	 * search history.
+	 *
+	 * @param index instance used for search operations.
+	 * @param queryProcessor instance for query processing.
+	 * @param searchHistory instance to track and manage search history.
+	 */
 	public SearchEngine(ThreadSafeInvertedIndex index, QueryProcessorInterface queryProcessor,
 			SearchHistory searchHistory) {
 		this.index = index;

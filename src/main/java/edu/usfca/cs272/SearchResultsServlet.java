@@ -33,6 +33,17 @@ public class SearchResultsServlet extends HttpServlet {
 
 		searchHistory.addSearchedQuery(searchQuery);
 
+		queryProcessor.queryProcessor(searchQuery);
+
+		for (var result : queryProcessor.getQueryResults(searchQuery)) {
+			System.out.println("Query Result: " + result.getWhere());
+			System.out.println("Query Score: " + result.getScore());
+			System.out.println("Query Count: " + result.getCount());
+			System.out.println();
+		}
+		//System.out.println("Query line: " + queryProcessor.getQueryLines());
+		//System.out.println("Query Results: " + searchHistory.toString());
+
 		Set<String> queryWords = convertQueryToWords(searchQuery);
 		List<InvertedIndex.SearchResult> results = index.search(queryWords, exactSearch);
 
@@ -71,6 +82,7 @@ public class SearchResultsServlet extends HttpServlet {
 		if (!results.isEmpty()) {
 			resultsBuilder.append("<ol>");
 			for (InvertedIndex.SearchResult result : results) {
+				System.out.println("result Count: " + result.getCount());
 				resultsBuilder.append("<li>")
 						.append("<a class='index-link' href=\"")
 						.append(result.getWhere())
