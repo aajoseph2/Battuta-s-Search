@@ -61,8 +61,7 @@ public class SearchEngine {
 
 		contextHandler.addServlet(new ServletHolder(new HomeServlet()), "/home");
 		contextHandler.addServlet(new ServletHolder(new InvertedIndexServlet(index, queryProcessor)), "/index");
-		contextHandler.addServlet(new ServletHolder(new SearchResultsServlet(index, queryProcessor, searchHistory)),
-				"/results");
+		contextHandler.addServlet(new ServletHolder(new SearchResultsServlet(index, queryProcessor, searchHistory)), "/results");
 		contextHandler.addServlet(new ServletHolder(new LocationServlet(index, queryProcessor)), "/locations");
 		contextHandler.addServlet(new ServletHolder(new DownloadIndexServlet(index)), "/download");
 		contextHandler.addServlet(new ServletHolder(new HistoryServlet(searchHistory)), "/history");
@@ -74,7 +73,7 @@ public class SearchEngine {
 		HandlerList handlers = new HandlerList();
 		handlers.setHandlers(new Handler[] { resourceHandler, contextHandler });
 
-		System.out.println("Starting server on port " + port);
+		System.out.println("Launching website: http://localhost:" + port + "/home");
 
 		server.setHandler(handlers);
 		server.start();

@@ -41,7 +41,7 @@ public class InvertedIndexServlet extends HttpServlet {
 				builder.append("<li>")
 						.append("<a class='index-link' href=\"")
 						.append(location)
-						.append("\">")
+						.append("\">-> ")
 						.append(location)
 						.append("</a> - Count: ")
 						.append(frequency)
