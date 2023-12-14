@@ -26,6 +26,9 @@ public class Crawler {
 	 * through Urls
 	 */
 	private final int maxCrawlLimit;
+	
+	// TODO init instance members in the constructor
+	
 	/**
 	 * A set of URLs that have already been visited to avoid redundant crawling.
 	 */
@@ -57,7 +60,7 @@ public class Crawler {
 		this.index = index;
 		this.maxCrawlLimit = maxCrawlLimit;
 		this.workers = workers;
-		this.lock = new MultiReaderLock();
+		this.lock = new MultiReaderLock(); // TODO Might be too complex for this use case
 	}
 
 	/**
@@ -80,6 +83,7 @@ public class Crawler {
 	 * @param url The URL to be crawled.
 	 */
 	private void submitTask(URL url) {
+		// TODO visitedUrls.size() >= maxCrawlLimit
 		if (visitedContains(url) || crawledCount >= maxCrawlLimit) {
 			return;
 		}
@@ -131,6 +135,27 @@ public class Crawler {
 		String html = HtmlFetcher.fetch(url, 3);
 
 		if (html != null) {
+			// TODO Swap order, links then text
+			
+			/* TODO 
+			var local = LinkFinder.listUrls(url, html);
+			
+			sync ( ) {
+				for (URL nextUrl : local) {
+					if (crawledCount >= maxCrawlLimit) {
+						break;
+					}
+	
+					if (visitedUrls.contains(url)) {
+						visitedUrls.add(url);
+						crawledCount++;
+		
+						workers.execute(new Worker(url));
+					}
+				}
+			}
+			*/
+			
 			processText(HtmlCleaner.stripHtml(html), url.toString());
 			for (URL nextUrl : LinkFinder.listUrls(url, html)) {
 				submitTask(nextUrl);
@@ -146,11 +171,12 @@ public class Crawler {
 	 * @param location The URL from which the text was extracted.
 	 */
 	private void processText(String text, String location) {
+		// TODO Add to local instead
 		int pos = 1;
 		Stemmer stemmer = new SnowballStemmer(ENGLISH);
 		String[] words = TextParser.parse(text);
 		for (String word : words) {
-			index.addData(stemmer.stem(word).toString(), location, pos);
+			index.addData(stemmer.stem(word).toString(), location, pos); // TODO blocking add within a loop
 			pos++;
 		}
 	}
