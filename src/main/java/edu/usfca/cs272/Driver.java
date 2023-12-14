@@ -6,10 +6,9 @@ import java.nio.file.Path;
 
 /**
  * Class responsible for running this project based on the provided command-line
- * arguments. See the README for details.
+ * arguments. Driver starts server.
  *
  * @author Amin Joseph
- * @author CS 272 Software Development (University of San Francisco)
  * @version Fall 2023
  */
 public class Driver {
