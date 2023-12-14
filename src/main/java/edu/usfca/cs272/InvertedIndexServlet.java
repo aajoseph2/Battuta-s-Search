@@ -65,7 +65,7 @@ public class InvertedIndexServlet extends HttpServlet {
 
 		for (String word : new TreeSet<>(index.getWords())) {
 			builder.append("<li>")
-					.append("<div class = ' is-size-5'>")
+					.append("<div class = 'is-size-5'>")
 					.append(word)
 					.append(":</div>")
 					.append("<ul style='margin-left: 25px;'>");
