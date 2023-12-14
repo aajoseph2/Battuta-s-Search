@@ -72,15 +72,16 @@ public class InvertedIndexServlet extends HttpServlet {
 						.append(location)
 						.append("\">-> ")
 						.append(location)
-						.append("</a> - Count: ")
+						.append("</a> <p style=\"margin-left: 30px;\">-> Word Count - ")
 						.append(frequency)
+						.append("</p>")
 						.append("</li>");
 			}
 
 			builder.append("</ul></li>");
 		}
 
-		return indexTemplate.replace("${title}", "Battuta's Search").replace("${results}", builder.toString());
+		return indexTemplate.replace("${results}", builder.toString());
 	}
 
 }

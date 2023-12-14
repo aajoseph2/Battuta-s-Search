@@ -73,15 +73,15 @@ public class LocationServlet extends HttpServlet {
 					.append(location)
 					.append("\">")
 					.append(location)
-					.append("</a> - Word Count: ")
+					.append("</a> <p style=\"margin-left: 30px;\">-> Word Count - ")
 					.append(count)
+					.append("</p>")
 					.append("</li>");
 		}
 
 		builder.append("</ol>");
 
-		return locationTemplate.replace("${title}", "Battuta's Search - Locations")
-				.replace("${results}", builder.toString());
+		return locationTemplate.replace("${results}", builder.toString());
 	}
 
 }
