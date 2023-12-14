@@ -58,6 +58,7 @@ public class SearchEngine {
 		if (inputStream == null) {
 			throw new FileNotFoundException("Resource file not found: " + resourcePath);
 		}
+
 		return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 	}
 
