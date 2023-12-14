@@ -64,7 +64,11 @@ public class InvertedIndexServlet extends HttpServlet {
 		StringBuilder builder = new StringBuilder();
 
 		for (String word : new TreeSet<>(index.getWords())) {
-			builder.append("<li>").append(word).append(":<ul style='margin-left: 25px;'>");
+			builder.append("<li>")
+					.append("<div class = ' is-size-5'>")
+					.append(word)
+					.append(":</div>")
+					.append("<ul style='margin-left: 25px;'>");
 			for (String location : index.getLocations(word)) {
 				int frequency = index.numWordFrequencyAtLocation(word, location);
 				builder.append("<li>")
