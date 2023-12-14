@@ -20,6 +20,11 @@ public class SearchHistory {
 	private final List<String> searchHistory;
 
 	/**
+	 * The lock used to protect concurrent access to the underlying set.
+	 */
+	private final MultiReaderLock lock;
+
+	/**
 	 * Constructs a new SearchHistory object with an empty list to store search
 	 * queries.
 	 *
@@ -27,6 +32,7 @@ public class SearchHistory {
 	 */
 	public SearchHistory() throws IOException {
 		searchHistory = new ArrayList<>();
+		lock = new MultiReaderLock();
 	}
 
 	/**
@@ -35,7 +41,13 @@ public class SearchHistory {
 	 * @param word The search query to be added to the history.
 	 */
 	public void addSearchedQuery(String word) {
-		searchHistory.add(word);
+		lock.writeLock().lock();
+		try {
+			searchHistory.add(word);
+		}
+		finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	/**
@@ -44,14 +56,26 @@ public class SearchHistory {
 	 * @return An unmodifiable list representing the search history.
 	 */
 	public List<String> getSearchedList() {
-		return Collections.unmodifiableList(searchHistory);
+		lock.readLock().lock();
+		try {
+			return Collections.unmodifiableList(searchHistory);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	/**
 	 * Clears all entries from the search history.
 	 */
 	public void clearSearchHistory() {
-		searchHistory.clear();
+		lock.writeLock().lock();
+		try {
+			searchHistory.clear();
+		}
+		finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 }
