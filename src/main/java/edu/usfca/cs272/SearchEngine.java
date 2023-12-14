@@ -84,7 +84,7 @@ public class SearchEngine {
 		contextHandler.addServlet(new ServletHolder(new ClearHistoryServlet(searchHistory)), "/clearHistory");
 
 		ResourceHandler resourceHandler = new ResourceHandler();
-		resourceHandler.setResourceBase("/Users/aminjoseph/git/project-aajoseph2/src/main/resources/static");
+		resourceHandler.setResourceBase("src/main/resources/static");
 
 		HandlerList handlers = new HandlerList();
 		handlers.setHandlers(new Handler[] { resourceHandler, contextHandler });

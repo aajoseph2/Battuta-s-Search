@@ -65,6 +65,7 @@ public class DownloadIndexServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		// TODO Can make more efficient
 		response.setContentType("application/json");
 		response.setHeader("Content-Disposition", "attachment; filename=\"index.json\"");
 

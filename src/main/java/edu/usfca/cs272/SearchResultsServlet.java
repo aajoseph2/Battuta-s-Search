@@ -59,10 +59,17 @@ public class SearchResultsServlet extends HttpServlet {
 		String searchQuery = HtmlCleaner.stripHtml(request.getParameter("query"));
 
 		searchHistory.addSearchedQuery(searchQuery);
+		
+		// TODO Not efficient
 		QueryProcessorInterface queryProcessor = new QueryProcessor("on".equals(request.getParameter("exact")), index);
 
 		queryProcessor.queryProcessor(searchQuery);
 		var results = new ArrayList<>(queryProcessor.getQueryResults(searchQuery));
+		
+		/* TODO 
+		var queries = TextParser.uniqueStems(request.getParameter("query"));
+		var results = index.search(queries, "on".equals(request.getParameter("exact"));
+		*/
 
 		if ("on".equals(request.getParameter("reverse"))) {
 			Collections.reverse(results);
