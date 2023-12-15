@@ -40,6 +40,8 @@ public class LinkFinder {
 	public static void findLinks(URL base, String html, Collection<URL> links) {
 		String regex = "(?i)<a\\s+(?:[^>]*?\\s+)?href\\s*=\\s*([\"'])(.*?)\\1";
 		Pattern pattern = Pattern.compile(regex);
+		
+		// TODO Usually strip the block elements outside of this method
 		Matcher matcher = pattern.matcher(HtmlCleaner.stripBlockElements(html));
 
 		while (matcher.find()) {
