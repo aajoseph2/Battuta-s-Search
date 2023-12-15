@@ -319,6 +319,12 @@ public class InvertedIndex {
 	public void writeJson(Path path) throws IOException {
 		JsonFormatter.writeIndexJson(index, path, 1);
 	}
+	
+	/* TODO
+	public void writeJson(Writer writer) throws IOException {
+		JsonFormatter.writeIndexJson(index, writer, 1);
+	}
+	*/
 
 	@Override
 	public String toString() {
